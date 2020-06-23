@@ -5,32 +5,33 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
       <title>Matplotlib Tips</title>
     
-      <link rel="stylesheet" href="../_static/pygments.css">
-      <link rel="stylesheet" href="../_static/theme.css">
-      <link rel="stylesheet" href="../_static/sphinx_press_theme.css">
+      <link rel="stylesheet" href="../../_static/pygments.css">
+      <link rel="stylesheet" href="../../_static/theme.css">
+      <link rel="stylesheet" href="../../_static/sphinx_press_theme.css">
       
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
 
       <!-- sphinx script_files -->
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script src="../_static/translations.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/translations.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
 
       
-      <script src="../_static/theme-vendors.js"></script>
-      <script src="../_static/theme.js" defer></script>
+      <script src="../../_static/theme-vendors.js"></script>
+      <script src="../../_static/theme.js" defer></script>
     
-  <link rel="index" title="索引" href="../genindex.html" />
-  <link rel="search" title="検索" href="../search.html" />
-  <link rel="prev" title="MakeOverMonday" href="../makeovermonday/2020_W25.html" /> 
+  <link rel="index" title="索引" href="../../genindex.html" />
+  <link rel="search" title="検索" href="../../search.html" />
+  <link rel="next" title="Plotly Tips" href="../tips_plotly/plotly.html" />
+  <link rel="prev" title="Tips memo" href="../index.html" /> 
   </head>
 
   <body>
     <div id="app" class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
-  <router-link to="../index.html" class="home-link">
+  <router-link to="../../index.html" class="home-link">
     
       <span class="site-name">My page</span>
     
@@ -59,7 +60,7 @@
           </navlinks><div id="searchbox" class="searchbox" role="search">
   <div class="caption"><span class="caption-text">クイック検索</span>
     <div class="searchformwrapper">
-      <form class="search" action="../search.html" method="get">
+      <form class="search" action="../../search.html" method="get">
         <input type="text" name="q" />
         <input type="submit" value="検索" />
         <input type="hidden" name="check_keywords" value="yes" />
@@ -71,32 +72,18 @@
   
     <div class="sidebar-group">
       <p class="caption">
-        <span class="caption-text"><a href="../index.html#welcome-to-yujikawa-s-pages">Contents:</a></span>
+        <span class="caption-text"><a href="../../index.html#welcome-to-yujikawa-s-pages">Contents:</a></span>
       </p>
-      <ul class="current">
+      <ul class="">
         
-          <li class="toctree-l1 "><a href="../makeovermonday/2020_W24.html" class="reference internal ">MakeOverMonday</a>
+          <li class="toctree-l1 "><a href="../../makeovermonday/index.html" class="reference internal ">Makeover Monday</a>
 
             
           </li>
 
         
-          <li class="toctree-l1 "><a href="../makeovermonday/2020_W25.html" class="reference internal ">MakeOverMonday</a>
+          <li class="toctree-l1 "><a href="../index.html" class="reference internal ">Tips memo</a>
 
-            
-          </li>
-
-        
-          <li class="toctree-l1 current"><a href="#" class="reference internal current">Matplotlib Tips</a>
-
-            
-              <ul>
-                
-                  <li class="toctree-l2"><a href="#そのままで描画する場合" class="reference internal">そのままで描画する場合</a></li>
-                
-                  <li class="toctree-l2"><a href="#Google流資料作成術の方法を取り入れた場合" class="reference internal">Google流資料作成術の方法を取り入れた場合</a></li>
-                
-              </ul>
             
           </li>
 
@@ -111,7 +98,9 @@
           <div class="body-header" role="navigation" aria-label="navigation">
   
   <ul class="breadcrumbs">
-    <li><a href="../index.html">Docs</a> &raquo;</li>
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+    
+      <li><a href="../index.html">Tips memo</a> &raquo;</li>
     
     <li>Matplotlib Tips</li>
   </ul>
@@ -119,8 +108,12 @@
 
   <ul class="page-nav">
   <li class="prev">
-    <a href="../makeovermonday/2020_W25.html"
-       title="前の章へ">← MakeOverMonday</a>
+    <a href="../index.html"
+       title="前の章へ">← Tips memo</a>
+  </li>
+  <li class="next">
+    <a href="../tips_plotly/plotly.html"
+       title="次の章へ">Plotly Tips →</a>
   </li>
 </ul>
   
@@ -410,8 +403,9 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
+</div>
 <div class="section" id="そのままで描画する場合">
-<h2>そのままで描画する場合<a class="headerlink" href="#そのままで描画する場合" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h1>そのままで描画する場合<a class="headerlink" href="#そのままで描画する場合" title="このヘッドラインへのパーマリンク">¶</a></h1>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
@@ -432,11 +426,11 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/study_matplotlib_5_0.svg" src="../_images/study_matplotlib_5_0.svg" /></div>
+<img alt="../../_images/study_tips_matplotlib_matplotlib_5_0.svg" src="../../_images/study_tips_matplotlib_matplotlib_5_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="Google流資料作成術の方法を取り入れた場合">
-<h2>Google流資料作成術の方法を取り入れた場合<a class="headerlink" href="#Google流資料作成術の方法を取り入れた場合" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h1>Google流資料作成術の方法を取り入れた場合<a class="headerlink" href="#Google流資料作成術の方法を取り入れた場合" title="このヘッドラインへのパーマリンク">¶</a></h1>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
@@ -460,7 +454,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/study_matplotlib_7_0.svg" src="../_images/study_matplotlib_7_0.svg" /></div>
+<img alt="../../_images/study_tips_matplotlib_matplotlib_7_0.svg" src="../../_images/study_tips_matplotlib_matplotlib_7_0.svg" /></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -472,15 +466,18 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 </div>
-</div>
 
 
           </div>
           <div class="page-nav">
             <div class="inner"><ul class="page-nav">
   <li class="prev">
-    <a href="../makeovermonday/2020_W25.html"
-       title="前の章へ">← MakeOverMonday</a>
+    <a href="../index.html"
+       title="前の章へ">← Tips memo</a>
+  </li>
+  <li class="next">
+    <a href="../tips_plotly/plotly.html"
+       title="次の章へ">Plotly Tips →</a>
   </li>
 </ul><div class="footer" role="contentinfo">
       &#169; Copyright 2020, yuji.kawakami.

@@ -4,9 +4,8 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# MakeOverMonday\n",
     "## 2020/W24\n",
-    "### https://data.world/makeovermonday/2020w24"
+    "### [data world](https://data.world/makeovermonday/2020w24)"
    ]
   },
   {

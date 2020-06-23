@@ -10,7 +10,7 @@ Here are mainly output activities and notes on what I've read in the book.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
    :glob:
    
