@@ -1,0 +1,13 @@
+# IDE
+.idea
+.venv
+.vscode
+
+# direnv
+.envrc
+
+# Python
+__pycache__
+*.pyc
+
+build/*
