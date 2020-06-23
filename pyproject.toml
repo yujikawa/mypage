@@ -19,6 +19,7 @@ sphinx-gallery = "^0.7.0"
 ipykernel = "^5.3"
 seaborn = "^0.10.1"
 xlrd = "^1.2"
+statsmodels = "^0.11.1"
 
 [tool.poetry.dev-dependencies]
 

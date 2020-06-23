@@ -58,7 +58,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## そのままで描画する場合"
+    "### そのままで描画する場合"
    ]
   },
   {
@@ -1111,7 +1111,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Google流資料作成術の方法を取り入れた場合"
+    "### Google流資料作成術の方法を取り入れた場合"
    ]
   },
   {
