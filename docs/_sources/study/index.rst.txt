@@ -8,3 +8,4 @@ Tips memo
    
    tips_matplotlib/*
    tips_plotly/*
+   tips_python/*
