@@ -24,6 +24,8 @@ panel = "^0.9.7"
 scikit-learn = "^0.23.1"
 altair = "^4.1"
 vega_datasets = "^0.8.0"
+ipywidgets = "^7.5"
+jupyter-sphinx = "^0.2.4"
 
 [tool.poetry.dev-dependencies]
 yapf = "^0.30.0"
