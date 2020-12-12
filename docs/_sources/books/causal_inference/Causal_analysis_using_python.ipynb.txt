@@ -498,6 +498,63 @@
    ]
   },
   {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 4-3 Doubly Robust法による因果推論の実装"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 52,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "X = df[['age', 'sex', 'saw_cm']]\n",
+    "y = df['purchase_amount']\n",
+    "reg2 = LinearRegression().fit(X, y)\n",
+    "\n",
+    "# Z=0\n",
+    "X_0 = X.copy()\n",
+    "X_0['saw_cm'] = 0\n",
+    "Y_0 = reg2.predict(X_0)\n",
+    "\n",
+    "# Z=1\n",
+    "X_1 = X.copy()\n",
+    "X_1['saw_cm'] = 1\n",
+    "Y_1 = reg2.predict(X_1)\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 54,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ATE_1_i = Y/Z_pre[:, 1]*Z + (1-Z/Z_pre[:,1])*Y_1\n",
+    "ATE_0_i = Y/Z_pre[:, 0]*(1-Z) + (1-(1-Z)/Z_pre[:,0])*Y_0"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 55,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "ATE= 9.302251170506118\n"
+     ]
+    }
+   ],
+   "source": [
+    "ATE = 1/len(Y)*(ATE_1_i - ATE_0_i).sum()\n",
+    "print('ATE=', ATE)"
+   ]
+  },
+  {
    "cell_type": "code",
    "execution_count": null,
    "metadata": {},
