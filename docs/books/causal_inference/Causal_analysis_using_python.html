@@ -27,7 +27,7 @@
     
   <link rel="index" title="索引" href="../../genindex.html" />
   <link rel="search" title="検索" href="../../search.html" />
-  <link rel="prev" title="Tips memo" href="../index.html" /> 
+  <link rel="prev" title="Books memo" href="../index.html" /> 
   </head>
 
   <body>
@@ -89,7 +89,7 @@
           </li>
 
         
-          <li class="toctree-l1 "><a href="../index.html" class="reference internal ">Tips memo</a>
+          <li class="toctree-l1 "><a href="../index.html" class="reference internal ">Books memo</a>
 
             
           </li>
@@ -107,7 +107,7 @@
   <ul class="breadcrumbs">
     <li><a href="../../index.html">Docs</a> &raquo;</li>
     
-      <li><a href="../index.html">Tips memo</a> &raquo;</li>
+      <li><a href="../index.html">Books memo</a> &raquo;</li>
     
     <li>Pythonによる因果分析</li>
   </ul>
@@ -116,7 +116,7 @@
   <ul class="page-nav">
   <li class="prev">
     <a href="../index.html"
-       title="前の章へ">← Tips memo</a>
+       title="前の章へ">← Books memo</a>
   </li>
 </ul>
   
@@ -592,11 +592,11 @@ div.rendered_html tbody tr:hover {
 </div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
+<span></span><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span><span class="p">,</span> <span class="n">LogisticRegression</span>
 </pre></div>
 </div>
 </div>
@@ -675,6 +675,124 @@ P(Y=y\mid do(Z=z)) = \sum_{x}{\frac{P(X,Y,Z)}{P(Z \mid X)}}\end{split}\]</div>
     allowfullscreen
 ></iframe></div>
 </div>
+<p>ある属性xにおける介入される確率のことを傾向スコアと呼ぶ</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">X</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;sex&#39;</span><span class="p">]]</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;saw_cm&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">reg</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;beta=&#39;</span><span class="p">,</span> <span class="n">reg</span><span class="o">.</span><span class="n">coef_</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;alpha=&#39;</span><span class="p">,</span> <span class="n">reg</span><span class="o">.</span><span class="n">intercept_</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+beta= [[ 0.09423455 -0.86637788]]
+alpha= [-2.84672344]
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">Z_pre</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[47]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">print</span><span class="p">(</span><span class="n">Z_pre</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;------------&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">Z_pre</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;------------&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Z</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[[0.89197871 0.10802129]
+ [0.46244206 0.53755794]
+ [0.86157224 0.13842776]
+ [0.70807741 0.29192259]
+ [0.06793314 0.93206686]]
+------------
+[0 1 0 0 1]
+------------
+0    0.0
+1    0.0
+2    0.0
+3    0.0
+4    1.0
+Name: saw_cm, dtype: float64
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[48]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ATE_i</span> <span class="o">=</span> <span class="n">Y</span><span class="o">/</span><span class="n">Z_pre</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">Z</span> <span class="o">-</span> <span class="n">Y</span><span class="o">/</span><span class="n">Z_pre</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Z</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[50]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ATE</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span><span class="o">*</span><span class="n">ATE_i</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[51]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ATE</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[51]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+12.124906657728303
+</pre></div></div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -693,7 +811,7 @@ P(Y=y\mid do(Z=z)) = \sum_{x}{\frac{P(X,Y,Z)}{P(Z \mid X)}}\end{split}\]</div>
             <div class="inner"><ul class="page-nav">
   <li class="prev">
     <a href="../index.html"
-       title="前の章へ">← Tips memo</a>
+       title="前の章へ">← Books memo</a>
   </li>
 </ul><div class="footer" role="contentinfo">
       &#169; Copyright 2020, yuji.kawakami.

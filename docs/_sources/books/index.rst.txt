@@ -1,5 +1,5 @@
 
-Tips memo
+Books memo
 ==================================
 .. toctree::
    :maxdepth: 1
