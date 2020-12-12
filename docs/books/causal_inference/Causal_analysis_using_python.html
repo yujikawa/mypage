@@ -18,13 +18,16 @@
         <script src="../../_static/language_data.js"></script>
         <script src="../../_static/translations.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
 
       
       <script src="../../_static/theme-vendors.js"></script>
       <script src="../../_static/theme.js" defer></script>
     
   <link rel="index" title="索引" href="../../genindex.html" />
-  <link rel="search" title="検索" href="../../search.html" /> 
+  <link rel="search" title="検索" href="../../search.html" />
+  <link rel="prev" title="Tips memo" href="../index.html" /> 
   </head>
 
   <body>
@@ -86,6 +89,12 @@
           </li>
 
         
+          <li class="toctree-l1 "><a href="../index.html" class="reference internal ">Tips memo</a>
+
+            
+          </li>
+
+        
       </ul>
     </div>
   
@@ -98,11 +107,17 @@
   <ul class="breadcrumbs">
     <li><a href="../../index.html">Docs</a> &raquo;</li>
     
+      <li><a href="../index.html">Tips memo</a> &raquo;</li>
+    
     <li>Pythonによる因果分析</li>
   </ul>
   
 
   <ul class="page-nav">
+  <li class="prev">
+    <a href="../index.html"
+       title="前の章へ">← Tips memo</a>
+  </li>
 </ul>
   
 </div>
@@ -348,11 +363,12 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="4-1.-回帰分析による因果推論の実装">
 <h2>4-1. 回帰分析による因果推論の実装<a class="headerlink" href="#4-1.-回帰分析による因果推論の実装" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">random</span>
+<span></span><span class="kn">import</span> <span class="nn">IPython</span>
+<span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">expit</span>
@@ -621,6 +637,44 @@ div.rendered_html tbody tr:hover {
 CMをみたという介入効果は 9.172783688208007
 </pre></div></div>
 </div>
+</div>
+<div class="section" id="4-2.-傾向スコアを用いた逆確率重み付け法の実装">
+<h2>4-2. 傾向スコアを用いた逆確率重み付け法の実装<a class="headerlink" href="#4-2.-傾向スコアを用いた逆確率重み付け法の実装" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>調整化公式の式変換について</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}P(X,Y,Z) = P(Y \mid X, Z)P(X, Z) \\
+P(Y \mid X, Z) = \frac{P(X,Y,Z)}{P(X, Z)} \\
+また分母のP(X, Z)は\\
+P(X,Z) = P(Z \mid X)P(X) \\
+であるため代入すると\\
+P(Y \mid X, Z) = \frac{P(X,Y,Z)}{P(Z \mid X)P(X)} \\
+つまり調整化公式の右辺はP(X)が分母と分子に存在するため消える\\
+P(Y \mid X, Z)P(X)=\frac{P(X,Y,Z)}{P(Z \mid X)} \\
+最終的に以下の式になる \\
+P(Y=y\mid do(Z=z)) = \sum_{x}{\frac{P(X,Y,Z)}{P(Z \mid X)}}\end{split}\]</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># 参考Youtube</span>
+<span class="n">IPython</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;zYKOL5RpVbo&#39;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">189</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<iframe
+    width="400"
+    height="300"
+    src="https://www.youtube.com/embed/zYKOL5RpVbo?start=189"
+    frameborder="0"
+    allowfullscreen
+></iframe></div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -637,6 +691,10 @@ CMをみたという介入効果は 9.172783688208007
           </div>
           <div class="page-nav">
             <div class="inner"><ul class="page-nav">
+  <li class="prev">
+    <a href="../index.html"
+       title="前の章へ">← Tips memo</a>
+  </li>
 </ul><div class="footer" role="contentinfo">
       &#169; Copyright 2020, yuji.kawakami.
     <br>
