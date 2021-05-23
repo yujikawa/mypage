@@ -7,3 +7,4 @@ Books memo
    :glob:
    
    causal_inference/*
+   time_series_analysis/*
