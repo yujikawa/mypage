@@ -2,27 +2,26 @@
 <html  lang="ja">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
       <title>Welcome to Yujikawa&#39;s pages!</title>
     
-      <link rel="stylesheet" href="_static/pygments.css">
-      <link rel="stylesheet" href="_static/theme.css">
-      <link rel="stylesheet" href="_static/sphinx_press_theme.css">
+          <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+          <link rel="stylesheet" href="_static/theme.css " type="text/css" />
       
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-
       <!-- sphinx script_files -->
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
         <script src="_static/translations.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
 
       
-      <script src="_static/theme-vendors.js"></script>
+      <!-- bundled in js (rollup iife) -->
+      <!-- <script src="_static/theme-vendors.js"></script> -->
       <script src="_static/theme.js" defer></script>
     
   <link rel="index" title="索引" href="genindex.html" />
@@ -31,7 +30,8 @@
   </head>
 
   <body>
-    <div id="app" class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
+    <div id="app">
+    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
   <router-link to="#" class="home-link">
     
       <span class="site-name">My page</span>
@@ -77,19 +77,19 @@
       </p>
       <ul class="">
         
-          <li class="toctree-l1 "><a href="makeovermonday/index.html" class="reference internal ">Makeover Monday</a>
+          <li class="toctree-l1 ">
+            
+              <a href="makeovermonday/index.html" class="reference internal ">Makeover Monday</a>
+            
 
             
           </li>
 
         
-          <li class="toctree-l1 "><a href="study/index.html" class="reference internal ">Tips memo</a>
-
+          <li class="toctree-l1 ">
             
-          </li>
-
-        
-          <li class="toctree-l1 "><a href="books/index.html" class="reference internal ">Books memo</a>
+              <a href="study/index.html" class="reference internal ">Tips memo</a>
+            
 
             
           </li>
@@ -120,28 +120,27 @@
   
 </div>
 <hr>
-          <div class="content" role="main">
+          <div class="content" role="main" v-pre>
             
-  <div class="section" id="welcome-to-yujikawa-s-pages">
-<h1>Welcome to Yujikawa's pages!<a class="headerlink" href="#welcome-to-yujikawa-s-pages" title="このヘッドラインへのパーマリンク">¶</a></h1>
+  <section id="welcome-to-yujikawa-s-pages">
+<h1>Welcome to Yujikawa's pages!<a class="headerlink" href="#welcome-to-yujikawa-s-pages" title="この見出しへのパーマリンク"></a></h1>
 <p>ここでは主にアウトプットの活動や本で読んだ内容をメモしたことを載せております。
 Here are mainly output activities and notes on what I've read in the book.</p>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="makeovermonday/index.html">Makeover Monday</a></li>
 <li class="toctree-l1"><a class="reference internal" href="study/index.html">Tips memo</a></li>
-<li class="toctree-l1"><a class="reference internal" href="books/index.html">Books memo</a></li>
 </ul>
 </div>
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="この見出しへのパーマリンク"></a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">索引</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">検索ページ</span></a></p></li>
 </ul>
-</div>
+</section>
 
 
           </div>
@@ -154,12 +153,12 @@ Here are mainly output activities and notes on what I've read in the book.</p>
 </ul><div class="footer" role="contentinfo">
       &#169; Copyright 2020, yuji.kawakami.
     <br>
-    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a>.
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
 </div>
             </div>
           </div>
       </page>
-    </div>
+    </div></div>
     
     
   </body>

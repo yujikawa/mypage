@@ -16,7 +16,7 @@ Here are mainly output activities and notes on what I've read in the book.
    
    makeovermonday/*
    study/*
-   books/*
+   blog/*
 
 
 

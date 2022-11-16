@@ -6,24 +6,22 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
       <title>索引</title>
     
-      <link rel="stylesheet" href="_static/pygments.css">
-      <link rel="stylesheet" href="_static/theme.css">
-      <link rel="stylesheet" href="_static/sphinx_press_theme.css">
+          <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+          <link rel="stylesheet" href="_static/theme.css " type="text/css" />
       
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-
       <!-- sphinx script_files -->
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
         <script src="_static/translations.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
 
       
-      <script src="_static/theme-vendors.js"></script>
+      <!-- bundled in js (rollup iife) -->
+      <!-- <script src="_static/theme-vendors.js"></script> -->
       <script src="_static/theme.js" defer></script>
     
   <link rel="index" title="索引" href="#" />
@@ -31,7 +29,8 @@
   </head>
 
   <body>
-    <div id="app" class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
+    <div id="app">
+    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
   <router-link to="index.html" class="home-link">
     
       <span class="site-name">My page</span>
@@ -77,19 +76,19 @@
       </p>
       <ul class="">
         
-          <li class="toctree-l1 "><a href="makeovermonday/index.html" class="reference internal ">Makeover Monday</a>
+          <li class="toctree-l1 ">
+            
+              <a href="makeovermonday/index.html" class="reference internal ">Makeover Monday</a>
+            
 
             
           </li>
 
         
-          <li class="toctree-l1 "><a href="study/index.html" class="reference internal ">Tips memo</a>
-
+          <li class="toctree-l1 ">
             
-          </li>
-
-        
-          <li class="toctree-l1 "><a href="books/index.html" class="reference internal ">Books memo</a>
+              <a href="study/index.html" class="reference internal ">Tips memo</a>
+            
 
             
           </li>
@@ -116,7 +115,7 @@
   
 </div>
 <hr>
-          <div class="content" role="main">
+          <div class="content" role="main" v-pre>
             
 
 <h1 id="index">索引</h1>
@@ -132,12 +131,12 @@
 </ul><div class="footer" role="contentinfo">
       &#169; Copyright 2020, yuji.kawakami.
     <br>
-    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a>.
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
 </div>
             </div>
           </div>
       </page>
-    </div>
+    </div></div>
     
     
   </body>
