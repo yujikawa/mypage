@@ -276,12 +276,58 @@ title="Print to PDF"
     </ul>
   </div>
 </div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
 
     </div>
 </div>
 
 <!-- Table of contents -->
 <div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#what-s-pyo3">
+   What’s PyO3?
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#how-to-use-it">
+   How to use it?
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#install">
+     Install
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#create-new-project">
+     Create new project
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#run-program">
+     Run program
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </nav>
 </div>
     </div>
     <div class="article row">
@@ -293,6 +339,41 @@ title="Print to PDF"
                 <div id="print-main-content">
                     <div id="jb-print-toc">
                         
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#what-s-pyo3">
+   What’s PyO3?
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#how-to-use-it">
+   How to use it?
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#install">
+     Install
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#create-new-project">
+     Create new project
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#run-program">
+     Run program
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -302,23 +383,110 @@ title="Print to PDF"
                 
   <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-pyo3">
 <h1>Introduction to PyO3<a class="headerlink" href="#introduction-to-pyo3" title="Permalink to this headline">#</a></h1>
+<p><img alt="Rust" src="https://img.shields.io/badge/Language-Rust-orange" />
+<img alt="Python" src="https://img.shields.io/badge/Language-Python-blue" /></p>
 <p>Hi, there.</p>
-<p>I talk to you about PyO3. This library is Rust library for binding Python.</p>
+<p>I talk to you about <a class="reference external" href="https://github.com/PyO3/pyo3">PyO3</a>. This library is Rust library for binding Python.</p>
 <p>In short, we can create Python library with Rust!!</p>
 <p>In my opinion, the fact that I want to use Rust is fast.
 But I also want to use Python so the problem is solve with PyO3.</p>
 <p>Let’s check PyO3 together!</p>
-<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<section id="what-s-pyo3">
+<h2>What’s PyO3?<a class="headerlink" href="#what-s-pyo3" title="Permalink to this headline">#</a></h2>
+<p>It is Rust library for binding Python.
+<a class="reference external" href="https://github.com/PyO3/pyo3">https://github.com/PyO3/pyo3</a></p>
+</section>
+<section id="how-to-use-it">
+<h2>How to use it?<a class="headerlink" href="#how-to-use-it" title="Permalink to this headline">#</a></h2>
+<p>I recommend using maturin to use PyO3.
+You can create new project with <a class="reference external" href="https://github.com/PyO3/maturin">maturin-cli</a> which is to develop tools with PyO3 easily.</p>
+<section id="install">
+<h3>Install<a class="headerlink" href="#install" title="Permalink to this headline">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">maturin</span>
+</pre></div>
+</div>
+</section>
+<section id="create-new-project">
+<h3>Create new project<a class="headerlink" href="#create-new-project" title="Permalink to this headline">#</a></h3>
+<p>I try to make new project for creating fibonacci sequence.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">maturin</span> <span class="n">new</span> <span class="n">fib_rs</span>
+</pre></div>
+</div>
+<p>When you create new project, this is default code.</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">pyo3</span>::<span class="n">prelude</span>::<span class="o">*</span><span class="p">;</span><span class="w"></span>
+
+<span class="sd">/// Formats the sum of two numbers as string.</span>
+<span class="cp">#[pyfunction]</span><span class="w"></span>
+<span class="k">fn</span> <span class="nf">sum_as_string</span><span class="p">(</span><span class="n">a</span>: <span class="kt">usize</span><span class="p">,</span><span class="w"> </span><span class="n">b</span>: <span class="kt">usize</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">PyResult</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">((</span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">).</span><span class="n">to_string</span><span class="p">())</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="sd">/// A Python module implemented in Rust.</span>
+<span class="cp">#[pymodule]</span><span class="w"></span>
+<span class="k">fn</span> <span class="nf">fib_rs</span><span class="p">(</span><span class="n">_py</span>: <span class="nc">Python</span><span class="p">,</span><span class="w"> </span><span class="n">m</span>: <span class="kp">&amp;</span><span class="nc">PyModule</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">PyResult</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">m</span><span class="p">.</span><span class="n">add_function</span><span class="p">(</span><span class="n">wrap_pyfunction</span><span class="o">!</span><span class="p">(</span><span class="n">sum_as_string</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="o">?</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Let’s create fibonacci sequence</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">pyo3</span>::<span class="n">prelude</span>::<span class="o">*</span><span class="p">;</span><span class="w"></span>
+
+<span class="k">fn</span> <span class="nf">fib_result</span><span class="p">(</span><span class="n">n</span>: <span class="kt">usize</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">usize</span> <span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w">  </span><span class="n">n</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w">  </span><span class="n">fib_result</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">fib_result</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="cp">#[pyfunction]</span><span class="w"></span>
+<span class="k">fn</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span>: <span class="kt">usize</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">PyResult</span><span class="o">&lt;</span><span class="kt">usize</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(</span><span class="n">fib_result</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="w"> </span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="cp">#[pymodule]</span><span class="w"></span>
+<span class="k">fn</span> <span class="nf">fib_rs</span><span class="p">(</span><span class="n">_py</span>: <span class="nc">Python</span><span class="p">,</span><span class="w"> </span><span class="n">m</span>: <span class="kp">&amp;</span><span class="nc">PyModule</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">PyResult</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">m</span><span class="p">.</span><span class="n">add_function</span><span class="p">(</span><span class="n">wrap_pyfunction</span><span class="o">!</span><span class="p">(</span><span class="n">fib</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="o">?</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="run-program">
+<h3>Run program<a class="headerlink" href="#run-program" title="Permalink to this headline">#</a></h3>
+<p>First of all, you should create venv.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="o">.</span><span class="n">venv</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>xxxxxxxxxxx</p>
+<p>Virtualenv is also OK</p>
 </div>
-<div class="admonition-title admonition">
-<p class="admonition-title">Title</p>
-<p>text</p>
+<p>Second, set environment for VIRTUAL_ENV.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">VIRTUAL_ENV</span><span class="o">=.</span><span class="n">venv</span>
+</pre></div>
 </div>
+<p>Finally, you run maturin-cli.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>maturin develop
+🔗 Found pyo3 bindings
+--- SKIP ---
+🛠  Installed fib_rs-0.1.0
+</pre></div>
+</div>
+<p>fib_rs library is installed into venv.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ source .venv/bin/activate
+(.venv) ~$ python
+Python 3.10.0 (default, Apr 24 2022, 21:07:51) [Clang 13.0.0 (clang-1300.0.27.3)] on darwin
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&gt;&gt;&gt; import fib_rs
+&gt;&gt;&gt; fib_rs.fib(10)
+55
+</pre></div>
+</div>
+<p>It works!</p>
+</section>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
