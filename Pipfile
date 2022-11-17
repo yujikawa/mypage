@@ -4,16 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sphinx-rtd-theme = "*"
-sphinx = "*"
-nbsphinx = "*"
-recommonmark = "*"
-sphinx-press-theme = "*"
-commonmark = "*"
-nbconvert = "*"
-jupyter-sphinx = "*"
-seaborn = "*"
-matplotlib = "*"
+jupyter-book = "*"
+ghp-import = "*"
 
 [dev-packages]
 
