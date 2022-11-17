@@ -1,4 +1,1 @@
-make html
-rm -rf docs
-mv build/html docs
-rm -rf build/
+ghp-import -n -p -f _build/html
