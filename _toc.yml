@@ -4,6 +4,9 @@
 format: jb-book
 root: intro
 parts:
-- caption: blog
+# - caption: Python
+#   chapters:
+#     - glob: python/*
+- caption: Rust
   chapters:
-    - file: blog/blog20221117
+  - glob: rust/*
