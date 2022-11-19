@@ -19,14 +19,15 @@ My interests are Python, Rust and Data engineering.
 
 </center>
 
-```{image} https://grass-graph.appspot.com/images/yujikawa.png
+```{image} https://ghchart.rshah.org/yujikawa
 :width: 100%
 :name: grass
 :align: center
 
 ```
+
 <center>
-<small>This image is created by <a href=https://grass-graph.appspot.com>grass-graph</a>
+<small>This image is created by <a href=https://ghchart.rshah.org/>ghchart API</a>
 </small>
 </center>
 
