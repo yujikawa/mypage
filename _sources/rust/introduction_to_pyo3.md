@@ -1,9 +1,12 @@
-# Introduction to PyO3 
+# PyO3 
 ![Rust](https://img.shields.io/badge/Language-Rust-orange)
 ![Python](https://img.shields.io/badge/Language-Python-blue)
 
+```{contents}
+:local:
+```
 
-
+## Overview
 Hi, there. 
 
 I talk to you about [PyO3](https://github.com/PyO3/pyo3). This library is Rust library for binding Python.
@@ -14,6 +17,11 @@ In my opinion, the fact that I want to use Rust is fast.
 But I also want to use Python so the problem is solve with PyO3.
 
 Let's check PyO3 together!
+
+## Who should Read This Article
+- Python users
+- Rust users
+- You want to speed up for Python
 
 ## What's PyO3?
 It is Rust library for binding Python.

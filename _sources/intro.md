@@ -31,7 +31,7 @@ My interests are Python, Rust and Data engineering.
 </small>
 </center>
 
-# My articles
+## My articles
 ```{tableofcontents}
 ```
 
