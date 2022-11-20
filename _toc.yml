@@ -1,14 +1,14 @@
 # Table of contents
 # Learn more at https://jupyterbook.org/customize/toc.html
 
-format: jb-article
+format: jb-book
 root: intro
-sections:
-- glob: rust/*
-# parts:
-# # - caption: Python
-# #   chapters:
-# #     - glob: python/*
-# - caption: Rust
+parts:
+# - caption: Python
 #   chapters:
-#   - glob: rust/*
+#     - glob: python/*
+- caption: Rust
+  chapters:
+  - file: rust/rust_lib_overview
+    sections:
+    - file: rust/introduction_to_pyo3
