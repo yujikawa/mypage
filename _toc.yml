@@ -4,11 +4,13 @@
 format: jb-book
 root: intro
 parts:
-# - caption: Python
-#   chapters:
-#     - glob: python/*
+- caption: Data Engineering
+  chapters:
+  - file: data_engineering/overview
+    sections:
+    - file: data_engineering/data_mesh
 - caption: Rust
   chapters:
-  - file: rust/rust_lib_overview
+  - file: rust/overview
     sections:
     - file: rust/introduction_to_pyo3
