@@ -9,6 +9,11 @@ parts:
   - file: data_engineering/overview
     sections:
     - file: data_engineering/data_mesh
+- caption: Development
+  chapters:
+  - file: development/overview
+    sections:
+    - file: development/ddd
 - caption: Rust
   chapters:
   - file: rust/overview
