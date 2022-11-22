@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Introduce to PyO3</title>
+    <title>Learning DDD</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -55,7 +55,8 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Learning Rust" href="overview.html" />
+    <link rel="next" title="Learning Rust" href="../rust/overview.html" />
+    <link rel="prev" title="Learning Development" href="overview.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -150,19 +151,19 @@ const thebe_selector_output = ".output, .cell_output"
   Development
  </span>
 </p>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../development/overview.html">
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="overview.html">
    Learning Development
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
   <label for="toctree-checkbox-2">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../development/ddd.html">
+  <ul class="current">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
      Learning DDD
     </a>
    </li>
@@ -174,19 +175,19 @@ const thebe_selector_output = ".output, .cell_output"
   Rust
  </span>
 </p>
-<ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active has-children">
-  <a class="reference internal" href="overview.html">
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../rust/overview.html">
    Learning Rust
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
   <label for="toctree-checkbox-3">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul class="current">
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../rust/introduction_to_pyo3.html">
      Introduce to PyO3
     </a>
    </li>
@@ -282,7 +283,7 @@ title="Source repository"
       </li>
       
       <li>
-        <a href="https://github.com/yujikawa/mypage/issues/new?title=Issue%20on%20page%20%2Frust/introduction_to_pyo3.html&body=Your%20issue%20content%20here."
+        <a href="https://github.com/yujikawa/mypage/issues/new?title=Issue%20on%20page%20%2Fdevelopment/ddd.html&body=Your%20issue%20content%20here."
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -310,7 +311,7 @@ title="Open an issue"
   <div class="menu-dropdown__content">
     <ul>
       <li>
-        <a href="../_sources/rust/introduction_to_pyo3.md"
+        <a href="../_sources/development/ddd.md"
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -370,8 +371,8 @@ title="Print to PDF"
     <nav id="bd-toc-nav" aria-label="Page">
         <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#overview">
-   Overview
+  <a class="reference internal nav-link" href="#motivation-to-learn-ddd">
+   Motivation to Learn DDD
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -380,31 +381,9 @@ title="Print to PDF"
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#whats-pyo3">
-   What’s PyO3?
+  <a class="reference internal nav-link" href="#whats-ddd">
+   What’s DDD?
   </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#how-to-use-it">
-   How to use it?
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#install">
-     Install
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#create-new-project">
-     Create new project
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#run-program">
-     Run program
-    </a>
-   </li>
-  </ul>
  </li>
 </ul>
 
@@ -415,7 +394,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Introduce to PyO3</h1>
+                <h1>Learning DDD</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -426,8 +405,8 @@ title="Print to PDF"
                         <nav aria-label="Page">
                             <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#overview">
-   Overview
+  <a class="reference internal nav-link" href="#motivation-to-learn-ddd">
+   Motivation to Learn DDD
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -436,31 +415,9 @@ title="Print to PDF"
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#whats-pyo3">
-   What’s PyO3?
+  <a class="reference internal nav-link" href="#whats-ddd">
+   What’s DDD?
   </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#how-to-use-it">
-   How to use it?
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#install">
-     Install
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#create-new-project">
-     Create new project
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#run-program">
-     Run program
-    </a>
-   </li>
-  </ul>
  </li>
 </ul>
 
@@ -472,136 +429,35 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="introduce-to-pyo3">
-<h1>Introduce to PyO3<a class="headerlink" href="#introduce-to-pyo3" title="Permalink to this headline">#</a></h1>
-<p><img alt="Rust" src="https://img.shields.io/badge/Language-Rust-orange" />
-<img alt="Python" src="https://img.shields.io/badge/Language-Python-blue" /></p>
+  <section class="tex2jax_ignore mathjax_ignore" id="learning-ddd">
+<h1>Learning DDD<a class="headerlink" href="#learning-ddd" title="Permalink to this headline">#</a></h1>
+<script type="module">
+  import mermaid from 'https://unpkg.com/mermaid@9/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true });
+</script>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#overview" id="id1">Overview</a></p></li>
+<li><p><a class="reference internal" href="#motivation-to-learn-ddd" id="id1">Motivation to Learn DDD</a></p></li>
 <li><p><a class="reference internal" href="#who-should-read-this-article" id="id2">Who should Read This Article</a></p></li>
-<li><p><a class="reference internal" href="#whats-pyo3" id="id3">What’s PyO3?</a></p></li>
-<li><p><a class="reference internal" href="#how-to-use-it" id="id4">How to use it?</a></p>
-<ul>
-<li><p><a class="reference internal" href="#install" id="id5">Install</a></p></li>
-<li><p><a class="reference internal" href="#create-new-project" id="id6">Create new project</a></p></li>
-<li><p><a class="reference internal" href="#run-program" id="id7">Run program</a></p></li>
-</ul>
-</li>
+<li><p><a class="reference internal" href="#whats-ddd" id="id3">What’s DDD?</a></p></li>
 </ul>
 </div>
-<section id="overview">
-<h2><a class="toc-backref" href="#id1">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">#</a></h2>
-<p>Hi, there.</p>
-<p>I talk to you about <a class="reference external" href="https://github.com/PyO3/pyo3">PyO3</a>. This library is Rust library for binding Python.</p>
-<p>In short, we can create Python library with Rust!!</p>
-<p>In my opinion, the fact that I want to use Rust is fast.
-But I also want to use Python so the problem is solve with PyO3.</p>
-<p>Let’s check PyO3 together!</p>
+<section id="motivation-to-learn-ddd">
+<h2><a class="toc-backref" href="#id1">Motivation to Learn DDD</a><a class="headerlink" href="#motivation-to-learn-ddd" title="Permalink to this headline">#</a></h2>
+<p>When I learned Data mesh, I knew it was based design of DDD and microservices.
+But I didn’t know much about DDD so I try learning DDD.</p>
 </section>
 <section id="who-should-read-this-article">
 <h2><a class="toc-backref" href="#id2">Who should Read This Article</a><a class="headerlink" href="#who-should-read-this-article" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
-<li><p>Python users</p></li>
-<li><p>Rust users</p></li>
-<li><p>You want to speed up for Python</p></li>
+<li><p>You want to know DDD.</p></li>
 </ul>
 </section>
-<section id="whats-pyo3">
-<h2><a class="toc-backref" href="#id3">What’s PyO3?</a><a class="headerlink" href="#whats-pyo3" title="Permalink to this headline">#</a></h2>
-<p>It is Rust library for binding Python.
-<a class="reference external" href="https://github.com/PyO3/pyo3">https://github.com/PyO3/pyo3</a></p>
-</section>
-<section id="how-to-use-it">
-<h2><a class="toc-backref" href="#id4">How to use it?</a><a class="headerlink" href="#how-to-use-it" title="Permalink to this headline">#</a></h2>
-<p>I recommend using maturin to use PyO3.
-You can create new project with <a class="reference external" href="https://github.com/PyO3/maturin">maturin-cli</a> which is to develop tools with PyO3 easily.</p>
-<section id="install">
-<h3><a class="toc-backref" href="#id5">Install</a><a class="headerlink" href="#install" title="Permalink to this headline">#</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">maturin</span>
-</pre></div>
-</div>
-</section>
-<section id="create-new-project">
-<h3><a class="toc-backref" href="#id6">Create new project</a><a class="headerlink" href="#create-new-project" title="Permalink to this headline">#</a></h3>
-<p>I try to make new project for creating fibonacci sequence.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">maturin</span> <span class="n">new</span> <span class="n">fib_rs</span>
-</pre></div>
-</div>
-<p>When you create new project, this is default code.</p>
-<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">pyo3</span>::<span class="n">prelude</span>::<span class="o">*</span><span class="p">;</span><span class="w"></span>
-
-<span class="sd">/// Formats the sum of two numbers as string.</span>
-<span class="cp">#[pyfunction]</span><span class="w"></span>
-<span class="k">fn</span> <span class="nf">sum_as_string</span><span class="p">(</span><span class="n">a</span>: <span class="kt">usize</span><span class="p">,</span><span class="w"> </span><span class="n">b</span>: <span class="kt">usize</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">PyResult</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nb">Ok</span><span class="p">((</span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">).</span><span class="n">to_string</span><span class="p">())</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-
-<span class="sd">/// A Python module implemented in Rust.</span>
-<span class="cp">#[pymodule]</span><span class="w"></span>
-<span class="k">fn</span> <span class="nf">fib_rs</span><span class="p">(</span><span class="n">_py</span>: <span class="nc">Python</span><span class="p">,</span><span class="w"> </span><span class="n">m</span>: <span class="kp">&amp;</span><span class="nc">PyModule</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">PyResult</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">m</span><span class="p">.</span><span class="n">add_function</span><span class="p">(</span><span class="n">wrap_pyfunction</span><span class="o">!</span><span class="p">(</span><span class="n">sum_as_string</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="o">?</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</pre></div>
-</div>
-<p>Let’s create fibonacci sequence</p>
-<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">pyo3</span>::<span class="n">prelude</span>::<span class="o">*</span><span class="p">;</span><span class="w"></span>
-
-<span class="k">fn</span> <span class="nf">fib_result</span><span class="p">(</span><span class="n">n</span>: <span class="kt">usize</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">usize</span> <span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w">  </span><span class="n">n</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w">  </span><span class="n">fib_result</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">fib_result</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-
-<span class="cp">#[pyfunction]</span><span class="w"></span>
-<span class="k">fn</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span>: <span class="kt">usize</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">PyResult</span><span class="o">&lt;</span><span class="kt">usize</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nb">Ok</span><span class="p">(</span><span class="n">fib_result</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="w"> </span>
-<span class="p">}</span><span class="w"></span>
-
-<span class="cp">#[pymodule]</span><span class="w"></span>
-<span class="k">fn</span> <span class="nf">fib_rs</span><span class="p">(</span><span class="n">_py</span>: <span class="nc">Python</span><span class="p">,</span><span class="w"> </span><span class="n">m</span>: <span class="kp">&amp;</span><span class="nc">PyModule</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">PyResult</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">m</span><span class="p">.</span><span class="n">add_function</span><span class="p">(</span><span class="n">wrap_pyfunction</span><span class="o">!</span><span class="p">(</span><span class="n">fib</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="o">?</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</pre></div>
-</div>
-</section>
-<section id="run-program">
-<h3><a class="toc-backref" href="#id7">Run program</a><a class="headerlink" href="#run-program" title="Permalink to this headline">#</a></h3>
-<p>First of all, you should create venv.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="o">.</span><span class="n">venv</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Virtualenv is also OK</p>
-</div>
-<p>Second, set environment for VIRTUAL_ENV.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">VIRTUAL_ENV</span><span class="o">=.</span><span class="n">venv</span>
-</pre></div>
-</div>
-<p>Finally, you run maturin-cli.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>maturin develop
-🔗 Found pyo3 bindings
---- SKIP ---
-🛠  Installed fib_rs-0.1.0
-</pre></div>
-</div>
-<p>fib_rs library is installed into venv.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ source .venv/bin/activate
-(.venv) ~$ python
-Python 3.10.0 (default, Apr 24 2022, 21:07:51) [Clang 13.0.0 (clang-1300.0.27.3)] on darwin
-Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
-&gt;&gt;&gt; import fib_rs
-&gt;&gt;&gt; fib_rs.fib(10)
-55
-</pre></div>
-</div>
-<p>It works!</p>
-</section>
+<section id="whats-ddd">
+<h2><a class="toc-backref" href="#id3">What’s DDD?</a><a class="headerlink" href="#whats-ddd" title="Permalink to this headline">#</a></h2>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/A2EU0paEVJ0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<p>This video in Japanese is easy for me to understand DDD.</p>
+<p>TODO…</p>
 </section>
 </section>
 
@@ -618,7 +474,7 @@ Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;licen
         },
         kernelOptions: {
             kernelName: "python3",
-            path: "./rust"
+            path: "./development"
         },
         predefinedOutput: true
     }
@@ -636,8 +492,15 @@ Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;licen
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Learning Rust</p>
+            <p class="prev-next-title">Learning Development</p>
         </div>
+    </a>
+    <a class='right-next' id="next-link" href="../rust/overview.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Learning Rust</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
     </a>
 </div>
             </footer>

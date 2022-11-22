@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Introduce libraries for Rust</title>
+    <title>Learning to Data mesh</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -55,8 +55,8 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="PyO3" href="introduction_to_pyo3.html" />
-    <link rel="prev" title="Welcome!" href="../intro.html" />
+    <link rel="next" title="Learning Development" href="../development/overview.html" />
+    <link rel="prev" title="Learning Data Engineering" href="overview.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -124,23 +124,71 @@ const thebe_selector_output = ".output, .cell_output"
         </ul>
         <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  Rust
+  Data Engineering
  </span>
 </p>
 <ul class="current nav bd-sidenav">
  <li class="toctree-l1 current active has-children">
-  <a class="current reference internal" href="#">
-   Introduce libraries for Rust
+  <a class="reference internal" href="overview.html">
+   Learning Data Engineering
   </a>
   <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
   <label for="toctree-checkbox-1">
    <i class="fas fa-chevron-down">
    </i>
   </label>
+  <ul class="current">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Learning to Data mesh
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Development
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../development/overview.html">
+   Learning Development
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="introduction_to_pyo3.html">
-     PyO3
+    <a class="reference internal" href="../development/ddd.html">
+     Learning DDD
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Rust
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../rust/overview.html">
+   Learning Rust
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../rust/introduction_to_pyo3.html">
+     Introduce to PyO3
     </a>
    </li>
   </ul>
@@ -235,7 +283,7 @@ title="Source repository"
       </li>
       
       <li>
-        <a href="https://github.com/yujikawa/mypage/issues/new?title=Issue%20on%20page%20%2Frust/rust_lib_overview.html&body=Your%20issue%20content%20here."
+        <a href="https://github.com/yujikawa/mypage/issues/new?title=Issue%20on%20page%20%2Fdata_engineering/data_mesh.html&body=Your%20issue%20content%20here."
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -263,7 +311,7 @@ title="Open an issue"
   <div class="menu-dropdown__content">
     <ul>
       <li>
-        <a href="../_sources/rust/rust_lib_overview.md"
+        <a href="../_sources/data_engineering/data_mesh.md"
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -300,23 +348,80 @@ title="Print to PDF"
     </ul>
   </div>
 </div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
 
     </div>
 </div>
 
 <!-- Table of contents -->
 <div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#overview">
+   Overview
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#who-should-read-this-article">
+   Who should Read This Article
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#whats-data-mesh">
+   What’s Data Mesh?
+  </a>
+ </li>
+</ul>
+
+    </nav>
 </div>
     </div>
     <div class="article row">
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Introduce libraries for Rust</h1>
+                <h1>Learning to Data mesh</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
                         
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#overview">
+   Overview
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#who-should-read-this-article">
+   Who should Read This Article
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#whats-data-mesh">
+   What’s Data Mesh?
+  </a>
+ </li>
+</ul>
+
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -324,14 +429,28 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="introduce-libraries-for-rust">
-<h1>Introduce libraries for Rust<a class="headerlink" href="#introduce-libraries-for-rust" title="Permalink to this headline">#</a></h1>
-<p>This is article to learn Rust libraries.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction_to_pyo3.html">PyO3</a></li>
+  <section class="tex2jax_ignore mathjax_ignore" id="learning-to-data-mesh">
+<h1>Learning to Data mesh<a class="headerlink" href="#learning-to-data-mesh" title="Permalink to this headline">#</a></h1>
+<script type="module">
+  import mermaid from 'https://unpkg.com/mermaid@9/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true });
+</script>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">#</a></h2>
+<p>Data mesh is modern method for data engineering. I’ve seen articles about it a lot but I learn it a little so I’d like to learn it more.</p>
+</section>
+<section id="who-should-read-this-article">
+<h2>Who should Read This Article<a class="headerlink" href="#who-should-read-this-article" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Want to know data mesh</p></li>
 </ul>
-</div>
+</section>
+<section id="whats-data-mesh">
+<h2>What’s Data Mesh?<a class="headerlink" href="#whats-data-mesh" title="Permalink to this headline">#</a></h2>
+<p>Zhamak Dehghani created design of Data mesh. It is a paradigm shift in data management.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/_bmYXWCxF_Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<p>TODO…</p>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -347,7 +466,7 @@ title="Print to PDF"
         },
         kernelOptions: {
             kernelName: "python3",
-            path: "./rust"
+            path: "./data_engineering"
         },
         predefinedOutput: true
     }
@@ -361,17 +480,17 @@ title="Print to PDF"
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="../intro.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="overview.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Welcome!</p>
+            <p class="prev-next-title">Learning Data Engineering</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="introduction_to_pyo3.html" title="next page">
+    <a class='right-next' id="next-link" href="../development/overview.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">PyO3</p>
+        <p class="prev-next-title">Learning Development</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
