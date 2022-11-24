@@ -28,6 +28,26 @@ They can't solve the problems because they are not object. The object is defined
 - Domain model: This is modeled for problems.
 - Domain object: This is module to run as program.
 
+### I try to implement DDD with Rust
+I think the fact that try implementing DDD is easy for me to understand it. 
+
+#### Example
+First of all, I have to decide what to create app.
+I'll create a diary app. This is a simple app.
+System requirements document are
+
+- You can create a diary.
+- You can only write 140 characters.
+- You can create it once a day.
+
+It's too useless. lol
+
+I had an idea for the first time, Diary domain.
+
+<div class=mermaid>
+classDiagram
+  class Diary
+</div>
 
 ## References.
 ### Video
