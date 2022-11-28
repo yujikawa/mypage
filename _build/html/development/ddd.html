@@ -575,7 +575,18 @@ classDiagram
   class Diary
 </div>
 <div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">Diary</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">text</span>: <span class="nb">String</span>
+<span class="w">  </span><span class="n">text</span>: <span class="nb">String</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">create_at</span>: <span class="nc">Date</span><span class="o">&lt;</span><span class="n">Utc</span><span class="o">&gt;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">chrono</span>::<span class="p">{</span><span class="n">Utc</span><span class="p">,</span><span class="w"> </span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">DateTime</span><span class="p">,</span><span class="w"> </span><span class="n">Date</span><span class="p">};</span><span class="w"></span>
+
+<span class="k">impl</span><span class="w"> </span><span class="n">Diary</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">fn</span> <span class="nf">new</span><span class="p">(</span><span class="n">text</span>: <span class="nb">String</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="bp">Self</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="kt">str</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// TODO </span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(</span><span class="n">Diary</span><span class="w"> </span><span class="p">{</span><span class="n">text</span>: <span class="nc">text</span><span class="p">,</span><span class="w"> </span><span class="n">create_at</span>: <span class="nc">Utc</span>::<span class="n">today</span><span class="p">()})</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>

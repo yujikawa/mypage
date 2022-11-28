@@ -49,9 +49,23 @@ classDiagram
   class Diary
 </div>
 
+
+
 ```rust
 struct Diary {
-  text: String
+  text: String,
+  create_at: Date<Utc>
+}
+```
+
+```rust
+use chrono::{Utc, Local, DateTime, Date};
+
+impl Diary {
+  fn new(text: String) -> Result<Self, &str> {
+    // TODO 
+    Ok(Diary {text: text, create_at: Utc::today()})
+  }
 }
 ```
 

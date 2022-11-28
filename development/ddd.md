@@ -53,7 +53,46 @@ classDiagram
 
 ```rust
 struct Diary {
-  text: String
+  text: String,
+  create_at: Date<Utc>
+}
+```
+
+```rust
+use chrono::{Utc, Local, DateTime, Date};
+
+impl Diary {
+  fn new(text: String) -> Result<Self, &str> {
+    // TODO 
+    Ok(Diary {text: text, create_at: Utc::today()})
+  }
+}
+```
+
+Next, I'll create below requirement.
+
+> You can create it once a day.
+
+```rust
+impl Diary {
+  fn is_exists_diary(self) -> bool {
+    TODO!()
+  }
+}
+```
+
+I created the function into Diary domain.
+Just a second. Something is wrong with the domain.
+If you'd like to know diary is created at the same day, you have to create Diary instance. This is wrong...
+
+You should create Domain service to solve the problem.
+
+```rust
+struct DomainService {}
+impl DomainService {
+    fn is_exists_diary(self, diary: Diary) -> bool {
+    TODO!()
+  }
 }
 ```
 
