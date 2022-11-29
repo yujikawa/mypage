@@ -38,7 +38,7 @@ System requirements document are
 
 - You can create a diary.
 - You can only write 140 characters.
-- You can create it once a day.
+- You can create 5 articles a day.
 
 It's too useless. lol
 
@@ -47,52 +47,53 @@ I had an idea for the first time, Diary domain.
 <div class=mermaid>
 classDiagram
   class Diary
+
+classDiagram
+  class Article
 </div>
 
 
 
 ```rust
+use chrono::prelude::*;
+
+struct Article {
+    text: String,
+    create_at: DateTime<Utc>,
+}
+
+impl Article {
+    fn new(text: String) -> Result<Self, String> {
+        if text.len() <= 140 {
+            Ok(Article { text: text, create_at: Utc::now()})
+        } else {
+            Err("Text is more than 140 characters.".to_string())
+        }
+    }
+}
+
 struct Diary {
-  text: String,
-  create_at: Date<Utc>
+    articles: Vec<Article>
 }
-```
 
-```rust
-use chrono::{Utc, Local, DateTime, Date};
 
 impl Diary {
-  fn new(text: String) -> Result<Self, &str> {
-    // TODO 
-    Ok(Diary {text: text, create_at: Utc::today()})
-  }
-}
-```
+    fn new() -> Self {
+        Diary { articles: Vec::new() }
+    }
 
-Next, I'll create below requirement.
+    fn add(&mut self, article: Article) -> Result<(), String> {
+        if self.is_add() {
+            self.articles.push(article);
+            Ok(())
+        } else {
+            Err("I can't create new diary. It is full today.".to_string())
+        }
+    }
 
-> You can create it once a day.
-
-```rust
-impl Diary {
-  fn is_exists_diary(self) -> bool {
-    TODO!()
-  }
-}
-```
-
-I created the function into Diary domain.
-Just a second. Something is wrong with the domain.
-If you'd like to know diary is created at the same day, you have to create Diary instance. This is wrong...
-
-You should create Domain service to solve the problem.
-
-```rust
-struct DomainService {}
-impl DomainService {
-    fn is_exists_diary(self, diary: Diary) -> bool {
-    TODO!()
-  }
+    fn is_add(&self) -> bool {
+        self.articles.len() < 5
+    }
 }
 ```
 
