@@ -9,6 +9,7 @@ parts:
   - file: data_engineering/overview
     sections:
     - file: data_engineering/data_mesh
+    - file: data_engineering/data_modeling
 - caption: Development
   chapters:
   - file: development/overview
