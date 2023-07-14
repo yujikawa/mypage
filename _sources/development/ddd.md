@@ -38,7 +38,7 @@ System requirements document are
 
 - You can create a diary.
 - You can only write 140 characters.
-- You can create it once a day.
+- You can create 5 articles a day.
 
 It's too useless. lol
 
@@ -47,25 +47,53 @@ I had an idea for the first time, Diary domain.
 <div class=mermaid>
 classDiagram
   class Diary
+
+classDiagram
+  class Article
 </div>
 
 
 
 ```rust
-struct Diary {
-  text: String,
-  create_at: Date<Utc>
-}
-```
+use chrono::prelude::*;
 
-```rust
-use chrono::{Utc, Local, DateTime, Date};
+struct Article {
+    text: String,
+    create_at: DateTime<Utc>,
+}
+
+impl Article {
+    fn new(text: String) -> Result<Self, String> {
+        if text.len() <= 140 {
+            Ok(Article { text: text, create_at: Utc::now()})
+        } else {
+            Err("Text is more than 140 characters.".to_string())
+        }
+    }
+}
+
+struct Diary {
+    articles: Vec<Article>
+}
+
 
 impl Diary {
-  fn new(text: String) -> Result<Self, &str> {
-    // TODO 
-    Ok(Diary {text: text, create_at: Utc::today()})
-  }
+    fn new() -> Self {
+        Diary { articles: Vec::new() }
+    }
+
+    fn add(&mut self, article: Article) -> Result<(), String> {
+        if self.is_add() {
+            self.articles.push(article);
+            Ok(())
+        } else {
+            Err("I can't create new diary. It is full today.".to_string())
+        }
+    }
+
+    fn is_add(&self) -> bool {
+        self.articles.len() < 5
+    }
 }
 ```
 
