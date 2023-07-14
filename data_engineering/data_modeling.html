@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Learning to Data mesh</title>
+    <title>Learning to Data modeling</title>
   
   
   
@@ -71,11 +71,11 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'data_engineering/data_mesh';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'data_engineering/data_modeling';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Learning to Data modeling" href="data_modeling.html" />
-    <link rel="prev" title="Learning Data Engineering" href="overview.html" />
+    <link rel="next" title="Learning Development" href="../development/overview.html" />
+    <link rel="prev" title="Learning to Data mesh" href="data_mesh.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -169,8 +169,8 @@ const thebe_selector_output = ".output, .cell_output"
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Engineering</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="overview.html">Learning Data Engineering</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Learning to Data mesh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_modeling.html">Learning to Data modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_mesh.html">Learning to Data mesh</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Learning to Data modeling</a></li>
 </ul>
 </li>
 </ul>
@@ -258,7 +258,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/yujikawa/mypage/issues/new?title=Issue%20on%20page%20%2Fdata_engineering/data_mesh.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/yujikawa/mypage/issues/new?title=Issue%20on%20page%20%2Fdata_engineering/data_modeling.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -288,7 +288,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/data_engineering/data_mesh.md" target="_blank"
+      <li><a href="../_sources/data_engineering/data_modeling.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -370,7 +370,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Learning to Data mesh</h1>
+    <h1>Learning to Data modeling</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -382,7 +382,7 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#who-should-read-this-article">Who should Read This Article</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#whats-data-mesh">What’s Data Mesh?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dimensional-modeling">Dimensional modeling</a></li>
 </ul>
             </nav>
         </div>
@@ -394,27 +394,25 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="learning-to-data-mesh">
-<h1>Learning to Data mesh<a class="headerlink" href="#learning-to-data-mesh" title="Permalink to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="learning-to-data-modeling">
+<h1>Learning to Data modeling<a class="headerlink" href="#learning-to-data-modeling" title="Permalink to this heading">#</a></h1>
 <script type="module">
   import mermaid from 'https://unpkg.com/mermaid@9/dist/mermaid.esm.min.mjs';
   mermaid.initialize({ startOnLoad: true });
 </script>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
-<p>Data mesh is modern method for data engineering. I’ve seen articles about it a lot but I learn it a little so I’d like to learn it more.</p>
+<p>This is written about data modeling such as dimensional modeling.</p>
 </section>
 <section id="who-should-read-this-article">
 <h2>Who should Read This Article<a class="headerlink" href="#who-should-read-this-article" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p>Want to know data mesh</p></li>
+<li><p>Want to know data modeling</p></li>
 </ul>
 </section>
-<section id="whats-data-mesh">
-<h2>What’s Data Mesh?<a class="headerlink" href="#whats-data-mesh" title="Permalink to this heading">#</a></h2>
-<p>Zhamak Dehghani created design of Data mesh. It is a paradigm shift in data management.</p>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/_bmYXWCxF_Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-<p>TODO…</p>
+<section id="dimensional-modeling">
+<h2>Dimensional modeling<a class="headerlink" href="#dimensional-modeling" title="Permalink to this heading">#</a></h2>
+<p>There are two types of tables. They are fact table and dimension table.</p>
 </section>
 </section>
 
@@ -450,20 +448,20 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="overview.html"
+       href="data_mesh.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Learning Data Engineering</p>
+        <p class="prev-next-title">Learning to Data mesh</p>
       </div>
     </a>
     <a class="right-next"
-       href="data_modeling.html"
+       href="../development/overview.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Learning to Data modeling</p>
+        <p class="prev-next-title">Learning Development</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -487,7 +485,7 @@ document.write(`
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#who-should-read-this-article">Who should Read This Article</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#whats-data-mesh">What’s Data Mesh?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dimensional-modeling">Dimensional modeling</a></li>
 </ul>
   </nav></div>
 
