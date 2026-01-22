@@ -17,9 +17,9 @@ const { Content } = await doc.render();
 
 <Layout title={doc.data.title}>
   <main class="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <h1 class="text-4xl font-extrabold text-gray-900 mb-4">{doc.data.title}</h1>
-    {doc.data.description && <p class="text-xl text-gray-600 mb-8">{doc.data.description}</p>}
-    <article class="prose lg:prose-xl max-w-none">
+    <h1 class="text-4xl font-extrabold text-text-base mb-4">{doc.data.title}</h1>
+    {doc.data.description && <p class="text-xl text-text-muted mb-8">{doc.data.description}</p>}
+    <article class="prose lg:prose-xl max-w-none prose-invert">
       <Content />
     </article>
   </main>

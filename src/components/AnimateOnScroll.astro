@@ -1,0 +1,48 @@
+---
+interface Props {
+  animation?: 'fade-in' | 'slide-up';
+  delay?: number; // in ms
+}
+
+const { animation = 'fade-in', delay = 0 } = Astro.props;
+const animationClass = animation === 'slide-up' ? 'animate-slide-up' : 'animate-fade-in';
+---
+
+<div class="opacity-0 animated-element" data-animation={animationClass} data-delay={delay}>
+  <slot />
+</div>
+
+<script client:load type="module">
+  console.log('AnimateOnScroll script loaded.');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      console.log('Observer entry:', entry.target, 'isIntersecting:', entry.isIntersecting);
+      if (entry.isIntersecting) {
+        const target = entry.target;
+          const animationClassFromData = target.dataset.animation; // data-animationからアニメーションクラス名を取得
+          const delay = parseInt(target.dataset.delay || '0');
+
+          console.log('Element intersecting:', target, 'animationClassFromData:', animationClassFromData, 'delay:', delay);
+          if (animationClassFromData) {
+            target.style.transitionDelay = `${delay}ms`;
+            // JavaScriptで直接アニメーションクラスを追加
+            target.classList.add(animationClassFromData);
+            // 初期状態の opacity-0 を削除することで、アニメーションが始まる
+            target.classList.remove('opacity-0');
+
+            console.log('Added animation class:', animationClassFromData, 'and removed opacity-0 from:', target);
+          }
+        observer.unobserve(target); // Only animate once
+      }
+    });
+  }, {
+    threshold: 0.1, // Trigger when 10% of the element is visible
+  });
+
+  document.querySelectorAll('.animated-element').forEach(element => {
+    console.log('Observing element:', element);
+    observer.observe(element);
+  });
+</script>
+
+

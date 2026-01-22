@@ -1,6 +1,6 @@
 ---
 title: "Introduce to PyO3"
-description: "RustとPythonのバインディングライブラリPyO3の紹介記事です。"
+description: "An introductory article to PyO3, a Rust and Python binding library."
 pubDate: "2024-01-01T00:00:00Z"
 ---
 # Introduce to PyO3 
