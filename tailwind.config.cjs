@@ -7,14 +7,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Modern & Stylish Dark Theme Palette
-        background: '#1a1a1a',       // Dark background
-        'background-alt': '#2d2d2d', // Slightly lighter dark for cards/sections
-        primary: '#3b82f6',          // A good blue (Tailwind's blue-500)
-        secondary: '#60a5fa',        // Lighter blue for accents (Tailwind's blue-400)
-        'text-base': '#f0f0f0',      // Near white for main text
-        'text-muted': '#b0b0b0',     // Muted gray for secondary text
-        'border-color': '#4a4a4a',   // Subtle border color
+        background: '#0d1117',
+        'background-alt': '#161b22',
+        primary: '#3b82f6',
+        secondary: '#60a5fa',
+        accent: '#06b6d4',
+        'text-base': '#e6edf3',
+        'text-muted': '#8b949e',
+        'border-color': '#30363d',
       },
       keyframes: {
         fadeIn: {
@@ -22,13 +22,18 @@ module.exports = {
           '100%': { opacity: '1' },
         },
         slideUp: {
-          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '0%': { opacity: '0', transform: 'translateY(24px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        glow: {
+          '0%, 100%': { boxShadow: '0 0 8px rgba(59,130,246,0.4), 0 0 24px rgba(59,130,246,0.2)' },
+          '50%': { boxShadow: '0 0 16px rgba(59,130,246,0.7), 0 0 48px rgba(59,130,246,0.35)' },
         },
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-out forwards',
-        'slide-up': 'slideUp 0.6s ease-out forwards',
+        'slide-up': 'slideUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards',
+        'glow': 'glow 2.5s ease-in-out infinite',
       },
       typography: {
         DEFAULT: {
@@ -126,9 +131,9 @@ module.exports = {
             '--tw-prose-quotes': '#b0b0b0',
             '--tw-prose-quotes-border': '#3b82f6',
             '--tw-prose-code': '#60a5fa',
-            '--tw-prose-code-bg': '#2d2d2d',
-            '--tw-prose-pre-code': '#f0f0f0',
-            '--tw-prose-pre-bg': '#1a1a1a',
+            '--tw-prose-code-bg': '#161b22',
+            '--tw-prose-pre-code': '#e6edf3',
+            '--tw-prose-pre-bg': '#0d1117',
             '--tw-prose-th-borders': '#4a4a4a',
             '--tw-prose-td-borders': '#4a4a4a',
           },
