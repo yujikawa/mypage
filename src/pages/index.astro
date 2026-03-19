@@ -134,24 +134,284 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
       </section>
 
       <!-- ═══════════════════════════════════════════ -->
+      <!-- STAR SCHEMA                                 -->
+      <!-- ═══════════════════════════════════════════ -->
+      <AnimateOnScroll animation="slide-up" delay={0}>
+        <section class="py-12">
+          <div class="mono text-xs mb-3 rounded-lg border border-dashed border-border-color/60 bg-background-alt/30 px-4 py-3 flex gap-3 mb-0">
+            <span class="text-teal-400/70 flex-shrink-0 select-none">analytics=#</span>
+            <div class="leading-6 text-text-muted/60">
+              <div><span class="sql-kw">SELECT</span> <span class="sql-col">table_name</span><span class="text-text-muted">,</span> <span class="sql-col">column_name</span><span class="text-text-muted">,</span> <span class="sql-col">data_type</span></div>
+              <div><span class="sql-kw">FROM</span>  <span class="sql-tbl">information_schema.columns</span></div>
+              <div><span class="sql-kw">WHERE</span> <span class="sql-col">table_schema</span> <span class="text-text-muted/60">=</span> <span class="sql-str">'analytics'</span><span class="text-text-muted">;</span></div>
+            </div>
+          </div>
+          <div class="sql-connector flex items-center gap-2 my-2 mono text-[10px] pl-2" data-rows="5 tables found">
+            <span>▼</span>
+            <span>executing...</span>
+          </div>
+          <div class="rounded-xl border border-border-color overflow-hidden shadow-xl">
+            <div class="px-4 py-2 border-b border-border-color bg-background/80 mono text-xs text-text-muted/40 flex items-center gap-3">
+              <span><span class="text-emerald-400">▶</span> 5 tables found</span>
+              <span class="text-text-muted/25">·</span>
+              <span class="text-text-muted/30">hover to highlight · click to navigate</span>
+            </div>
+            <div class="p-4 md:p-8 bg-background-alt/30 overflow-x-auto">
+              <svg id="schema-svg" viewBox="0 0 800 460" class="w-full max-w-3xl mx-auto min-w-[480px]" xmlns="http://www.w3.org/2000/svg">
+
+                <!-- Relationship lines (initially hidden, animated in) -->
+                <line id="line-skills"   x1="400" y1="168" x2="400" y2="110" stroke="#30363d" stroke-width="1.5"/>
+                <line id="line-activity" x1="400" y1="310" x2="400" y2="350" stroke="#30363d" stroke-width="1.5"/>
+                <line id="line-projects" x1="270" y1="239" x2="230" y2="239" stroke="#30363d" stroke-width="1.5"/>
+                <line id="line-writing"  x1="530" y1="239" x2="570" y2="239" stroke="#30363d" stroke-width="1.5"/>
+
+                <!-- 1:N labels -->
+                <text id="lbl-skills"   x="406" y="143" fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
+                <text id="lbl-activity" x="406" y="334" fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
+                <text id="lbl-projects" x="240" y="233" fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
+                <text id="lbl-writing"  x="538" y="233" fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
+
+                <!-- dim_skills (top) — click → skills section -->
+                <g id="dim-skills" style="cursor:pointer">
+                  <rect id="rect-skills" x="300" y="20" width="200" height="90" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+                  <line x1="300" y1="44" x2="500" y2="44" stroke="#30363d" stroke-width="1"/>
+                  <text x="314" y="36" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_skills</text>
+                  <text x="314" y="60" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">skill_name    TEXT</text>
+                  <text x="314" y="75" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">               -- 'dbt','SQL','Python'</text>
+                  <text x="314" y="90" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">category      TEXT</text>
+                </g>
+
+                <!-- dim_projects (left) — click → projects section -->
+                <g id="dim-projects" style="cursor:pointer">
+                  <rect id="rect-projects" x="30" y="194" width="200" height="90" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+                  <line x1="30" y1="218" x2="230" y2="218" stroke="#30363d" stroke-width="1"/>
+                  <text x="44" y="210" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_projects</text>
+                  <text x="44" y="234" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">title         TEXT</text>
+                  <text x="44" y="249" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">               -- 'modaryn','modscape'</text>
+                  <text x="44" y="264" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">tags          TEXT[]</text>
+                </g>
+
+                <!-- dim_writing (right) — click → writing section -->
+                <g id="dim-writing" style="cursor:pointer">
+                  <rect id="rect-writing" x="570" y="194" width="200" height="90" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+                  <line x1="570" y1="218" x2="770" y2="218" stroke="#30363d" stroke-width="1"/>
+                  <text x="584" y="210" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_writing</text>
+                  <text x="584" y="234" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">platform      TEXT</text>
+                  <text x="584" y="249" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">               -- 'medium','qiita','zenn'</text>
+                  <text x="584" y="264" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">url           TEXT</text>
+                </g>
+
+                <!-- dim_activity (bottom) — click → activity section -->
+                <g id="dim-activity" style="cursor:pointer">
+                  <rect id="rect-activity" x="300" y="350" width="200" height="90" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+                  <line x1="300" y1="374" x2="500" y2="374" stroke="#30363d" stroke-width="1"/>
+                  <text x="314" y="366" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_activity</text>
+                  <text x="314" y="390" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">date          DATE</text>
+                  <text x="314" y="405" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">contributions INT</text>
+                  <text x="314" y="420" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">               -- github activity</text>
+                </g>
+
+                <!-- fact_engineer (center) -->
+                <rect x="270" y="168" width="260" height="142" rx="6" fill="#0d1117" stroke="#3b82f6" stroke-width="1.5"/>
+                <line x1="270" y1="194" x2="530" y2="194" stroke="#3b82f6" stroke-width="1" opacity="0.5"/>
+                <text x="286" y="185" fill="#569cd6" font-size="12" font-weight="700" font-family="JetBrains Mono, monospace">⬡ fact_engineer</text>
+
+                <text x="286" y="212" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
+                <text x="308" y="212" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id</text>
+                <text x="430" y="212" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT  -- 1</text>
+                <line x1="286" y1="218" x2="514" y2="218" stroke="#30363d" stroke-width="0.5"/>
+
+                <g id="fk-skills">
+                  <text x="286" y="234" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="308" y="234" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">skill_id</text>
+                  <text x="430" y="234" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                </g>
+                <g id="fk-projects">
+                  <text x="286" y="252" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="308" y="252" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">project_id</text>
+                  <text x="430" y="252" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                </g>
+                <g id="fk-writing">
+                  <text x="286" y="270" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="308" y="270" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">writing_id</text>
+                  <text x="430" y="270" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                </g>
+                <g id="fk-activity">
+                  <text x="286" y="288" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="308" y="288" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">activity_id</text>
+                  <text x="430" y="288" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </section>
+      </AnimateOnScroll>
+
+      <script>
+        // ── Line lengths (precomputed from SVG coordinates) ──
+        const lineLengths: Record<string, number> = {
+          'line-skills':   58, // sqrt((400-400)²+(168-110)²)
+          'line-activity': 40, // sqrt((400-400)²+(310-350)²)
+          'line-projects': 40, // sqrt((270-230)²+(239-239)²)
+          'line-writing':  40, // sqrt((530-570)²+(239-239)²)
+        };
+
+        // Init: hide all lines
+        Object.entries(lineLengths).forEach(([id, len]) => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.setAttribute('stroke-dasharray', String(len));
+            el.setAttribute('stroke-dashoffset', String(len));
+          }
+        });
+
+        // Animate lines when schema enters viewport
+        const svg = document.getElementById('schema-svg');
+        let drawn = false;
+        if (svg) {
+          new IntersectionObserver(([entry]) => {
+            if (!entry.isIntersecting || drawn) return;
+            drawn = true;
+            const lineOrder = ['line-skills', 'line-projects', 'line-writing', 'line-activity'];
+            const lblOrder  = ['lbl-skills',  'lbl-projects',  'lbl-writing',  'lbl-activity'];
+            lineOrder.forEach((id, i) => {
+              setTimeout(() => {
+                const line = document.getElementById(id) as SVGLineElement | null;
+                const lbl  = document.getElementById(lblOrder[i]);
+                if (line) {
+                  line.style.transition = 'stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1)';
+                  line.style.strokeDashoffset = '0';
+                }
+                if (lbl) {
+                  lbl.style.transition = 'opacity 0.3s ease';
+                  lbl.setAttribute('opacity', '1');
+                }
+              }, i * 130);
+            });
+          }, { threshold: 0.3 }).observe(svg);
+        }
+
+        // ── Hover highlight + click to scroll ──
+        const BLUE = '#3b82f6';
+        const interactions = [
+          { dim: 'dim-skills',   rect: 'rect-skills',   line: 'line-skills',   lbl: 'lbl-skills',   fk: 'fk-skills',   section: 'skills'   },
+          { dim: 'dim-projects', rect: 'rect-projects', line: 'line-projects', lbl: 'lbl-projects', fk: 'fk-projects', section: 'projects' },
+          { dim: 'dim-writing',  rect: 'rect-writing',  line: 'line-writing',  lbl: 'lbl-writing',  fk: 'fk-writing',  section: 'writing'  },
+          { dim: 'dim-activity', rect: 'rect-activity', line: 'line-activity', lbl: 'lbl-activity', fk: 'fk-activity', section: 'activity' },
+        ];
+
+        interactions.forEach(({ dim, rect, line, lbl, fk, section }) => {
+          const dimEl  = document.getElementById(dim);
+          const rectEl = document.getElementById(rect);
+          const lineEl = document.getElementById(line);
+          const lblEl  = document.getElementById(lbl);
+          const fkEl   = document.getElementById(fk);
+          if (!dimEl) return;
+
+          dimEl.addEventListener('mouseenter', () => {
+            rectEl?.setAttribute('stroke', BLUE);
+            lineEl?.setAttribute('stroke', BLUE);
+            lblEl?.setAttribute('fill', BLUE);
+            fkEl?.querySelectorAll('text').forEach(t => t.setAttribute('fill', BLUE));
+          });
+
+          dimEl.addEventListener('mouseleave', () => {
+            rectEl?.setAttribute('stroke', '#30363d');
+            lineEl?.setAttribute('stroke', '#30363d');
+            lblEl?.setAttribute('fill', '#8b949e');
+            fkEl?.querySelectorAll('text').forEach((t, i) => {
+              t.setAttribute('fill', i === 0 ? '#6a9955' : i === 1 ? '#9cdcfe' : '#8b949e');
+            });
+          });
+
+          if (section) {
+            dimEl.addEventListener('click', () => {
+              document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
+            });
+          }
+        });
+      </script>
+
+      <!-- ═══════════════════════════════════════════ -->
+      <!-- SKILLS                                      -->
+      <!-- ═══════════════════════════════════════════ -->
+      <AnimateOnScroll animation="slide-up" delay={0}>
+        <section id="skills" class="py-12">
+          <div class="mono text-xs mb-0 rounded-lg border border-dashed border-border-color/60 bg-background-alt/30 px-4 py-3 flex gap-3">
+            <span class="text-teal-400/70 flex-shrink-0 select-none">analytics=#</span>
+            <div class="leading-6 text-text-muted/60">
+              <div><span class="sql-cmt">-- passion: 'working with business users on data requirements'</span></div>
+              <div><span class="sql-kw">SELECT</span> <span class="sql-col">s.skill_name</span><span class="text-text-muted">,</span> <span class="sql-col">s.category</span><span class="text-text-muted">,</span> <span class="sql-col">s.proficiency</span></div>
+              <div><span class="sql-kw">FROM</span>      <span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></div>
+              <div><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_skills</span> <span class="sql-col">s</span> <span class="sql-kw">ON</span> <span class="sql-col">f.skill_id</span> <span class="text-text-muted/60">=</span> <span class="sql-col">s.id</span></div>
+              <div><span class="sql-kw">WHERE</span>     <span class="sql-col">f.engineer_id</span> <span class="text-text-muted/60">=</span> <span class="sql-num">1</span><span class="text-text-muted">;</span></div>
+            </div>
+          </div>
+          <div class="sql-connector flex items-center gap-2 my-2 mono text-[10px] pl-2" data-rows="5 rows returned">
+            <span>▼</span>
+            <span>executing...</span>
+          </div>
+          <div class="rounded-xl border border-border-color overflow-hidden shadow-xl">
+            <div class="overflow-x-auto">
+              <table class="w-full mono text-sm">
+                <thead>
+                  <tr class="border-b border-border-color bg-background/80">
+                    <th class="text-left px-4 py-2.5 text-text-muted/50 font-normal text-xs">skill_name</th>
+                    <th class="text-left px-4 py-2.5 text-text-muted/50 font-normal text-xs hidden sm:table-cell">category</th>
+                    <th class="text-left px-4 py-2.5 text-text-muted/50 font-normal text-xs hidden md:table-cell">proficiency</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { name: "Data Modeling",     category: "Analytics Engineering", level: "expert",     passion: true  },
+                    { name: "Data Engineering",  category: "Engineering",           level: "proficient", passion: false },
+                    { name: "SQL",               category: "Query Language",        level: "expert",     passion: false },
+                    { name: "Python",            category: "Programming",           level: "proficient", passion: false },
+                    { name: "Airflow",           category: "Orchestration",         level: "proficient", passion: false },
+                  ].map(skill => (
+                    <tr class="border-b border-border-color/20 hover:bg-background-alt/60 transition-colors">
+                      <td class="px-4 py-3 flex items-center gap-2">
+                        <span class="sql-str">'{skill.name}'</span>
+                        {skill.passion && (
+                          <span class="text-[10px] px-1.5 py-0.5 rounded border border-accent/30 text-accent/70 bg-accent/5 hidden lg:inline">★ passion</span>
+                        )}
+                      </td>
+                      <td class="px-4 py-3 hidden sm:table-cell text-text-muted/50 text-xs">{skill.category}</td>
+                      <td class="px-4 py-3 hidden md:table-cell">
+                        <span class={`text-xs px-2 py-0.5 rounded border ${skill.level === 'expert' ? 'text-primary/80 border-primary/20 bg-primary/5' : 'text-text-muted/50 border-border-color'}`}>
+                          {skill.level}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div class="px-4 py-2 border-t border-border-color/20 bg-background/50 mono text-xs text-text-muted/40">
+              <span class="text-emerald-400">▶</span> 5 rows returned
+            </div>
+          </div>
+        </section>
+      </AnimateOnScroll>
+
+      <!-- ═══════════════════════════════════════════ -->
       <!-- ACTIVITY                                    -->
       <!-- ═══════════════════════════════════════════ -->
       <AnimateOnScroll animation="slide-up" delay={0}>
         <section id="activity" class="py-12">
           <!-- SQL label -->
-          <div class="mono text-xs text-text-muted/50 mb-3 flex flex-wrap gap-1 items-center">
-            <span class="sql-kw">SELECT</span>
-            <span class="sql-col">date</span><span class="text-text-muted">,</span>
-            <span class="sql-col">contributions</span>
-            <span class="sql-kw">FROM</span>
-            <span class="sql-tbl">github_activity</span>
-            <span class="sql-kw">WHERE</span>
-            <span class="sql-col">user</span>
-            <span class="text-text-muted/60">=</span>
-            <span class="sql-str">'yujikawa'</span>
-            <span class="sql-kw">ORDER BY</span>
-            <span class="sql-col">date</span>
-            <span class="sql-kw">DESC</span><span class="text-text-muted">;</span>
+          <div class="mono text-xs mb-3 rounded-lg border border-dashed border-border-color/60 bg-background-alt/30 px-4 py-3 flex gap-3 mb-0">
+            <span class="text-teal-400/70 flex-shrink-0 select-none">analytics=#</span>
+            <div class="leading-6 text-text-muted/60">
+              <div><span class="sql-kw">SELECT</span> <span class="sql-col">a.date</span><span class="text-text-muted">,</span> <span class="sql-col">a.contributions</span></div>
+              <div><span class="sql-kw">FROM</span>      <span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></div>
+              <div><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_activity</span> <span class="sql-col">a</span> <span class="sql-kw">ON</span> <span class="sql-col">f.activity_id</span> <span class="text-text-muted/60">=</span> <span class="sql-col">a.id</span></div>
+              <div><span class="sql-kw">WHERE</span>     <span class="sql-col">f.engineer_id</span> <span class="text-text-muted/60">=</span> <span class="sql-num">1</span> <span class="sql-kw">ORDER BY</span> <span class="sql-col">a.date</span> <span class="sql-kw">DESC</span><span class="text-text-muted">;</span></div>
+            </div>
+          </div>
+          <div class="sql-connector flex items-center gap-2 my-2 mono text-[10px] pl-2" data-rows="365 rows returned">
+            <span>▼</span>
+            <span>executing...</span>
           </div>
           <!-- Result -->
           <div class="rounded-xl border border-border-color overflow-hidden shadow-xl">
@@ -175,17 +435,18 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
       <AnimateOnScroll animation="slide-up" delay={0}>
         <section id="writing" class="py-12">
           <!-- SQL label -->
-          <div class="mono text-xs text-text-muted/50 mb-3 flex flex-wrap gap-1 items-center">
-            <span class="sql-kw">SELECT</span>
-            <span class="sql-col">platform</span><span class="text-text-muted">,</span>
-            <span class="sql-col">url</span><span class="text-text-muted">,</span>
-            <span class="sql-col">topics</span>
-            <span class="sql-kw">FROM</span>
-            <span class="sql-tbl">writing</span>
-            <span class="sql-kw">WHERE</span>
-            <span class="sql-col">author</span>
-            <span class="text-text-muted/60">=</span>
-            <span class="sql-str">'yujikawa'</span><span class="text-text-muted">;</span>
+          <div class="mono text-xs mb-3 rounded-lg border border-dashed border-border-color/60 bg-background-alt/30 px-4 py-3 flex gap-3 mb-0">
+            <span class="text-teal-400/70 flex-shrink-0 select-none">analytics=#</span>
+            <div class="leading-6 text-text-muted/60">
+              <div><span class="sql-kw">SELECT</span> <span class="sql-col">w.platform</span><span class="text-text-muted">,</span> <span class="sql-col">w.url</span><span class="text-text-muted">,</span> <span class="sql-col">w.topics</span></div>
+              <div><span class="sql-kw">FROM</span>      <span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></div>
+              <div><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_writing</span> <span class="sql-col">w</span> <span class="sql-kw">ON</span> <span class="sql-col">f.writing_id</span> <span class="text-text-muted/60">=</span> <span class="sql-col">w.id</span></div>
+              <div><span class="sql-kw">WHERE</span>     <span class="sql-col">f.engineer_id</span> <span class="text-text-muted/60">=</span> <span class="sql-num">1</span><span class="text-text-muted">;</span></div>
+            </div>
+          </div>
+          <div class="sql-connector flex items-center gap-2 my-2 mono text-[10px] pl-2" data-rows="3 rows returned">
+            <span>▼</span>
+            <span>executing...</span>
           </div>
           <!-- SQL result table -->
           <div class="rounded-xl border border-border-color overflow-hidden shadow-xl">
@@ -202,23 +463,35 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
                   <tr class="border-b border-border-color/20 hover:bg-background-alt/60 transition-colors">
                     <td class="px-4 py-3"><span class="sql-str">'medium'</span></td>
                     <td class="px-4 py-3">
-                      <a
-                        href="https://medium.com/@yujikawa"
-                        target="_blank" rel="noopener noreferrer"
-                        class="text-primary hover:text-secondary transition-colors"
-                      >
+                      <a href="https://medium.com/@yujikawa" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-secondary transition-colors">
                         medium.com/@yujikawa ↗
                       </a>
                     </td>
-                    <td class="px-4 py-3 hidden md:table-cell text-text-muted/50 text-xs">
-                      Analytics Engineering, dbt, data modeling
+                    <td class="px-4 py-3 hidden md:table-cell text-text-muted/50 text-xs">Analytics Engineering, dbt, data modeling</td>
+                  </tr>
+                  <tr class="border-b border-border-color/20 hover:bg-background-alt/60 transition-colors">
+                    <td class="px-4 py-3"><span class="sql-str">'qiita'</span></td>
+                    <td class="px-4 py-3">
+                      <a href="https://qiita.com/yujikawa" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-secondary transition-colors">
+                        qiita.com/yujikawa ↗
+                      </a>
                     </td>
+                    <td class="px-4 py-3 hidden md:table-cell text-text-muted/50 text-xs">Analytics Engineering, Python, SQL</td>
+                  </tr>
+                  <tr class="border-b border-border-color/20 hover:bg-background-alt/60 transition-colors">
+                    <td class="px-4 py-3"><span class="sql-str">'zenn'</span></td>
+                    <td class="px-4 py-3">
+                      <a href="https://zenn.dev/yujikawa" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-secondary transition-colors">
+                        zenn.dev/yujikawa ↗
+                      </a>
+                    </td>
+                    <td class="px-4 py-3 hidden md:table-cell text-text-muted/50 text-xs">Analytics Engineering, dbt, data stack</td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <div class="px-4 py-2 border-t border-border-color/20 bg-background/50 mono text-xs text-text-muted/40">
-              <span class="text-emerald-400">▶</span> 1 row returned
+              <span class="text-emerald-400">▶</span> 3 rows returned
             </div>
           </div>
         </section>
@@ -230,14 +503,18 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
       <AnimateOnScroll animation="slide-up" delay={0}>
         <section id="projects" class="py-12">
           <!-- SQL label -->
-          <div class="mono text-xs text-text-muted/50 mb-3 flex flex-wrap gap-1 items-center">
-            <span class="sql-kw">SELECT</span> *
-            <span class="sql-kw">FROM</span>
-            <span class="sql-tbl">projects</span>
-            <span class="sql-kw">WHERE</span>
-            <span class="sql-col">author</span>
-            <span class="text-text-muted/60">=</span>
-            <span class="sql-str">'yujikawa'</span><span class="text-text-muted">;</span>
+          <div class="mono text-xs mb-3 rounded-lg border border-dashed border-border-color/60 bg-background-alt/30 px-4 py-3 flex gap-3 mb-0">
+            <span class="text-teal-400/70 flex-shrink-0 select-none">analytics=#</span>
+            <div class="leading-6 text-text-muted/60">
+              <div><span class="sql-kw">SELECT</span> <span class="sql-col">p.title</span><span class="text-text-muted">,</span> <span class="sql-col">p.tags</span><span class="text-text-muted">,</span> <span class="sql-col">p.github_url</span></div>
+              <div><span class="sql-kw">FROM</span>      <span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></div>
+              <div><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_projects</span> <span class="sql-col">p</span> <span class="sql-kw">ON</span> <span class="sql-col">f.project_id</span> <span class="text-text-muted/60">=</span> <span class="sql-col">p.id</span></div>
+              <div><span class="sql-kw">WHERE</span>     <span class="sql-col">f.engineer_id</span> <span class="text-text-muted/60">=</span> <span class="sql-num">1</span><span class="text-text-muted">;</span></div>
+            </div>
+          </div>
+          <div class="sql-connector flex items-center gap-2 my-2 mono text-[10px] pl-2" data-rows="2 rows returned">
+            <span>▼</span>
+            <span>executing...</span>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -298,3 +575,88 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
     </div>
   </main>
 </Layout>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.sql-connector').forEach(connector => {
+    const result = connector.nextElementSibling as HTMLElement | null;
+    if (!result) return;
+    const arrow = connector.querySelector<HTMLElement>('span:first-child');
+    const text  = connector.querySelector<HTMLElement>('span:last-child');
+    const rows  = connector.dataset.rows ?? 'rows returned';
+
+    // Add re-run button (hidden until after first run)
+    const btn = document.createElement('button');
+    btn.textContent = '⟳ re-run';
+    btn.style.cssText = [
+      'margin-left:auto',
+      'padding:1px 8px',
+      'border:1px solid #30363d',
+      'border-radius:4px',
+      'background:transparent',
+      'color:#8b949e',
+      'font-size:10px',
+      'font-family:inherit',
+      'cursor:pointer',
+      'opacity:0',
+      'transition:opacity 0.3s ease, color 0.2s, border-color 0.2s',
+      'flex-shrink:0',
+    ].join(';');
+    btn.addEventListener('mouseenter', () => {
+      btn.style.color = '#3b82f6';
+      btn.style.borderColor = '#3b82f6';
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.color = '#8b949e';
+      btn.style.borderColor = '#30363d';
+    });
+    connector.appendChild(btn);
+
+    // Core animation function
+    function runAnimation() {
+      // Reset
+      if (arrow) { arrow.textContent = '▼'; arrow.style.color = ''; }
+      if (text)  { text.textContent = 'executing...'; text.style.color = ''; }
+      result!.style.transition = 'none';
+      result!.style.opacity = '0';
+      result!.style.transform = 'translateY(10px)';
+      btn.style.opacity = '0';
+      btn.style.pointerEvents = 'none';
+
+      // Re-enable transition after reset frame
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          result!.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
+        });
+      });
+
+      let dots = 0;
+      const timer = setInterval(() => {
+        if (text) text.textContent = 'executing' + '.'.repeat((dots++ % 3) + 1);
+      }, 220);
+
+      setTimeout(() => {
+        clearInterval(timer);
+        if (arrow) { arrow.textContent = '▶'; arrow.style.color = '#34d399'; }
+        if (text)  { text.textContent = rows; text.style.color = '#6ee7b7'; }
+        result!.style.opacity = '1';
+        result!.style.transform = 'translateY(0)';
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'auto';
+      }, 1050);
+    }
+
+    btn.addEventListener('click', runAnimation);
+
+    // Hide result block initially, trigger on scroll
+    result.style.opacity = '0';
+    result.style.transform = 'translateY(10px)';
+    result.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
+
+    let triggered = false;
+    new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting || triggered) return;
+      triggered = true;
+      runAnimation();
+    }, { threshold: 0.2 }).observe(connector);
+  });
+</script>
