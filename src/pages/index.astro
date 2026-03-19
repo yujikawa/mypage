@@ -199,7 +199,7 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
                 </g>
 
                 <!-- fact_engineer (center) -->
-                <rect x="270" y="168" width="260" height="142" rx="6" fill="#0d1117" stroke="#3b82f6" stroke-width="1.5"/>
+                <rect id="rect-fact" x="270" y="168" width="260" height="142" rx="6" fill="#0d1117" stroke="#3b82f6" stroke-width="1.5"/>
                 <line x1="270" y1="194" x2="530" y2="194" stroke="#3b82f6" stroke-width="1" opacity="0.5"/>
                 <text x="286" y="185" fill="#569cd6" font-size="12" font-weight="700" font-family="JetBrains Mono, monospace">⬡ fact_engineer</text>
 
@@ -329,29 +329,43 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
         }
 
         // ── Miro-style collaborative cursor ──
-        const cursor = document.getElementById('collab-cursor');
-        if (cursor) {
-          // Waypoints: [left%, top%] roughly matching each ER node position
-          const waypoints = [
-            { l: '46%', t: '42%' },  // fact_engineer (center)
-            { l: '46%', t:  '4%' },  // dim_skills (top)
-            { l: '46%', t: '42%' },  // back to center
-            { l:  '4%', t: '38%' },  // dim_projects (left)
-            { l: '46%', t: '42%' },  // back to center
-            { l: '70%', t: '38%' },  // dim_writing (right)
-            { l: '46%', t: '42%' },  // back to center
-            { l: '46%', t: '74%' },  // dim_activity (bottom)
+        const cursorEl = document.getElementById('collab-cursor') as HTMLElement | null;
+        if (cursorEl) {
+          const cursor = cursorEl;
+          const canvas = cursor.parentElement!;
+
+          // Get center of an SVG/HTML element relative to the canvas div
+          function getCenter(id: string): { x: number; y: number } | null {
+            const el = document.getElementById(id);
+            if (!el) return null;
+            const er = el.getBoundingClientRect();
+            const cr = canvas.getBoundingClientRect();
+            return { x: er.left + er.width / 2 - cr.left, y: er.top + er.height / 2 - cr.top };
+          }
+
+          // sequence: id of target rect, pause duration after arriving (ms)
+          const sequence: { id: string; pause: number }[] = [
+            { id: 'rect-fact',     pause: 1600 },
+            { id: 'rect-skills',   pause: 1600 },
+            { id: 'rect-fact',     pause:  500 },
+            { id: 'rect-projects', pause: 1600 },
+            { id: 'rect-fact',     pause:  500 },
+            { id: 'rect-writing',  pause: 1600 },
+            { id: 'rect-fact',     pause:  500 },
+            { id: 'rect-activity', pause: 1600 },
           ];
-          const pauses = [1800, 1400, 600, 1400, 600, 1400, 600, 1800];
+
           let idx = 0;
           function moveCursor() {
-            const wp = waypoints[idx % waypoints.length];
-            (cursor as HTMLElement).style.left = wp.l;
-            (cursor as HTMLElement).style.top  = wp.t;
+            const step = sequence[idx % sequence.length];
+            const pos = getCenter(step.id);
+            if (pos) {
+              cursor.style.left = pos.x + 'px';
+              cursor.style.top  = pos.y + 'px';
+            }
             idx++;
-            setTimeout(moveCursor, 900 + pauses[(idx - 1) % pauses.length]);
+            setTimeout(moveCursor, 900 + step.pause);
           }
-          // Start after a short delay
           setTimeout(moveCursor, 800);
         }
 
@@ -407,14 +421,28 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
             <div class="flex-1 h-px bg-gradient-to-r from-primary/40 to-transparent"></div>
             <span class="mono text-[10px] text-primary/40 border border-primary/20 bg-primary/5 px-2 py-0.5 rounded">dim_skills</span>
           </div>
-          <div class="mono text-xs mb-0 rounded-lg border border-dashed border-border-color bg-background-alt/70 px-4 py-3 flex gap-3">
-            <span class="text-teal-400/80 flex-shrink-0 select-none">analytics=#</span>
-            <div class="leading-6 text-text-muted/90">
-              <div><span class="sql-cmt">-- passion: 'working with business users on data requirements'</span></div>
-              <div><span class="sql-kw">SELECT</span> <span class="sql-col">s.skill_name</span><span class="text-text-muted">,</span> <span class="sql-col">s.category</span><span class="text-text-muted">,</span> <span class="sql-col">s.proficiency</span></div>
-              <div><span class="sql-kw">FROM</span>      <span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></div>
-              <div><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_skills</span> <span class="sql-col">s</span> <span class="sql-kw">ON</span> <span class="sql-col">f.skill_id</span> <span class="text-text-muted/80">=</span> <span class="sql-col">s.id</span></div>
-              <div><span class="sql-kw">WHERE</span>     <span class="sql-col">f.engineer_id</span> <span class="text-text-muted/80">=</span> <span class="sql-num">1</span><span class="text-text-muted">;</span></div>
+          <div class="rounded-lg border border-border-color overflow-hidden">
+            <div class="flex items-center border-b border-border-color bg-[#0d1117] pl-2 pr-3 pt-1.5">
+              <div class="flex items-center gap-1.5 px-3 py-1.5 bg-background-alt border-x border-t border-border-color rounded-t mono text-[11px] text-text-base/70 -mb-px">
+                <span class="text-accent/50 text-[9px]">◈</span>mart_skills.sql
+              </div>
+              <div class="ml-auto">
+                <button class="sql-run-btn flex items-center gap-1 px-2.5 py-1 bg-primary/15 hover:bg-primary/25 border border-primary/25 rounded text-primary/80 text-[10px] mono transition-colors">▶ Run</button>
+              </div>
+            </div>
+            <div class="bg-[#0d1117] py-2 mono text-xs overflow-x-auto">
+              {[
+                { n:1, line: <><span class="sql-cmt">-- passion: 'working with business users on data requirements'</span></> },
+                { n:2, line: <><span class="sql-kw">SELECT</span> <span class="sql-col">s.skill_name</span><span class="text-text-muted">,</span> <span class="sql-col">s.category</span><span class="text-text-muted">,</span> <span class="sql-col">s.proficiency</span></> },
+                { n:3, line: <><span class="sql-kw">FROM</span>{"      "}<span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></> },
+                { n:4, line: <><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_skills</span> <span class="sql-col">s</span> <span class="sql-kw">ON</span> <span class="sql-col">f.skill_id</span> <span class="text-text-muted/80">=</span> <span class="sql-col">s.id</span></> },
+                { n:5, line: <><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">f.engineer_id</span> <span class="text-text-muted/80">=</span> <span class="sql-num">1</span><span class="text-text-muted">;</span></> },
+              ].map(({ n, line }) => (
+                <div class="flex leading-6 hover:bg-white/[0.03] px-0">
+                  <span class="w-10 text-right pr-4 text-text-muted/25 select-none flex-shrink-0">{n}</span>
+                  <span class="pr-4 text-text-muted/90">{line}</span>
+                </div>
+              ))}
             </div>
           </div>
           <div class="sql-connector flex items-center gap-2 my-2 mono text-[10px] pl-2" data-rows="5 rows returned">
@@ -472,13 +500,27 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
             <div class="flex-1 h-px bg-gradient-to-r from-primary/40 to-transparent"></div>
             <span class="mono text-[10px] text-primary/40 border border-primary/20 bg-primary/5 px-2 py-0.5 rounded">dim_activity</span>
           </div>
-          <div class="mono text-xs mb-0 rounded-lg border border-dashed border-border-color bg-background-alt/70 px-4 py-3 flex gap-3">
-            <span class="text-teal-400/80 flex-shrink-0 select-none">analytics=#</span>
-            <div class="leading-6 text-text-muted/90">
-              <div><span class="sql-kw">SELECT</span> <span class="sql-col">a.date</span><span class="text-text-muted">,</span> <span class="sql-col">a.contributions</span></div>
-              <div><span class="sql-kw">FROM</span>      <span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></div>
-              <div><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_activity</span> <span class="sql-col">a</span> <span class="sql-kw">ON</span> <span class="sql-col">f.activity_id</span> <span class="text-text-muted/80">=</span> <span class="sql-col">a.id</span></div>
-              <div><span class="sql-kw">WHERE</span>     <span class="sql-col">f.engineer_id</span> <span class="text-text-muted/80">=</span> <span class="sql-num">1</span> <span class="sql-kw">ORDER BY</span> <span class="sql-col">a.date</span> <span class="sql-kw">DESC</span><span class="text-text-muted">;</span></div>
+          <div class="rounded-lg border border-border-color overflow-hidden">
+            <div class="flex items-center border-b border-border-color bg-[#0d1117] pl-2 pr-3 pt-1.5">
+              <div class="flex items-center gap-1.5 px-3 py-1.5 bg-background-alt border-x border-t border-border-color rounded-t mono text-[11px] text-text-base/70 -mb-px">
+                <span class="text-accent/50 text-[9px]">◈</span>mart_activity.sql
+              </div>
+              <div class="ml-auto">
+                <button class="sql-run-btn flex items-center gap-1 px-2.5 py-1 bg-primary/15 hover:bg-primary/25 border border-primary/25 rounded text-primary/80 text-[10px] mono transition-colors">▶ Run</button>
+              </div>
+            </div>
+            <div class="bg-[#0d1117] py-2 mono text-xs overflow-x-auto">
+              {[
+                { n:1, line: <><span class="sql-kw">SELECT</span> <span class="sql-col">a.date</span><span class="text-text-muted">,</span> <span class="sql-col">a.contributions</span></> },
+                { n:2, line: <><span class="sql-kw">FROM</span>{"      "}<span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></> },
+                { n:3, line: <><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_activity</span> <span class="sql-col">a</span> <span class="sql-kw">ON</span> <span class="sql-col">f.activity_id</span> <span class="text-text-muted/80">=</span> <span class="sql-col">a.id</span></> },
+                { n:4, line: <><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">f.engineer_id</span> <span class="text-text-muted/80">=</span> <span class="sql-num">1</span> <span class="sql-kw">ORDER BY</span> <span class="sql-col">a.date</span> <span class="sql-kw">DESC</span><span class="text-text-muted">;</span></> },
+              ].map(({ n, line }) => (
+                <div class="flex leading-6 hover:bg-white/[0.03] px-0">
+                  <span class="w-10 text-right pr-4 text-text-muted/25 select-none flex-shrink-0">{n}</span>
+                  <span class="pr-4 text-text-muted/90">{line}</span>
+                </div>
+              ))}
             </div>
           </div>
           <div class="sql-connector flex items-center gap-2 my-2 mono text-[10px] pl-2" data-rows="365 rows returned">
@@ -509,13 +551,27 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
             <div class="flex-1 h-px bg-gradient-to-r from-primary/40 to-transparent"></div>
             <span class="mono text-[10px] text-primary/40 border border-primary/20 bg-primary/5 px-2 py-0.5 rounded">dim_writing</span>
           </div>
-          <div class="mono text-xs mb-0 rounded-lg border border-dashed border-border-color bg-background-alt/70 px-4 py-3 flex gap-3">
-            <span class="text-teal-400/80 flex-shrink-0 select-none">analytics=#</span>
-            <div class="leading-6 text-text-muted/90">
-              <div><span class="sql-kw">SELECT</span> <span class="sql-col">w.platform</span><span class="text-text-muted">,</span> <span class="sql-col">w.url</span><span class="text-text-muted">,</span> <span class="sql-col">w.topics</span></div>
-              <div><span class="sql-kw">FROM</span>      <span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></div>
-              <div><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_writing</span> <span class="sql-col">w</span> <span class="sql-kw">ON</span> <span class="sql-col">f.writing_id</span> <span class="text-text-muted/80">=</span> <span class="sql-col">w.id</span></div>
-              <div><span class="sql-kw">WHERE</span>     <span class="sql-col">f.engineer_id</span> <span class="text-text-muted/80">=</span> <span class="sql-num">1</span><span class="text-text-muted">;</span></div>
+          <div class="rounded-lg border border-border-color overflow-hidden">
+            <div class="flex items-center border-b border-border-color bg-[#0d1117] pl-2 pr-3 pt-1.5">
+              <div class="flex items-center gap-1.5 px-3 py-1.5 bg-background-alt border-x border-t border-border-color rounded-t mono text-[11px] text-text-base/70 -mb-px">
+                <span class="text-accent/50 text-[9px]">◈</span>mart_writing.sql
+              </div>
+              <div class="ml-auto">
+                <button class="sql-run-btn flex items-center gap-1 px-2.5 py-1 bg-primary/15 hover:bg-primary/25 border border-primary/25 rounded text-primary/80 text-[10px] mono transition-colors">▶ Run</button>
+              </div>
+            </div>
+            <div class="bg-[#0d1117] py-2 mono text-xs overflow-x-auto">
+              {[
+                { n:1, line: <><span class="sql-kw">SELECT</span> <span class="sql-col">w.platform</span><span class="text-text-muted">,</span> <span class="sql-col">w.url</span><span class="text-text-muted">,</span> <span class="sql-col">w.topics</span></> },
+                { n:2, line: <><span class="sql-kw">FROM</span>{"      "}<span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></> },
+                { n:3, line: <><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_writing</span> <span class="sql-col">w</span> <span class="sql-kw">ON</span> <span class="sql-col">f.writing_id</span> <span class="text-text-muted/80">=</span> <span class="sql-col">w.id</span></> },
+                { n:4, line: <><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">f.engineer_id</span> <span class="text-text-muted/80">=</span> <span class="sql-num">1</span><span class="text-text-muted">;</span></> },
+              ].map(({ n, line }) => (
+                <div class="flex leading-6 hover:bg-white/[0.03] px-0">
+                  <span class="w-10 text-right pr-4 text-text-muted/25 select-none flex-shrink-0">{n}</span>
+                  <span class="pr-4 text-text-muted/90">{line}</span>
+                </div>
+              ))}
             </div>
           </div>
           <div class="sql-connector flex items-center gap-2 my-2 mono text-[10px] pl-2" data-rows="3 rows returned">
@@ -579,13 +635,27 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
             <div class="flex-1 h-px bg-gradient-to-r from-primary/40 to-transparent"></div>
             <span class="mono text-[10px] text-primary/40 border border-primary/20 bg-primary/5 px-2 py-0.5 rounded">dim_projects</span>
           </div>
-          <div class="mono text-xs mb-0 rounded-lg border border-dashed border-border-color bg-background-alt/70 px-4 py-3 flex gap-3">
-            <span class="text-teal-400/80 flex-shrink-0 select-none">analytics=#</span>
-            <div class="leading-6 text-text-muted/90">
-              <div><span class="sql-kw">SELECT</span> <span class="sql-col">p.title</span><span class="text-text-muted">,</span> <span class="sql-col">p.tags</span><span class="text-text-muted">,</span> <span class="sql-col">p.github_url</span></div>
-              <div><span class="sql-kw">FROM</span>      <span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></div>
-              <div><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_projects</span> <span class="sql-col">p</span> <span class="sql-kw">ON</span> <span class="sql-col">f.project_id</span> <span class="text-text-muted/80">=</span> <span class="sql-col">p.id</span></div>
-              <div><span class="sql-kw">WHERE</span>     <span class="sql-col">f.engineer_id</span> <span class="text-text-muted/80">=</span> <span class="sql-num">1</span><span class="text-text-muted">;</span></div>
+          <div class="rounded-lg border border-border-color overflow-hidden">
+            <div class="flex items-center border-b border-border-color bg-[#0d1117] pl-2 pr-3 pt-1.5">
+              <div class="flex items-center gap-1.5 px-3 py-1.5 bg-background-alt border-x border-t border-border-color rounded-t mono text-[11px] text-text-base/70 -mb-px">
+                <span class="text-accent/50 text-[9px]">◈</span>mart_projects.sql
+              </div>
+              <div class="ml-auto">
+                <button class="sql-run-btn flex items-center gap-1 px-2.5 py-1 bg-primary/15 hover:bg-primary/25 border border-primary/25 rounded text-primary/80 text-[10px] mono transition-colors">▶ Run</button>
+              </div>
+            </div>
+            <div class="bg-[#0d1117] py-2 mono text-xs overflow-x-auto">
+              {[
+                { n:1, line: <><span class="sql-kw">SELECT</span> <span class="sql-col">p.title</span><span class="text-text-muted">,</span> <span class="sql-col">p.tags</span><span class="text-text-muted">,</span> <span class="sql-col">p.github_url</span></> },
+                { n:2, line: <><span class="sql-kw">FROM</span>{"      "}<span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></> },
+                { n:3, line: <><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_projects</span> <span class="sql-col">p</span> <span class="sql-kw">ON</span> <span class="sql-col">f.project_id</span> <span class="text-text-muted/80">=</span> <span class="sql-col">p.id</span></> },
+                { n:4, line: <><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">f.engineer_id</span> <span class="text-text-muted/80">=</span> <span class="sql-num">1</span><span class="text-text-muted">;</span></> },
+              ].map(({ n, line }) => (
+                <div class="flex leading-6 hover:bg-white/[0.03] px-0">
+                  <span class="w-10 text-right pr-4 text-text-muted/25 select-none flex-shrink-0">{n}</span>
+                  <span class="pr-4 text-text-muted/90">{line}</span>
+                </div>
+              ))}
             </div>
           </div>
           <div class="sql-connector flex items-center gap-2 my-2 mono text-[10px] pl-2" data-rows="2 rows returned">
@@ -646,32 +716,9 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
     const text  = connector.querySelector<HTMLElement>('span:last-child');
     const rows  = connector.dataset.rows ?? 'rows returned';
 
-    // Add re-run button (hidden until after first run)
-    const btn = document.createElement('button');
-    btn.textContent = '⟳ re-run';
-    btn.style.cssText = [
-      'margin-left:auto',
-      'padding:1px 8px',
-      'border:1px solid #30363d',
-      'border-radius:4px',
-      'background:transparent',
-      'color:#8b949e',
-      'font-size:10px',
-      'font-family:inherit',
-      'cursor:pointer',
-      'opacity:0',
-      'transition:opacity 0.3s ease, color 0.2s, border-color 0.2s',
-      'flex-shrink:0',
-    ].join(';');
-    btn.addEventListener('mouseenter', () => {
-      btn.style.color = '#3b82f6';
-      btn.style.borderColor = '#3b82f6';
-    });
-    btn.addEventListener('mouseleave', () => {
-      btn.style.color = '#8b949e';
-      btn.style.borderColor = '#30363d';
-    });
-    connector.appendChild(btn);
+    // Find the Run button in the query editor above this connector
+    const editor = connector.previousElementSibling as HTMLElement | null;
+    const btn = editor?.querySelector<HTMLElement>('.sql-run-btn') ?? null;
 
     // Core animation function
     function runAnimation() {
@@ -681,8 +728,6 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
       result!.style.transition = 'none';
       result!.style.opacity = '0';
       result!.style.transform = 'translateY(10px)';
-      btn.style.opacity = '0';
-      btn.style.pointerEvents = 'none';
 
       // Re-enable transition after reset frame
       requestAnimationFrame(() => {
@@ -702,12 +747,10 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
         if (text)  { text.textContent = rows; text.style.color = '#6ee7b7'; }
         result!.style.opacity = '1';
         result!.style.transform = 'translateY(0)';
-        btn.style.opacity = '1';
-        btn.style.pointerEvents = 'auto';
       }, 1050);
     }
 
-    btn.addEventListener('click', runAnimation);
+    btn?.addEventListener('click', runAnimation);
 
     // Hide result block initially, trigger on scroll
     result.style.opacity = '0';
