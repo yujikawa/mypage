@@ -23,7 +23,7 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
 ---
 
 <Layout title="Welcome">
-  <main class="min-h-screen pt-24 pb-20">
+  <main class="min-h-screen pt-10 pb-20">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
       <!-- ═══════════════════════════════════════════ -->
@@ -70,8 +70,8 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
                 <div class="mono text-[11px] text-text-muted/35 mt-1">Analytics Engineer · Data Modeling</div>
               </div>
 
-              <!-- Author / profile card -->
-              <div class="absolute top-6 right-4 w-52 rounded-lg border border-border-color/60 bg-[#161b22]/95 shadow-xl backdrop-blur-sm overflow-hidden mono text-[10px]">
+              <!-- Author / profile card (hidden on mobile) -->
+              <div class="hidden sm:block absolute top-6 right-4 w-52 rounded-lg border border-border-color/60 bg-[#161b22]/95 shadow-xl backdrop-blur-sm overflow-hidden mono text-[10px]">
                 <!-- header: active status -->
                 <div class="px-3 py-2 border-b border-border-color/40 flex items-center gap-1.5">
                   <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse shadow shadow-emerald-400/60"></span>
@@ -132,7 +132,7 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
               </div>
 
               <!-- ER Diagram SVG (centered on canvas) -->
-              <div class="px-4 py-10 pr-52 overflow-x-auto">
+              <div class="px-4 py-10 sm:pr-56 overflow-x-auto">
                 <svg id="schema-svg" viewBox="0 0 800 460" class="w-full max-w-3xl mx-auto min-w-[480px]" xmlns="http://www.w3.org/2000/svg">
 
                 <!-- Relationship lines (initially hidden, animated in) -->
@@ -223,6 +223,13 @@ const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airfl
           </div><!-- /miro container -->
         </section>
       </AnimateOnScroll>
+
+      <!-- Bridge: board → detail sections -->
+      <div class="flex items-center gap-4 py-2 px-1">
+        <div class="flex-1 h-px bg-border-color/20"></div>
+        <span class="mono text-[10px] text-text-muted/25">↓ each dimension, in detail</span>
+        <div class="flex-1 h-px bg-border-color/20"></div>
+      </div>
 
       <script>
         // ── Line lengths (precomputed from SVG coordinates) ──
