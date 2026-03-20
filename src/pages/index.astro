@@ -1,6 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
+const ghRes = await fetch('https://api.github.com/users/yujikawa').catch(() => null);
+const ghUser = ghRes?.ok ? await ghRes.json() : null;
+const ghStats = {
+  repos:     ghUser?.public_repos ?? null,
+  followers: ghUser?.followers    ?? null,
+  following: ghUser?.following    ?? null,
+};
+
 const featuredProjects = [
   {
     title: "Modaryn",
@@ -1033,19 +1041,21 @@ const tabs = [
         <!-- Activity result -->
         <div class="ide-result-content" data-result="activity">
           <div class="result-view result-view-card active" style="padding:16px 20px;display:block!important;">
-            <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
-              {[
-                { label: "contributions", value: "1,200+", color: "#3b82f6" },
-                { label: "repos",         value: "30+",    color: "#10b981" },
-                { label: "streak",        value: "active", color: "#f59e0b" },
-              ].map(stat => (
-                <div style={`display:flex;align-items:center;gap:7px;padding:5px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.06);background:#161b22;`}>
-                  <span style={`width:6px;height:6px;border-radius:50%;background:${stat.color};flex-shrink:0;`}></span>
-                  <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(139,148,158,.4);">{stat.label}</span>
-                  <span style={`font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:${stat.color};`}>{stat.value}</span>
-                </div>
-              ))}
-            </div>
+            {(ghStats.repos !== null || ghStats.followers !== null || ghStats.following !== null) && (
+              <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+                {[
+                  { label: 'public repos', value: ghStats.repos,     color: '#3b82f6' },
+                  { label: 'followers',    value: ghStats.followers,  color: '#10b981' },
+                  { label: 'following',    value: ghStats.following,  color: '#f59e0b' },
+                ].filter(s => s.value !== null).map(s => (
+                  <div style="display:flex;align-items:center;gap:7px;padding:5px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.06);background:#161b22;">
+                    <span style={`width:6px;height:6px;border-radius:50%;background:${s.color};flex-shrink:0;`}></span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(139,148,158,.4);">{s.label}</span>
+                    <span style={`font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:${s.color};`}>{s.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             <img
               style="width:100%;max-width:680px;border-radius:8px;opacity:.85;display:block;border:1px solid rgba(255,255,255,.04);"
               src="https://ghchart.rshah.org/3b82f6/yujikawa"
