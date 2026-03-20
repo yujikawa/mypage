@@ -24,6 +24,13 @@ const featuredProjects = [
     link: "https://github.com/yujikawa/modscape",
     tags: ["TypeScript", "YAML", "Data Modeling"],
   },
+  {
+    title: "clipable",
+    slug: "clipable",
+    description: "Converts spreadsheet clipboard data into a Markdown table instantly. Copy cells from Excel or Google Sheets, run clipable, and the Markdown table is ready to paste.",
+    link: "https://github.com/yujikawa/clipable",
+    tags: ["Python", "CLI", "Markdown"],
+  },
 ];
 
 const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airflow"];
@@ -102,7 +109,7 @@ const TABLE_META = [
     columns: [
       { name: 'project_id',  key: 'PK', desc: 'Unique identifier for the project.' },
       { name: 'engineer_id', key: 'FK', desc: 'References dim_engineer.' },
-      { name: 'title',       key: '',   desc: 'Project name (e.g. Modaryn, Modscape).' },
+      { name: 'title',       key: '',   desc: 'Project name (e.g. Modaryn, Modscape, clipable).' },
       { name: 'description', key: '',   desc: 'Short description of what the project does.' },
       { name: 'tags',        key: '',   desc: 'Array of technology tags (TEXT[]).' },
       { name: 'github_url',  key: '',   desc: 'GitHub repository URL.' },
@@ -1578,7 +1585,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
       // dim_project
       'meta-dim_project-col-project_id':  'Unique identifier for the project.',
       'meta-dim_project-col-engineer_id': 'References dim_engineer.',
-      'meta-dim_project-col-title':       'Project name (e.g. Modaryn, Modscape).',
+      'meta-dim_project-col-title':       'Project name (e.g. Modaryn, Modscape, clipable).',
       'meta-dim_project-col-description': 'Short description of what the project does.',
       'meta-dim_project-col-tags':        'Array of technology tags (TEXT[]).',
       'meta-dim_project-col-github_url':  'GitHub repository URL.',
@@ -1648,7 +1655,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
       // dim_project
       'meta-dim_project-col-project_id':  'プロジェクトの一意識別子。',
       'meta-dim_project-col-engineer_id': 'dim_engineer を参照。',
-      'meta-dim_project-col-title':       'プロジェクト名（例: Modaryn, Modscape）。',
+      'meta-dim_project-col-title':       'プロジェクト名（例: Modaryn, Modscape, clipable）。',
       'meta-dim_project-col-description': 'プロジェクトの概要説明。',
       'meta-dim_project-col-tags':        '使用技術タグの配列（TEXT[]）。',
       'meta-dim_project-col-github_url':  'GitHub リポジトリの URL。',
@@ -1750,6 +1757,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
       return { kind:'table', headers:['project_id','engineer_id','title','description'], rows:[
         ['1','1','Modaryn','Analyzes dbt projects to score model complexity'],
         ['2','1','Modscape','YAML-driven data modeling visualizer'],
+        ['3','1','clipable','Converts spreadsheet clipboard data into a Markdown table instantly'],
       ]};
 
     // fact_daily_activity
