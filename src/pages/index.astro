@@ -38,21 +38,20 @@ const tabs = [
 
 const TABLE_META = [
   {
-    id: 'fact_engineer',
+    id: 'fact_daily_activity',
     kind: 'fact' as const,
-    description: 'The central fact table of this star schema. Represents me as a single engineer and holds foreign keys linking to all dimension tables.',
+    description: 'The central fact table. Grain: one row per engineer per day. Contains the only true measure in this schema — contributions count — plus foreign keys to dim_engineer and dim_date.',
     columns: [
-      { name: 'engineer_id', key: 'PK FK', desc: 'Unique identifier for the engineer. References dim_engineer.' },
-      { name: 'skill_id',    key: 'FK',    desc: 'Current primary skill focus. References dim_skills.' },
-      { name: 'project_id',  key: 'FK',    desc: 'Featured OSS project. References dim_projects.' },
-      { name: 'writing_id',  key: 'FK',    desc: 'Writing platform record. References dim_writing.' },
-      { name: 'activity_id', key: 'FK',    desc: 'GitHub activity snapshot. References dim_activity.' },
+      { name: 'activity_id',   key: 'PK',    desc: 'Surrogate key for the activity row.' },
+      { name: 'engineer_id',   key: 'FK',    desc: 'References dim_engineer. Identifies whose activity this is.' },
+      { name: 'date_id',       key: 'FK',    desc: 'References dim_date. The calendar day of the activity.' },
+      { name: 'contributions', key: 'MEAS',  desc: 'Number of GitHub contributions on this day. The one measurable fact.' },
     ],
   },
   {
     id: 'dim_engineer',
     kind: 'dim' as const,
-    description: 'Dimension holding personal attributes of the engineer — who I am. Name and role are stored here and used to filter queries.',
+    description: 'Dimension holding personal attributes of the engineer — who I am. Name and role are stored here and used to filter queries across all marts.',
     columns: [
       { name: 'engineer_id', key: 'PK', desc: 'Unique identifier for the engineer.' },
       { name: 'name',        key: '',   desc: 'Engineer\'s name. Used in WHERE clauses to filter rows.' },
@@ -60,43 +59,48 @@ const TABLE_META = [
     ],
   },
   {
-    id: 'dim_skills',
+    id: 'dim_date',
     kind: 'dim' as const,
-    description: 'Dimension for technical skills. Stores the skill set I use professionally — data modeling, SQL, Python and more — along with proficiency levels.',
+    description: 'Date dimension. Gives the fact table its time axis. Enables filtering and grouping by year, month, or day of week without date arithmetic in the query.',
     columns: [
-      { name: 'id',          key: 'PK', desc: 'Unique identifier for the skill.' },
+      { name: 'date_id',     key: 'PK', desc: 'Surrogate key for the calendar day.' },
+      { name: 'date',        key: '',   desc: 'The actual calendar date (DATE type).' },
+      { name: 'year',        key: '',   desc: 'Year extracted from the date.' },
+      { name: 'month',       key: '',   desc: 'Month number (1–12).' },
+      { name: 'day_of_week', key: '',   desc: 'Day name (e.g. Monday). Useful for weekly pattern analysis.' },
+    ],
+  },
+  {
+    id: 'dim_skill',
+    kind: 'dim' as const,
+    description: 'Skill dimension. Each row is one skill belonging to an engineer. Joined directly to dim_engineer — not through the fact table — making mart_skills a pure dim-to-dim query.',
+    columns: [
+      { name: 'skill_id',    key: 'PK', desc: 'Unique identifier for the skill.' },
+      { name: 'engineer_id', key: 'FK', desc: 'References dim_engineer. Ownership of the skill.' },
       { name: 'skill_name',  key: '',   desc: 'Name of the skill (e.g. dbt, SQL, Python).' },
       { name: 'category',    key: '',   desc: 'Skill category (e.g. Analytics Eng, Programming).' },
       { name: 'proficiency', key: '',   desc: 'Proficiency level (expert / proficient).' },
     ],
   },
   {
-    id: 'dim_activity',
+    id: 'dim_platform',
     kind: 'dim' as const,
-    description: 'Dimension for GitHub contribution history. Captures daily coding habits and makes them queryable as time-series data.',
+    description: 'Writing platform dimension. Tracks where I publish articles. Joined to dim_engineer directly — mart_writing is a dim-to-dim query with no fact table involved.',
     columns: [
-      { name: 'id',            key: 'PK', desc: 'Unique identifier for the activity record.' },
-      { name: 'date',          key: '',   desc: 'Contribution date (DATE type).' },
-      { name: 'contributions', key: '',   desc: 'Number of contributions on that day.' },
+      { name: 'platform_id', key: 'PK', desc: 'Unique identifier for the platform record.' },
+      { name: 'engineer_id', key: 'FK', desc: 'References dim_engineer.' },
+      { name: 'platform',    key: '',   desc: 'Platform name (medium / qiita / zenn).' },
+      { name: 'url',         key: '',   desc: 'Profile URL for the platform.' },
+      { name: 'topics',      key: '',   desc: 'Main writing topics (e.g. Analytics Engineering, dbt).' },
     ],
   },
   {
-    id: 'dim_writing',
+    id: 'dim_project',
     kind: 'dim' as const,
-    description: 'Dimension for writing platforms. Tracks where I publish articles — Medium, Qiita, Zenn — and the topics I write about.',
+    description: 'OSS project dimension. Holds metadata for tools I have built. Joined to dim_engineer directly — mart_projects is a dim-to-dim query with no fact table involved.',
     columns: [
-      { name: 'id',       key: 'PK', desc: 'Unique identifier for the platform record.' },
-      { name: 'platform', key: '',   desc: 'Platform name (medium / qiita / zenn).' },
-      { name: 'url',      key: '',   desc: 'Profile URL for the platform.' },
-      { name: 'topics',   key: '',   desc: 'Main writing topics (e.g. Analytics Engineering, dbt).' },
-    ],
-  },
-  {
-    id: 'dim_projects',
-    kind: 'dim' as const,
-    description: 'Dimension for OSS projects. Holds metadata for tools I have built for the analytics engineering community.',
-    columns: [
-      { name: 'id',          key: 'PK', desc: 'Unique identifier for the project.' },
+      { name: 'project_id',  key: 'PK', desc: 'Unique identifier for the project.' },
+      { name: 'engineer_id', key: 'FK', desc: 'References dim_engineer.' },
       { name: 'title',       key: '',   desc: 'Project name (e.g. Modaryn, Modscape).' },
       { name: 'description', key: '',   desc: 'Short description of what the project does.' },
       { name: 'tags',        key: '',   desc: 'Array of technology tags (TEXT[]).' },
@@ -701,24 +705,24 @@ const TABLE_META = [
                 Tables
               </div>
 
-              <!-- fact_engineer (not clickable, just display) -->
+              <!-- fact_daily_activity (not clickable, just display) -->
               <div class="explorer-item fact">
                 <span class="ei-icon" style="color:rgba(86,156,214,.6);">⬡</span>
-                <span style="color:rgba(86,156,214,.7);">fact_engineer</span>
+                <span style="color:rgba(86,156,214,.7);">fact_daily_activity</span>
               </div>
 
               <!-- dim_engineer (not clickable, just display) -->
               <div class="explorer-item" style="opacity:.55;cursor:default;">
                 <span class="ei-icon" style="color:rgba(78,201,176,.5);">⬡</span>
-                <span>engineer</span>
+                <span>dim_engineer</span>
               </div>
 
               <!-- dim tables (clickable) -->
               {[
-                { id: "skills",   table: "skills"   },
-                { id: "activity", table: "activity" },
-                { id: "writing",  table: "writing"  },
-                { id: "projects", table: "projects" },
+                { id: "skills",   table: "dim_skill"     },
+                { id: "activity", table: "dim_date"       },
+                { id: "writing",  table: "dim_platform"  },
+                { id: "projects", table: "dim_project"   },
               ].map((item, i) => (
                 <div class={`explorer-item ${i === 0 ? 'active' : ''}`} data-explorer-tab={item.id}>
                   <span class="ei-icon" style="color:rgba(78,201,176,.5);">⬡</span>
@@ -789,22 +793,18 @@ const TABLE_META = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">4</span>
-              <span class="lc"><span class="sql-kw">FROM</span>{"      "}<span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></span>
+              <span class="lc"><span class="sql-kw">FROM</span>{"      "}<span class="sql-tbl">dim_skill</span>{"    "}<span class="sql-col">s</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">5</span>
-              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">f.engineer_id</span></span>
+              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">s.engineer_id</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">6</span>
-              <span class="lc"><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_skills</span>{"    "}<span class="sql-col">s</span> <span class="sql-kw">ON</span> <span class="sql-col">f.skill_id</span>{"    "}<span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">s.id</span></span>
-            </div>
-            <div class="sql-line highlighted">
-              <span class="ln">7</span>
               <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span><span style="color:rgba(139,148,158,.5)">;</span></span>
             </div>
             <div class="sql-line">
-              <span class="ln">8</span>
+              <span class="ln">7</span>
               <span class="lc"><span class="sql-cursor"></span></span>
             </div>
           </div>
@@ -821,23 +821,23 @@ const TABLE_META = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">3</span>
-              <span class="lc"><span class="sql-kw">SELECT</span> <span class="sql-col">a.date</span><span style="color:rgba(139,148,158,.5)">,</span> <span class="sql-col">a.contributions</span></span>
+              <span class="lc"><span class="sql-kw">SELECT</span> <span class="sql-col">dt.date</span><span style="color:rgba(139,148,158,.5)">,</span> <span class="sql-col">f.contributions</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">4</span>
-              <span class="lc"><span class="sql-kw">FROM</span>{"      "}<span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></span>
+              <span class="lc"><span class="sql-kw">FROM</span>{"      "}<span class="sql-tbl">fact_daily_activity</span> <span class="sql-col">f</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">5</span>
-              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">f.engineer_id</span></span>
+              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"        "}<span class="sql-col">d</span>{"  "}<span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">f.engineer_id</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">6</span>
-              <span class="lc"><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_activity</span>{"  "}<span class="sql-col">a</span> <span class="sql-kw">ON</span> <span class="sql-col">f.activity_id</span>{"  "}<span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">a.id</span></span>
+              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_date</span>{"            "}<span class="sql-col">dt</span> <span class="sql-kw">ON</span> <span class="sql-col">dt.date_id</span>{"    "}<span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">f.date_id</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">7</span>
-              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span> <span class="sql-kw">ORDER BY</span> <span class="sql-col">a.date</span> <span class="sql-kw">DESC</span><span style="color:rgba(139,148,158,.5)">;</span></span>
+              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span> <span class="sql-kw">ORDER BY</span> <span class="sql-col">dt.date</span> <span class="sql-kw">DESC</span><span style="color:rgba(139,148,158,.5)">;</span></span>
             </div>
             <div class="sql-line">
               <span class="ln">8</span>
@@ -861,22 +861,18 @@ const TABLE_META = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">4</span>
-              <span class="lc"><span class="sql-kw">FROM</span>{"      "}<span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></span>
+              <span class="lc"><span class="sql-kw">FROM</span>{"      "}<span class="sql-tbl">dim_platform</span>{"  "}<span class="sql-col">w</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">5</span>
-              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">f.engineer_id</span></span>
+              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">w.engineer_id</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">6</span>
-              <span class="lc"><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_writing</span>{"   "}<span class="sql-col">w</span> <span class="sql-kw">ON</span> <span class="sql-col">f.writing_id</span>{"   "}<span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">w.id</span></span>
-            </div>
-            <div class="sql-line highlighted">
-              <span class="ln">7</span>
               <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span><span style="color:rgba(139,148,158,.5)">;</span></span>
             </div>
             <div class="sql-line">
-              <span class="ln">8</span>
+              <span class="ln">7</span>
               <span class="lc"><span class="sql-cursor"></span></span>
             </div>
           </div>
@@ -897,22 +893,18 @@ const TABLE_META = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">4</span>
-              <span class="lc"><span class="sql-kw">FROM</span>{"      "}<span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></span>
+              <span class="lc"><span class="sql-kw">FROM</span>{"      "}<span class="sql-tbl">dim_project</span>{"   "}<span class="sql-col">p</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">5</span>
-              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">f.engineer_id</span></span>
+              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">p.engineer_id</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">6</span>
-              <span class="lc"><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_projects</span>{"  "}<span class="sql-col">p</span> <span class="sql-kw">ON</span> <span class="sql-col">f.project_id</span>{"  "}<span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">p.id</span></span>
-            </div>
-            <div class="sql-line highlighted">
-              <span class="ln">7</span>
               <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span><span style="color:rgba(139,148,158,.5)">;</span></span>
             </div>
             <div class="sql-line">
-              <span class="ln">8</span>
+              <span class="ln">7</span>
               <span class="lc"><span class="sql-cursor"></span></span>
             </div>
           </div>
@@ -925,22 +917,18 @@ const TABLE_META = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">2</span>
-              <span class="lc"><span class="sql-kw">SELECT</span> <span class="sql-col">f.salary</span></span>
+              <span class="lc"><span class="sql-kw">SELECT</span> <span class="sql-col">d.salary</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">3</span>
-              <span class="lc"><span class="sql-kw">FROM</span>{"      "}<span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></span>
+              <span class="lc"><span class="sql-kw">FROM</span>{"      "}<span class="sql-tbl">dim_engineer</span> <span class="sql-col">d</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">4</span>
-              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">f.engineer_id</span></span>
-            </div>
-            <div class="sql-line highlighted">
-              <span class="ln">5</span>
               <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span><span style="color:rgba(139,148,158,.5)">;</span></span>
             </div>
             <div class="sql-line">
-              <span class="ln">6</span>
+              <span class="ln">5</span>
               <span class="lc"><span class="sql-cursor"></span></span>
             </div>
           </div>
@@ -974,7 +962,7 @@ const TABLE_META = [
               <rect x="2" y="9" width="5" height="5" rx="1"/>
               <rect x="9" y="9" width="5" height="5" rx="1"/>
             </svg>
-            Schema · fact_engineer (star)
+            Schema · fact_daily_activity (galaxy)
           </span>
           <span style="color:rgba(139,148,158,.2);" data-i18n="er-hint">click to inspect</span>
         </div>
@@ -982,110 +970,126 @@ const TABLE_META = [
         <div class="ide-er-scroll">
           <!-- ER SVG -->
           <div style="padding:16px;min-width:360px;">
-            <svg id="schema-svg" viewBox="0 0 800 460" style="width:100%;max-width:640px;min-width:340px;" xmlns="http://www.w3.org/2000/svg">
+            <svg id="schema-svg" viewBox="0 0 740 460" style="width:100%;max-width:640px;min-width:340px;" xmlns="http://www.w3.org/2000/svg">
 
-              <!-- Relationship lines -->
-              <line id="line-engineer" x1="210" y1="65"  x2="270" y2="200" stroke="#30363d" stroke-width="1.5"/>
-              <line id="line-skills"   x1="400" y1="168" x2="400" y2="125" stroke="#30363d" stroke-width="1.5"/>
-              <line id="line-activity" x1="400" y1="310" x2="400" y2="350" stroke="#30363d" stroke-width="1.5"/>
-              <line id="line-projects" x1="270" y1="239" x2="230" y2="239" stroke="#30363d" stroke-width="1.5"/>
-              <line id="line-writing"  x1="530" y1="239" x2="570" y2="239" stroke="#30363d" stroke-width="1.5"/>
+              <!-- ── Relationship lines ── -->
+              <!-- dim_skill → dim_engineer (diagonal, top-left to center) -->
+              <line id="line-skill"     x1="200" y1="72"  x2="248" y2="195" stroke="#30363d" stroke-width="1.5"/>
+              <!-- dim_platform → dim_engineer (horizontal, left to center) -->
+              <line id="line-platform"  x1="200" y1="237" x2="248" y2="237" stroke="#30363d" stroke-width="1.5"/>
+              <!-- dim_project → dim_engineer (diagonal, bottom-left to center) -->
+              <line id="line-project"   x1="200" y1="392" x2="248" y2="270" stroke="#30363d" stroke-width="1.5"/>
+              <!-- dim_engineer → fact_daily_activity (horizontal) -->
+              <line id="line-engineer"  x1="428" y1="237" x2="472" y2="237" stroke="#30363d" stroke-width="1.5"/>
+              <!-- fact_daily_activity → dim_date (diagonal, bottom) -->
+              <line id="line-date"      x1="576" y1="320" x2="520" y2="368" stroke="#30363d" stroke-width="1.5"/>
 
-              <!-- 1:N labels -->
-              <text id="lbl-engineer" x="218" y="125"  fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:1</text>
-              <text id="lbl-skills"   x="406" y="148" fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
-              <text id="lbl-activity" x="406" y="334" fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
-              <text id="lbl-projects" x="240" y="233" fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
-              <text id="lbl-writing"  x="538" y="233" fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
+              <!-- ── Cardinality labels ── -->
+              <text id="lbl-skill"     x="205" y="125"  fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
+              <text id="lbl-platform"  x="210" y="230"  fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
+              <text id="lbl-project"   x="205" y="345"  fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
+              <text id="lbl-engineer"  x="434" y="230"  fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
+              <text id="lbl-date"      x="558" y="352"  fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">N:1</text>
 
-              <!-- dim_engineer -->
+              <!-- ── dim_skill (top-left) ── -->
+              <g id="dim-skill" style="cursor:pointer">
+                <rect id="rect-skill" x="14" y="20" width="186" height="105" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+                <line x1="14" y1="44" x2="200" y2="44" stroke="#30363d" stroke-width="1"/>
+                <text x="28" y="36" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_skill</text>
+                <text x="28" y="60" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
+                <text x="46" y="60" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">skill_id      INT</text>
+                <g id="fk-skill">
+                  <text x="28" y="76" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="46" y="76" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id   INT</text>
+                </g>
+                <line x1="28" y1="82" x2="190" y2="82" stroke="#30363d" stroke-width="0.5"/>
+                <text x="28" y="94"  fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">skill_name    TEXT</text>
+                <text x="28" y="109" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">proficiency   TEXT</text>
+              </g>
+
+              <!-- ── dim_platform (left-mid) ── -->
+              <g id="dim-platform" style="cursor:pointer">
+                <rect id="rect-platform" x="14" y="193" width="186" height="105" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+                <line x1="14" y1="217" x2="200" y2="217" stroke="#30363d" stroke-width="1"/>
+                <text x="28" y="209" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_platform</text>
+                <text x="28" y="233" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
+                <text x="46" y="233" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">platform_id   INT</text>
+                <g id="fk-platform">
+                  <text x="28" y="249" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="46" y="249" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id   INT</text>
+                </g>
+                <line x1="28" y1="255" x2="190" y2="255" stroke="#30363d" stroke-width="0.5"/>
+                <text x="28" y="267" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">platform      TEXT</text>
+                <text x="28" y="282" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">               -- 'qiita','zenn'</text>
+              </g>
+
+              <!-- ── dim_project (bottom-left) ── -->
+              <g id="dim-project" style="cursor:pointer">
+                <rect id="rect-project" x="14" y="356" width="186" height="90" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+                <line x1="14" y1="380" x2="200" y2="380" stroke="#30363d" stroke-width="1"/>
+                <text x="28" y="372" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_project</text>
+                <text x="28" y="396" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
+                <text x="46" y="396" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">project_id    INT</text>
+                <g id="fk-project">
+                  <text x="28" y="412" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="46" y="412" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id   INT</text>
+                </g>
+                <text x="28" y="428" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">title         TEXT</text>
+              </g>
+
+              <!-- ── dim_engineer (center-left) ── -->
               <g id="dim-engineer" style="cursor:pointer">
-                <rect id="rect-engineer" x="30" y="20" width="180" height="90" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-                <line x1="30" y1="44" x2="210" y2="44" stroke="#30363d" stroke-width="1"/>
-                <text x="44" y="36" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_engineer</text>
-                <text x="44" y="62" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
-                <text x="66" y="62" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id  INT</text>
-                <line x1="44" y1="68" x2="195" y2="68" stroke="#30363d" stroke-width="0.5"/>
-                <text x="44" y="82" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">name         TEXT</text>
-                <text x="44" y="97" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">role         TEXT</text>
+                <rect id="rect-engineer" x="248" y="195" width="180" height="90" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+                <line x1="248" y1="219" x2="428" y2="219" stroke="#30363d" stroke-width="1"/>
+                <text x="262" y="211" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_engineer</text>
+                <text x="262" y="235" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
+                <text x="280" y="235" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id  INT</text>
+                <line x1="262" y1="241" x2="418" y2="241" stroke="#30363d" stroke-width="0.5"/>
+                <text x="262" y="255" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">name         TEXT</text>
+                <text x="262" y="270" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">role         TEXT</text>
               </g>
 
-              <!-- dim_skills -->
-              <g id="dim-skills" style="cursor:pointer">
-                <rect id="rect-skills" x="300" y="20" width="200" height="105" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-                <line x1="300" y1="44" x2="500" y2="44" stroke="#30363d" stroke-width="1"/>
-                <text x="314" y="36" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_skills</text>
-                <text x="314" y="60" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">skill_name    TEXT</text>
-                <text x="314" y="75" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">               -- 'dbt','SQL','Python'</text>
-                <text x="314" y="90" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">category      TEXT</text>
-                <text x="314" y="105" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">proficiency   TEXT</text>
-              </g>
-
-              <!-- dim_projects -->
-              <g id="dim-projects" style="cursor:pointer">
-                <rect id="rect-projects" x="30" y="194" width="200" height="120" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-                <line x1="30" y1="218" x2="230" y2="218" stroke="#30363d" stroke-width="1"/>
-                <text x="44" y="210" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_projects</text>
-                <text x="44" y="234" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">title         TEXT</text>
-                <text x="44" y="249" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">               -- 'modaryn','modscape'</text>
-                <text x="44" y="264" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">description   TEXT</text>
-                <text x="44" y="279" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">tags          TEXT[]</text>
-                <text x="44" y="294" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">github_url    TEXT</text>
-              </g>
-
-              <!-- dim_writing -->
-              <g id="dim-writing" style="cursor:pointer">
-                <rect id="rect-writing" x="570" y="194" width="200" height="105" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-                <line x1="570" y1="218" x2="770" y2="218" stroke="#30363d" stroke-width="1"/>
-                <text x="584" y="210" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_writing</text>
-                <text x="584" y="234" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">platform      TEXT</text>
-                <text x="584" y="249" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">               -- 'medium','qiita','zenn'</text>
-                <text x="584" y="264" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">url           TEXT</text>
-                <text x="584" y="279" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">topics        TEXT</text>
-              </g>
-
-              <!-- dim_activity -->
-              <g id="dim-activity" style="cursor:pointer">
-                <rect id="rect-activity" x="300" y="350" width="200" height="90" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-                <line x1="300" y1="374" x2="500" y2="374" stroke="#30363d" stroke-width="1"/>
-                <text x="314" y="366" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_activity</text>
-                <text x="314" y="390" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">date          DATE</text>
-                <text x="314" y="405" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">contributions INT</text>
-                <text x="314" y="420" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">               -- github activity</text>
-              </g>
-
-              <!-- fact_engineer (center, clickable) -->
+              <!-- ── fact_daily_activity (center-right, blue) ── -->
               <g id="dim-fact" style="cursor:pointer">
-                <rect id="rect-fact" x="270" y="168" width="260" height="142" rx="6" fill="#0d1117" stroke="#3b82f6" stroke-width="1.5"/>
-                <line x1="270" y1="194" x2="530" y2="194" stroke="#3b82f6" stroke-width="1" opacity="0.5"/>
-                <text x="286" y="185" fill="#569cd6" font-size="12" font-weight="700" font-family="JetBrains Mono, monospace">⬡ fact_engineer</text>
+                <rect id="rect-fact" x="472" y="165" width="252" height="155" rx="6" fill="#0d1117" stroke="#3b82f6" stroke-width="1.5"/>
+                <line x1="472" y1="191" x2="724" y2="191" stroke="#3b82f6" stroke-width="1" opacity="0.5"/>
+                <text x="488" y="182" fill="#569cd6" font-size="12" font-weight="700" font-family="JetBrains Mono, monospace">⬡ fact_daily_activity</text>
 
-                <text x="286" y="212" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
-                <text x="303" y="212" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
-                <text x="320" y="212" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id</text>
-                <text x="430" y="212" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT  -- 1</text>
-                <line x1="286" y1="218" x2="514" y2="218" stroke="#30363d" stroke-width="0.5"/>
+                <text x="488" y="209" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
+                <text x="506" y="209" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">activity_id</text>
+                <text x="620" y="209" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                <line x1="488" y1="215" x2="708" y2="215" stroke="#30363d" stroke-width="0.5"/>
 
-                <g id="fk-skills">
-                  <text x="286" y="234" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
-                  <text x="308" y="234" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">skill_id</text>
-                  <text x="430" y="234" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                <g id="fk-engineer">
+                  <text x="488" y="231" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="506" y="231" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id</text>
+                  <text x="620" y="231" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
                 </g>
-                <g id="fk-projects">
-                  <text x="286" y="252" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
-                  <text x="308" y="252" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">project_id</text>
-                  <text x="430" y="252" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                <g id="fk-date">
+                  <text x="488" y="249" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="506" y="249" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">date_id</text>
+                  <text x="620" y="249" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
                 </g>
-                <g id="fk-writing">
-                  <text x="286" y="270" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
-                  <text x="308" y="270" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">writing_id</text>
-                  <text x="430" y="270" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
-                </g>
-                <g id="fk-activity">
-                  <text x="286" y="288" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
-                  <text x="308" y="288" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">activity_id</text>
-                  <text x="430" y="288" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
-                </g>
+                <line x1="488" y1="255" x2="708" y2="255" stroke="#30363d" stroke-width="0.5"/>
+
+                <text x="488" y="271" fill="#ce9178" font-size="9"  font-family="JetBrains Mono, monospace">MEAS</text>
+                <text x="524" y="271" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">contributions</text>
+                <text x="620" y="271" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                <text x="488" y="286" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">               -- the only measure</text>
+
+                <line x1="488" y1="292" x2="708" y2="292" stroke="#30363d" stroke-width="0.5"/>
+                <text x="488" y="307" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">grain: 1 row / engineer / day</text>
+              </g>
+
+              <!-- ── dim_date (bottom-center) ── -->
+              <g id="dim-date" style="cursor:pointer">
+                <rect id="rect-date" x="340" y="368" width="196" height="78" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+                <line x1="340" y1="392" x2="536" y2="392" stroke="#30363d" stroke-width="1"/>
+                <text x="354" y="384" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_date</text>
+                <text x="354" y="408" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
+                <text x="372" y="408" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">date_id      INT</text>
+                <line x1="354" y1="414" x2="526" y2="414" stroke="#30363d" stroke-width="0.5"/>
+                <text x="354" y="428" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">date         DATE</text>
               </g>
 
             </svg>
@@ -1442,7 +1446,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
           <span data-i18n="status-connected">Connected</span>
         </span>
         <span style="color:rgba(139,148,158,.2);">·</span>
-        <span style="color:rgba(139,148,158,.4);">fact_engineer</span>
+        <span style="color:rgba(139,148,158,.4);">fact_daily_activity</span>
         <span style="color:rgba(139,148,158,.2);">·</span>
         <span style="color:rgba(139,148,158,.35);" id="status-active-tab">skills.sql</span>
       </div>
@@ -1484,7 +1488,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
       'salary-cmt-1':   '-- Just curious...',
       // Salary error panel
       'salary-err-title':  'ERROR: permission denied',
-      'salary-err-body':   `SQLSTATE[42501]: Insufficient privilege: 7\nERROR: column "salary" of relation "fact_engineer" does not exist\nLINE 1: SELECT f.salary FROM fact_engineer f JOIN dim_engineer d ON d.engineer_id = f.engineer_id WHERE d.name = 'Yuji'\n                   ^\nHINT: This column is classified. Access requires ROLE = 'hr_admin' or above.\n      Current role: 'analytics_engineer' — nice try 😏`,
+      'salary-err-body':   `SQLSTATE[42501]: Insufficient privilege: 7\nERROR: column "salary" of relation "dim_engineer" does not exist\nLINE 1: SELECT d.salary FROM dim_engineer d WHERE d.name = 'Yuji'\n                   ^\nHINT: This column is classified. Access requires ROLE = 'hr_admin' or above.\n      Current role: 'analytics_engineer' — nice try 😏`,
       'salary-err-footer': 'Execution time: 0ms · 0 rows returned · Query failed',
       // rows returned
       'rows-skills':    '5 rows returned',
@@ -1492,37 +1496,46 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
       'rows-writing':   '3 rows returned',
       'rows-projects':  '2 rows returned',
       // Table metadata descriptions
-      'meta-fact_engineer-desc': 'The central fact table of this star schema. Represents me as a single engineer and holds foreign keys linking to all dimension tables.',
-      'meta-dim_engineer-desc':  'Dimension holding personal attributes of the engineer — who I am. Name and role are stored here and used to filter queries.',
-      'meta-dim_skills-desc':    'Dimension for technical skills. Stores the skill set I use professionally — data modeling, SQL, Python and more — along with proficiency levels.',
-      'meta-dim_activity-desc':  'Dimension for GitHub contribution history. Captures daily coding habits and makes them queryable as time-series data.',
-      'meta-dim_writing-desc':   'Dimension for writing platforms. Tracks where I publish articles — Medium, Qiita, Zenn — and the topics I write about.',
-      'meta-dim_projects-desc':  'Dimension for OSS projects. Holds metadata for tools I have built for the analytics engineering community.',
-      // Column descriptions
-      'meta-fact_engineer-col-engineer_id': 'Unique identifier for the engineer. References dim_engineer.',
-      'meta-fact_engineer-col-skill_id':    'Current primary skill focus. References dim_skills.',
-      'meta-fact_engineer-col-project_id':  'Featured OSS project. References dim_projects.',
-      'meta-fact_engineer-col-writing_id':  'Writing platform record. References dim_writing.',
-      'meta-fact_engineer-col-activity_id': 'GitHub activity snapshot. References dim_activity.',
-      'meta-dim_engineer-col-engineer_id':  'Unique identifier for the engineer.',
-      'meta-dim_engineer-col-name':         "Engineer's name. Used in WHERE clauses to filter rows.",
-      'meta-dim_engineer-col-role':         'Job title or role (e.g. Analytics Engineer).',
-      'meta-dim_skills-col-id':             'Unique identifier for the skill.',
-      'meta-dim_skills-col-skill_name':     'Name of the skill (e.g. dbt, SQL, Python).',
-      'meta-dim_skills-col-category':       'Skill category (e.g. Analytics Eng, Programming).',
-      'meta-dim_skills-col-proficiency':    'Proficiency level (expert / proficient).',
-      'meta-dim_activity-col-id':           'Unique identifier for the activity record.',
-      'meta-dim_activity-col-date':         'Contribution date (DATE type).',
-      'meta-dim_activity-col-contributions':'Number of contributions on that day.',
-      'meta-dim_writing-col-id':            'Unique identifier for the platform record.',
-      'meta-dim_writing-col-platform':      'Platform name (medium / qiita / zenn).',
-      'meta-dim_writing-col-url':           'Profile URL for the platform.',
-      'meta-dim_writing-col-topics':        'Main writing topics (e.g. Analytics Engineering, dbt).',
-      'meta-dim_projects-col-id':           'Unique identifier for the project.',
-      'meta-dim_projects-col-title':        'Project name (e.g. Modaryn, Modscape).',
-      'meta-dim_projects-col-description':  'Short description of what the project does.',
-      'meta-dim_projects-col-tags':         'Array of technology tags (TEXT[]).',
-      'meta-dim_projects-col-github_url':   'GitHub repository URL.',
+      'meta-fact_daily_activity-desc': 'The central fact table. Grain: one row per engineer per day. Contains the only true measure in this schema — contributions count — plus foreign keys to dim_engineer and dim_date.',
+      'meta-dim_engineer-desc':        'Dimension holding personal attributes of the engineer — who I am. Name and role are stored here and used to filter queries across all marts.',
+      'meta-dim_date-desc':            'Date dimension. Gives the fact table its time axis. Enables filtering and grouping by year, month, or day of week without date arithmetic in the query.',
+      'meta-dim_skill-desc':           'Skill dimension. Each row is one skill belonging to an engineer. Joined directly to dim_engineer — making mart_skills a pure dim-to-dim query.',
+      'meta-dim_platform-desc':        'Writing platform dimension. Tracks where I publish articles. Joined to dim_engineer directly — mart_writing is a dim-to-dim query with no fact table involved.',
+      'meta-dim_project-desc':         'OSS project dimension. Holds metadata for tools I have built. Joined to dim_engineer directly — mart_projects is a dim-to-dim query with no fact table involved.',
+      // Column descriptions — fact_daily_activity
+      'meta-fact_daily_activity-col-activity_id':   'Surrogate key for the activity row.',
+      'meta-fact_daily_activity-col-engineer_id':   'References dim_engineer. Identifies whose activity this is.',
+      'meta-fact_daily_activity-col-date_id':       'References dim_date. The calendar day of the activity.',
+      'meta-fact_daily_activity-col-contributions': 'Number of GitHub contributions on this day. The one measurable fact.',
+      // dim_engineer
+      'meta-dim_engineer-col-engineer_id': 'Unique identifier for the engineer.',
+      'meta-dim_engineer-col-name':        "Engineer's name. Used in WHERE clauses to filter rows.",
+      'meta-dim_engineer-col-role':        'Job title or role (e.g. Analytics Engineer).',
+      // dim_date
+      'meta-dim_date-col-date_id':     'Surrogate key for the calendar day.',
+      'meta-dim_date-col-date':        'The actual calendar date (DATE type).',
+      'meta-dim_date-col-year':        'Year extracted from the date.',
+      'meta-dim_date-col-month':       'Month number (1–12).',
+      'meta-dim_date-col-day_of_week': 'Day name (e.g. Monday). Useful for weekly pattern analysis.',
+      // dim_skill
+      'meta-dim_skill-col-skill_id':    'Unique identifier for the skill.',
+      'meta-dim_skill-col-engineer_id': 'References dim_engineer. Ownership of the skill.',
+      'meta-dim_skill-col-skill_name':  'Name of the skill (e.g. dbt, SQL, Python).',
+      'meta-dim_skill-col-category':    'Skill category (e.g. Analytics Eng, Programming).',
+      'meta-dim_skill-col-proficiency': 'Proficiency level (expert / proficient).',
+      // dim_platform
+      'meta-dim_platform-col-platform_id': 'Unique identifier for the platform record.',
+      'meta-dim_platform-col-engineer_id': 'References dim_engineer.',
+      'meta-dim_platform-col-platform':    'Platform name (medium / qiita / zenn).',
+      'meta-dim_platform-col-url':         'Profile URL for the platform.',
+      'meta-dim_platform-col-topics':      'Main writing topics (e.g. Analytics Engineering, dbt).',
+      // dim_project
+      'meta-dim_project-col-project_id':  'Unique identifier for the project.',
+      'meta-dim_project-col-engineer_id': 'References dim_engineer.',
+      'meta-dim_project-col-title':       'Project name (e.g. Modaryn, Modscape).',
+      'meta-dim_project-col-description': 'Short description of what the project does.',
+      'meta-dim_project-col-tags':        'Array of technology tags (TEXT[]).',
+      'meta-dim_project-col-github_url':  'GitHub repository URL.',
     },
     ja: {
       'role-badge':      'アナリティクスエンジニア',
@@ -1545,7 +1558,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
       'salary-cmt-1':   '-- ちょっと気になって...',
       // Salary error panel
       'salary-err-title':  'エラー: 権限がありません',
-      'salary-err-body':   `SQLSTATE[42501]: 権限不足: 7\nエラー: リレーション "fact_engineer" に "salary" カラムは存在しません\n行 1: SELECT f.salary FROM fact_engineer f JOIN dim_engineer d ON d.engineer_id = f.engineer_id WHERE d.name = 'Yuji'\n                   ^\nヒント: このカラムは機密扱いです。アクセスには ROLE = 'hr_admin' 以上が必要です。\n      現在のロール: 'analytics_engineer' — 残念でした 😏`,
+      'salary-err-body':   `SQLSTATE[42501]: 権限不足: 7\nエラー: リレーション "dim_engineer" に "salary" カラムは存在しません\n行 1: SELECT d.salary FROM dim_engineer d WHERE d.name = 'Yuji'\n                   ^\nヒント: このカラムは機密扱いです。アクセスには ROLE = 'hr_admin' 以上が必要です。\n      現在のロール: 'analytics_engineer' — 残念でした 😏`,
       'salary-err-footer': '実行時間: 0ms · 0行取得 · クエリ失敗',
       // rows returned
       'rows-skills':    '5行取得',
@@ -1553,37 +1566,46 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
       'rows-writing':   '3行取得',
       'rows-projects':  '2行取得',
       // Table metadata descriptions
-      'meta-fact_engineer-desc': 'このスキーマの中心となるファクトテーブル。エンジニアとしての私を1行で表し、各ディメンションへの外部キーを保持します。',
-      'meta-dim_engineer-desc':  'エンジニア自身の属性を保持するディメンション。名前・役割など「誰であるか」を表す情報が格納され、クエリの絞り込みに使用されます。',
-      'meta-dim_skills-desc':    '技術スキルのディメンション。データモデリング・SQL・Python など業務で使用するスキルセットと習熟度を管理します。',
-      'meta-dim_activity-desc':  'GitHub のコントリビューション履歴を保持するディメンション。日々のコーディング習慣を時系列データとして扱えます。',
-      'meta-dim_writing-desc':   '執筆プラットフォームのディメンション。Medium・Qiita・Zenn など発信する場所と扱うトピックを管理します。',
-      'meta-dim_projects-desc':  'OSS プロジェクトのディメンション。アナリティクスエンジニアリングコミュニティ向けに開発したツール群のメタデータを保持します。',
-      // Column descriptions
-      'meta-fact_engineer-col-engineer_id': 'エンジニアの識別子。dim_engineer を参照。',
-      'meta-fact_engineer-col-skill_id':    '現在注力しているスキル。dim_skills を参照。',
-      'meta-fact_engineer-col-project_id':  '代表的な OSS プロジェクト。dim_projects を参照。',
-      'meta-fact_engineer-col-writing_id':  '執筆プラットフォームのレコード。dim_writing を参照。',
-      'meta-fact_engineer-col-activity_id': 'GitHub 活動のスナップショット。dim_activity を参照。',
-      'meta-dim_engineer-col-engineer_id':  'エンジニアの一意識別子。',
-      'meta-dim_engineer-col-name':         'エンジニアの名前。WHERE 句で絞り込みに使用。',
-      'meta-dim_engineer-col-role':         '職種・肩書き（例: アナリティクスエンジニア）。',
-      'meta-dim_skills-col-id':             'スキルの一意識別子。',
-      'meta-dim_skills-col-skill_name':     'スキル名（例: dbt, SQL, Python）。',
-      'meta-dim_skills-col-category':       'スキルカテゴリ（例: Analytics Eng, Programming）。',
-      'meta-dim_skills-col-proficiency':    '習熟度レベル（expert / proficient）。',
-      'meta-dim_activity-col-id':           'アクティビティレコードの識別子。',
-      'meta-dim_activity-col-date':         'コントリビューション日付（DATE 型）。',
-      'meta-dim_activity-col-contributions':'その日のコントリビューション数。',
-      'meta-dim_writing-col-id':            'プラットフォームの識別子。',
-      'meta-dim_writing-col-platform':      'プラットフォーム名（medium / qiita / zenn）。',
-      'meta-dim_writing-col-url':           'プロフィール URL。',
-      'meta-dim_writing-col-topics':        '主な執筆テーマ（例: Analytics Engineering, dbt）。',
-      'meta-dim_projects-col-id':           'プロジェクトの識別子。',
-      'meta-dim_projects-col-title':        'プロジェクト名（例: Modaryn, Modscape）。',
-      'meta-dim_projects-col-description':  'プロジェクトの概要説明。',
-      'meta-dim_projects-col-tags':         '使用技術タグの配列（TEXT[]）。',
-      'meta-dim_projects-col-github_url':   'GitHub リポジトリの URL。',
+      'meta-fact_daily_activity-desc': '中心となるファクトテーブル。粒度: エンジニア × 日の1行。このスキーマ唯一のメジャー（コントリビューション数）と dim_engineer・dim_date への外部キーを持ちます。',
+      'meta-dim_engineer-desc':        'エンジニア自身の属性を保持するディメンション。名前・役割など「誰であるか」を表す情報が格納され、全マートのクエリ絞り込みに使用されます。',
+      'meta-dim_date-desc':            '日付ディメンション。ファクトテーブルに時間軸を与えます。年・月・曜日での集計・フィルタを、クエリ内の日付計算なしに行えます。',
+      'meta-dim_skill-desc':           'スキルのディメンション。エンジニアが持つスキルを1行1スキーマで管理。dim_engineer と直接結合し、mart_skills はファクト不要の純粋な dim-to-dim クエリになります。',
+      'meta-dim_platform-desc':        '執筆プラットフォームのディメンション。dim_engineer と直接結合。mart_writing もファクトテーブルを経由しない dim-to-dim クエリです。',
+      'meta-dim_project-desc':         'OSS プロジェクトのディメンション。dim_engineer と直接結合。mart_projects もファクトテーブルを経由しない dim-to-dim クエリです。',
+      // fact_daily_activity
+      'meta-fact_daily_activity-col-activity_id':   'アクティビティ行のサロゲートキー。',
+      'meta-fact_daily_activity-col-engineer_id':   'dim_engineer を参照。誰のアクティビティかを識別。',
+      'meta-fact_daily_activity-col-date_id':       'dim_date を参照。アクティビティの日付。',
+      'meta-fact_daily_activity-col-contributions': 'その日の GitHub コントリビューション数。このスキーマ唯一のメジャー。',
+      // dim_engineer
+      'meta-dim_engineer-col-engineer_id': 'エンジニアの一意識別子。',
+      'meta-dim_engineer-col-name':        'エンジニアの名前。WHERE 句で絞り込みに使用。',
+      'meta-dim_engineer-col-role':        '職種・肩書き（例: アナリティクスエンジニア）。',
+      // dim_date
+      'meta-dim_date-col-date_id':     'カレンダー日のサロゲートキー。',
+      'meta-dim_date-col-date':        '実際の日付（DATE 型）。',
+      'meta-dim_date-col-year':        '日付から抽出した年。',
+      'meta-dim_date-col-month':       '月番号（1〜12）。',
+      'meta-dim_date-col-day_of_week': '曜日名（例: Monday）。週次パターン分析に有用。',
+      // dim_skill
+      'meta-dim_skill-col-skill_id':    'スキルの一意識別子。',
+      'meta-dim_skill-col-engineer_id': 'dim_engineer を参照。スキルの所有者。',
+      'meta-dim_skill-col-skill_name':  'スキル名（例: dbt, SQL, Python）。',
+      'meta-dim_skill-col-category':    'スキルカテゴリ（例: Analytics Eng, Programming）。',
+      'meta-dim_skill-col-proficiency': '習熟度レベル（expert / proficient）。',
+      // dim_platform
+      'meta-dim_platform-col-platform_id': 'プラットフォームの一意識別子。',
+      'meta-dim_platform-col-engineer_id': 'dim_engineer を参照。',
+      'meta-dim_platform-col-platform':    'プラットフォーム名（medium / qiita / zenn）。',
+      'meta-dim_platform-col-url':         'プロフィール URL。',
+      'meta-dim_platform-col-topics':      '主な執筆テーマ（例: Analytics Engineering, dbt）。',
+      // dim_project
+      'meta-dim_project-col-project_id':  'プロジェクトの一意識別子。',
+      'meta-dim_project-col-engineer_id': 'dim_engineer を参照。',
+      'meta-dim_project-col-title':       'プロジェクト名（例: Modaryn, Modscape）。',
+      'meta-dim_project-col-description': 'プロジェクトの概要説明。',
+      'meta-dim_project-col-tags':        '使用技術タグの配列（TEXT[]）。',
+      'meta-dim_project-col-github_url':  'GitHub リポジトリの URL。',
     },
   };
 
@@ -1783,10 +1805,10 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
   // ── ER Diagram interactions ──
   const BLUE = '#3b82f6';
   const ER_ITEMS = [
-    { dim: 'dim-skills',   rect: 'rect-skills',   line: 'line-skills',   lbl: 'lbl-skills',   fk: 'fk-skills',   ddl: 'dim_skills'   },
-    { dim: 'dim-projects', rect: 'rect-projects', line: 'line-projects', lbl: 'lbl-projects', fk: 'fk-projects', ddl: 'dim_projects' },
-    { dim: 'dim-writing',  rect: 'rect-writing',  line: 'line-writing',  lbl: 'lbl-writing',  fk: 'fk-writing',  ddl: 'dim_writing'  },
-    { dim: 'dim-activity', rect: 'rect-activity', line: 'line-activity', lbl: 'lbl-activity', fk: 'fk-activity', ddl: 'dim_activity' },
+    { dim: 'dim-skill',    rect: 'rect-skill',    line: 'line-skill',    lbl: 'lbl-skill',    fk: 'fk-skill',    ddl: 'dim_skill'    },
+    { dim: 'dim-platform', rect: 'rect-platform', line: 'line-platform', lbl: 'lbl-platform', fk: 'fk-platform', ddl: 'dim_platform' },
+    { dim: 'dim-project',  rect: 'rect-project',  line: 'line-project',  lbl: 'lbl-project',  fk: 'fk-project',  ddl: 'dim_project'  },
+    { dim: 'dim-date',     rect: 'rect-date',     line: 'line-date',     lbl: 'lbl-date',     fk: 'fk-date',     ddl: 'dim_date'     },
   ];
 
   ER_ITEMS.forEach(({ dim, rect, line, lbl, fk, ddl }) => {
@@ -1830,7 +1852,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
     rectFactEl?.setAttribute('stroke', '#3b82f6');
     lineEngineerEl?.setAttribute('stroke', '#30363d');
   });
-  dimFactEl?.addEventListener('click', () => showDDL('fact_engineer'));
+  dimFactEl?.addEventListener('click', () => showDDL('fact_daily_activity'));
 
   dimEngineerEl?.addEventListener('mouseenter', () => {
     rectEngineerEl?.setAttribute('stroke', BLUE);
@@ -1846,11 +1868,11 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
 
   // ── ER line animation on load ──
   const lineLengths: Record<string, number> = {
-    'line-engineer': 148,
-    'line-skills':    43,
-    'line-activity':  40,
-    'line-projects':  40,
-    'line-writing':   40,
+    'line-skill':    175,
+    'line-platform':  48,
+    'line-project':  175,
+    'line-engineer':  44,
+    'line-date':      72,
   };
   Object.entries(lineLengths).forEach(([id, len]) => {
     const el = document.getElementById(id);
@@ -1865,7 +1887,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
     new IntersectionObserver(([entry]) => {
       if (!entry.isIntersecting || linesDrawn) return;
       linesDrawn = true;
-      ['line-engineer','line-skills','line-projects','line-writing','line-activity'].forEach((id, i) => {
+      ['line-skill','line-platform','line-project','line-engineer','line-date'].forEach((id, i) => {
         setTimeout(() => {
           const line = document.getElementById(id) as SVGLineElement | null;
           const lbl  = document.getElementById(id.replace('line-', 'lbl-'));
