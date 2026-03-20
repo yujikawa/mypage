@@ -34,6 +34,7 @@ const tabs = [
   { id: "writing",  file: "writing.sql"  },
   { id: "projects", file: "projects.sql" },
   { id: "salary",   file: "salary.sql"   },
+  { id: "repl",     file: ">_ repl"      },
 ];
 
 const TABLE_META = [
@@ -229,6 +230,7 @@ const TABLE_META = [
 
   .ide-editor-content { display: none; padding-bottom: 16px; }
   .ide-editor-content.active { display: block; }
+  .ide-editor-content[data-content="repl"].active { display: flex; flex-direction: column; height: 100%; padding-bottom: 0; }
 
   .sql-line {
     display: flex;
@@ -305,6 +307,29 @@ const TABLE_META = [
   }
   .lang-btn:hover { color: rgba(139,148,158,.7); border-color: rgba(139,148,158,.3); }
   .lang-btn.active { color: rgba(59,130,246,.85); border-color: rgba(59,130,246,.4); background: rgba(59,130,246,.08); }
+
+  /* ── REPL tab special styling ── */
+  .ide-tab[data-tab="repl"] { color: rgba(52,211,153,.5); }
+  .ide-tab[data-tab="repl"]:hover { color: rgba(52,211,153,.8); }
+  .ide-tab[data-tab="repl"].active { color: rgba(52,211,153,.9); }
+  .ide-tab[data-tab="repl"].active .tab-dot { color: rgba(52,211,153,.9); }
+
+  .repl-textarea {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #9cdcfe;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    padding: 14px 16px;
+    resize: none;
+    caret-color: #34d399;
+  }
+  .repl-textarea::placeholder { color: rgba(139,148,158,.25); }
+  .repl-textarea::selection   { background: rgba(59,130,246,.2); }
 
   /* ── ER pane ── */
   .ide-er-pane {
@@ -396,6 +421,9 @@ const TABLE_META = [
   .ide-result-content.visible {
     display: block;
     animation: resultIn .4s ease forwards;
+  }
+  .ide-result-content[data-result="repl"].visible {
+    animation: none;
   }
   @keyframes resultIn {
     from { opacity: 0; transform: translateY(8px); }
@@ -933,6 +961,17 @@ const TABLE_META = [
             </div>
           </div>
 
+          <!-- REPL / Sandbox -->
+          <div class="ide-editor-content" data-content="repl">
+            <textarea
+              id="repl-input"
+              class="repl-textarea"
+              spellcheck="false"
+              autocomplete="off"
+              placeholder={`-- Free-form SQL sandbox. Try any query.\n-- Examples:\n--   SELECT * FROM dim_engineer\n--   SELECT * FROM fun_facts\n--   SHOW TABLES`}
+            ></textarea>
+          </div>
+
         </div><!-- /editor scroll -->
 
         <!-- Editor footer -->
@@ -944,10 +983,13 @@ const TABLE_META = [
             <span style="color:rgba(139,148,158,.1);">·</span>
             <span class="mono" style="font-size:10px;color:rgba(139,148,158,.2);" id="active-table">skills</span>
           </div>
-          <button class="run-btn" id="run-btn">
-            <svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:currentColor;"><path d="M4 2l10 6-10 6z"/></svg>
-            <span data-i18n="run-btn">Run Query</span>
-          </button>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+            <button class="run-btn" id="run-btn">
+              <svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:currentColor;"><path d="M4 2l10 6-10 6z"/></svg>
+              <span data-i18n="run-btn">Run Query</span>
+            </button>
+            <span class="mono" style="font-size:9px;color:rgba(139,148,158,.35);">Ctrl+Enter</span>
+          </div>
         </div>
 
       </div><!-- /editor pane -->
@@ -1370,8 +1412,6 @@ const TABLE_META = [
           </div>
         </div>
 
-      </div>
-
       <!-- Salary error result -->
       <div class="ide-result-content" data-result="salary" style="display:none;">
         <div style="padding:20px 24px;height:100%;display:flex;flex-direction:column;gap:16px;">
@@ -1391,6 +1431,11 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
             Execution time: 0ms · 0 rows returned · Query failed
           </div>
         </div>
+      </div>
+
+      <!-- REPL result panel (filled dynamically by JS) -->
+      <div class="ide-result-content" data-result="repl" style="display:none;">
+        <div id="repl-result-inner"></div>
       </div>
 
       <!-- Table metadata panels -->
@@ -1436,6 +1481,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
         </div>
       ))}
 
+      </div><!-- /scroll container -->
     </div><!-- /results pane -->
 
     <!-- ── Status Bar ── -->
@@ -1633,7 +1679,176 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
     writing:  { table: 'writing',  rows: '3 rows returned',   file: 'writing.sql',  error: false },
     projects: { table: 'projects', rows: '2 rows returned',   file: 'projects.sql', error: false },
     salary:   { table: 'salary',   rows: '',                  file: 'salary.sql',   error: true  },
+    repl:     { table: '',         rows: '',                  file: '>_ repl',       error: false },
   };
+
+  // ── REPL: query processor ──
+  type REPLResult =
+    | { kind: 'table'; headers: string[]; rows: string[][]; total?: number }
+    | { kind: 'error'; msg: string; hint?: string }
+    | { kind: 'text';  msg: string };
+
+  function escHtml(s: string) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function processREPL(sql: string): REPLResult {
+    const q = sql.trim().toLowerCase().replace(/\s+/g,' ');
+    if (!q) return { kind:'error', msg:'ERROR: no query specified', hint:'HINT: Try  SELECT * FROM dim_engineer' };
+
+    // Destructive ops
+    if (/^(drop|delete|truncate|update|insert|alter|create)\b/.test(q))
+      return { kind:'error', msg:'ERROR: permission denied\nDETAIL: This database is read-only.', hint:"HINT: The engineers table will not be dropped today. Nice try." };
+
+    // Salary easter egg
+    if (/\bsalary\b/.test(q))
+      return { kind:'error', msg:'ERROR: column "salary" of relation "dim_engineer" does not exist', hint:"HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.\n      Current role: 'analytics_engineer' — nice try 😏" };
+
+    // Secrets
+    if (/\bsecrets\b/.test(q))
+      return { kind:'error', msg:'ERROR: permission denied\nDETAIL: relation "secrets" exists but content is classified.', hint:'HINT: Submit a pull request at github.com/yujikawa to gain access.' };
+
+    // SHOW TABLES / \dt
+    if (/^(show tables|\\dt)\s*;?$/.test(q))
+      return { kind:'table', headers:['table_name','type','rows'], rows:[
+        ['fact_daily_activity','FACT','365'],
+        ['dim_engineer','DIMENSION','1'],
+        ['dim_date','DIMENSION','365'],
+        ['dim_skill','DIMENSION','5'],
+        ['dim_platform','DIMENSION','3'],
+        ['dim_project','DIMENSION','2'],
+        ['fun_facts','VIEW','7'],
+        ['secrets','???','???'],
+      ]};
+
+    // dim_engineer
+    if (/from\s+dim_engineer\b/.test(q))
+      return { kind:'table', headers:['engineer_id','name','role','location','years_exp'], rows:[
+        ['1','Yuji Kawano','Analytics Engineer','Japan 🇯🇵','5+'],
+      ]};
+
+    // dim_skill
+    if (/from\s+dim_skill\b/.test(q))
+      return { kind:'table', headers:['skill_id','engineer_id','skill_name','category','proficiency'], rows:[
+        ['1','1','Data Modeling','Analytics Eng','expert'],
+        ['2','1','dbt','Analytics Eng','expert'],
+        ['3','1','SQL','Query Language','expert'],
+        ['4','1','Python','Programming','proficient'],
+        ['5','1','BigQuery','Data Warehouse','proficient'],
+      ]};
+
+    // dim_platform
+    if (/from\s+dim_platform\b/.test(q))
+      return { kind:'table', headers:['platform_id','engineer_id','platform','url'], rows:[
+        ['1','1','qiita','https://qiita.com/yujikawa'],
+        ['2','1','zenn','https://zenn.dev/yujikawa'],
+        ['3','1','medium','https://medium.com/@yujikawa'],
+      ]};
+
+    // dim_project
+    if (/from\s+dim_project\b/.test(q))
+      return { kind:'table', headers:['project_id','engineer_id','title','description'], rows:[
+        ['1','1','Modaryn','Analyzes dbt projects to score model complexity'],
+        ['2','1','Modscape','YAML-driven data modeling visualizer'],
+      ]};
+
+    // fact_daily_activity
+    if (/from\s+fact_daily_activity\b/.test(q))
+      return { kind:'table', total:365, headers:['activity_id','engineer_id','date_id','contributions'], rows:[
+        ['365','1','20260320','12'],
+        ['364','1','20260319','7'],
+        ['363','1','20260318','3'],
+        ['362','1','20260317','15'],
+        ['361','1','20260316','0'],
+      ]};
+
+    // dim_date
+    if (/from\s+dim_date\b/.test(q))
+      return { kind:'table', total:365, headers:['date_id','date','year','month','day_of_week'], rows:[
+        ['20260320','2026-03-20','2026','3','Friday'],
+        ['20260319','2026-03-19','2026','3','Thursday'],
+        ['20260318','2026-03-18','2026','3','Wednesday'],
+        ['20260317','2026-03-17','2026','3','Tuesday'],
+        ['20260316','2026-03-16','2026','3','Monday'],
+      ]};
+
+    // fun_facts
+    if (/fun_fact/.test(q))
+      return { kind:'table', headers:['key','value'], rows:[
+        ['origin','Excel → SQL → dbt → never looked back'],
+        ['coffee_per_day','3 ☕'],
+        ['favorite_join','LEFT JOIN'],
+        ['tabs_vs_spaces','spaces, 2 of them'],
+        ['debug_method','EXPLAIN ANALYZE'],
+        ['philosophy','clean data > clean code'],
+        ['bug_count','0 (allegedly)'],
+      ]};
+
+    // SELECT 1
+    if (/^select 1\s*;?$/.test(q))
+      return { kind:'table', headers:['?column?'], rows:[['1']] };
+
+    // NOW() / CURRENT_TIMESTAMP
+    if (/\b(now\s*\(\)|current_timestamp)\b/.test(q))
+      return { kind:'table', headers:['now'], rows:[[new Date().toISOString()]] };
+
+    // version()
+    if (/\bversion\s*\(\)/.test(q))
+      return { kind:'table', headers:['version'], rows:[['mypage.sql 2.0.0 on portfolio_db, compiled by Yuji Kawano']] };
+
+    // EXPLAIN
+    if (/^explain\b/.test(q))
+      return { kind:'text', msg:'Seq Scan on dim_engineer  (cost=0.00..0.01 rows=1 width=72)\n  Filter: ((name)::text = \'Yuji\'::text)\nPlanning time: 0.042 ms\nExecution time: 0.021 ms' };
+
+    // Unknown relation
+    const tblMatch = q.match(/from\s+([a-z_][a-z0-9_]*)/);
+    if (tblMatch)
+      return { kind:'error', msg:`ERROR: relation "${escHtml(tblMatch[1])}" does not exist`, hint:'HINT: Run SHOW TABLES to see available relations.' };
+
+    return { kind:'error', msg:'ERROR: syntax error at or near the query', hint:'HINT: Try  SELECT * FROM dim_engineer' };
+  }
+
+  function renderREPLResult(result: REPLResult) {
+    const container = document.querySelector<HTMLElement>('[data-result="repl"]')!;
+    const inner     = document.getElementById('repl-result-inner')!;
+    const label     = document.getElementById('result-row-label');
+    const statusBar = document.querySelector<HTMLElement>('.ide-statusbar');
+
+    document.getElementById('results-empty')!.style.display = 'none';
+    document.querySelectorAll<HTMLElement>('.ide-result-content').forEach(el => {
+      if (el.dataset.result !== 'repl') { el.classList.remove('visible'); el.style.display = 'none'; }
+    });
+    container.style.display = '';
+    container.classList.add('visible');
+
+    // Reset scroll position
+    const scrollPane = container.closest<HTMLElement>('[style*="overflow:auto"]') ?? container.parentElement;
+    if (scrollPane) scrollPane.scrollTop = 0;
+
+    if (result.kind === 'error') {
+      inner.innerHTML = '<div style="padding:20px 24px;"><div style="background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.3);border-radius:6px;padding:16px 20px;"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><svg viewBox="0 0 16 16" style="width:16px;height:16px;fill:#f87171;flex-shrink:0;"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 4a.75.75 0 00-1.5 0v3.5a.75.75 0 001.5 0V5zm-.75 6.5a.75.75 0 100-1.5.75.75 0 000 1.5z"/></svg><span style="color:#f87171;font-family:\'JetBrains Mono\',monospace;font-size:13px;font-weight:600;">' + escHtml(result.msg.split('\n')[0]) + '</span></div><pre style="font-family:\'JetBrains Mono\',monospace;font-size:11px;line-height:1.7;color:rgba(248,113,113,.75);margin:0;white-space:pre-wrap;">' + escHtml(result.msg) + (result.hint ? '\n' + result.hint : '') + '</pre></div><div style="color:rgba(139,148,158,.35);font-family:\'JetBrains Mono\',monospace;font-size:10px;margin-top:10px;">Execution time: 0ms · 0 rows returned · Query failed</div></div>';
+      if (label) { label.textContent = '· ERROR'; label.style.color = '#f87171'; }
+      if (statusBar) statusBar.style.borderTop = '1px solid rgba(220,38,38,.4)';
+    } else if (result.kind === 'table') {
+      const shown = result.rows.length;
+      const total = result.total ?? shown;
+      const thStyle  = `text-align:left;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:normal;color:rgba(139,148,158,.5);background:#161b22;border-bottom:1px solid #21262d;position:sticky;top:0;z-index:1;white-space:nowrap;`;
+      const tdStyle  = `padding:6px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;border-bottom:1px solid rgba(33,38,45,.5);white-space:nowrap;`;
+      const numStyle = `color:rgba(139,148,158,.2);width:36px;`;
+      const thead = `<tr><th style="${thStyle}${numStyle}">#</th>${result.headers.map(h => `<th style="${thStyle}">${escHtml(h)}</th>`).join('')}</tr>`;
+      const tbody = result.rows.map((row, i) =>
+        `<tr><td style="${tdStyle}${numStyle}">${i + 1}</td>${row.map(c => `<td style="${tdStyle}">${escHtml(c)}</td>`).join('')}</tr>`
+      ).join('');
+      const note = total > shown ? ` · showing ${shown} of ${total}` : '';
+      inner.innerHTML = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table></div><div style="padding:8px 14px;font-family:\'JetBrains Mono\',monospace;font-size:10px;color:rgba(139,148,158,.35);border-top:1px solid rgba(33,38,45,.5);">' + total + ' row' + (total !== 1 ? 's' : '') + ' returned' + note + '</div>';
+      if (label) { label.textContent = `· ${total} rows returned`; label.style.color = 'rgba(52,211,153,.7)'; }
+      if (statusBar) statusBar.style.borderTop = '';
+    } else {
+      inner.innerHTML = '<div style="padding:20px 24px;"><pre style="font-family:\'JetBrains Mono\',monospace;font-size:11px;line-height:1.7;color:rgba(139,148,158,.65);margin:0;white-space:pre-wrap;">' + escHtml(result.msg) + '</pre></div>';
+      if (label) { label.textContent = ''; label.style.color = 'rgba(52,211,153,0)'; }
+      if (statusBar) statusBar.style.borderTop = '';
+    }
+  }
 
   let activeTab = 'skills';
   let resultShown: Record<string, boolean> = {};
@@ -1712,9 +1927,34 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
 
   // ── Run button ──
   const runBtn = document.getElementById('run-btn');
-  runBtn?.addEventListener('click', () => {
+  function executeRun() {
+    if (!runBtn) return;
     runBtn.classList.add('running');
     runBtn.innerHTML = `<svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:currentColor;animation:spin .6s linear infinite;"><path d="M8 2a6 6 0 100 12A6 6 0 008 2zm0 1a5 5 0 110 10A5 5 0 018 3zm-.5 2.5v3l2.5 1.5.5-.87-2-.5-2 .5V5.5h-.5z" opacity=".5"/></svg> ${t('running')}`;
+
+    if (activeTab === 'repl') {
+      const input = (document.getElementById('repl-input') as HTMLTextAreaElement)?.value ?? '';
+      setTimeout(() => {
+        const result = processREPL(input);
+        renderREPLResult(result);
+        runBtn.classList.remove('running');
+        if (result.kind === 'error') {
+          runBtn.style.background = 'rgba(220,38,38,.15)';
+          runBtn.style.borderColor = 'rgba(220,38,38,.4)';
+          runBtn.style.color = '#f87171';
+          runBtn.innerHTML = `<svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:currentColor;"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 4a.75.75 0 00-1.5 0v3.5a.75.75 0 001.5 0V5zm-.75 6.5a.75.75 0 100-1.5.75.75 0 000 1.5z"/></svg> ${t('error-btn')}`;
+          setTimeout(() => {
+            runBtn.style.background = '';
+            runBtn.style.borderColor = '';
+            runBtn.style.color = '';
+            runBtn.innerHTML = `<svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:currentColor;"><path d="M4 2l10 6-10 6z"/></svg> ${t('run-btn')}`;
+          }, 2500);
+        } else {
+          runBtn.innerHTML = `<svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:currentColor;"><path d="M4 2l10 6-10 6z"/></svg> ${t('run-btn')}`;
+        }
+      }, 500);
+      return;
+    }
 
     setTimeout(() => {
       resultShown[activeTab] = true;
@@ -1735,6 +1975,17 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
         runBtn.innerHTML = `<svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:currentColor;"><path d="M4 2l10 6-10 6z"/></svg> ${t('run-btn')}`;
       }
     }, 820);
+  }
+
+  runBtn?.addEventListener('click', executeRun);
+
+  // Ctrl+Enter anywhere in the editor pane runs the query
+  document.querySelector<HTMLElement>('.ide-editor-pane')?.addEventListener('keydown', (e) => {
+    const ke = e as KeyboardEvent;
+    if ((ke.ctrlKey || ke.metaKey) && ke.key === 'Enter') {
+      ke.preventDefault();
+      executeRun();
+    }
   });
 
   // ── Tab click ──
