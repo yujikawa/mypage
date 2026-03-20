@@ -719,10 +719,10 @@ const TABLE_META = [
 
               <!-- dim tables (clickable) -->
               {[
-                { id: "skills",   table: "dim_skill"     },
-                { id: "activity", table: "dim_date"       },
-                { id: "writing",  table: "dim_platform"  },
-                { id: "projects", table: "dim_project"   },
+                { id: "skills",   table: "skills"   },
+                { id: "activity", table: "activity" },
+                { id: "writing",  table: "writing"  },
+                { id: "projects", table: "projects" },
               ].map((item, i) => (
                 <div class={`explorer-item ${i === 0 ? 'active' : ''}`} data-explorer-tab={item.id}>
                   <span class="ei-icon" style="color:rgba(78,201,176,.5);">⬡</span>
