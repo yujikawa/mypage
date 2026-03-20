@@ -31,6 +31,20 @@ const featuredProjects = [
     link: "https://github.com/yujikawa/clipable",
     tags: ["Python", "CLI", "Markdown"],
   },
+  {
+    title: "Alisql",
+    slug: "alisql",
+    description: "Analyzes SQL files using Jinja2 ref() macros, extracting table dependencies and visualizing them as graphs.",
+    link: "https://github.com/yujikawa/alisql",
+    tags: ["Rust", "SQL", "CLI"],
+  },
+  {
+    title: "Wordic",
+    slug: "wordic",
+    description: "Manage your personal word dictionary on your local PC. Store words with values and descriptions, then look them up instantly from the terminal.",
+    link: "https://github.com/yujikawa/wordic",
+    tags: ["Rust", "CLI"],
+  },
 ];
 
 const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airflow"];
@@ -1547,7 +1561,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
       'rows-skills':    '5 rows returned',
       'rows-activity':  '365 rows returned',
       'rows-writing':   '3 rows returned',
-      'rows-projects':  '2 rows returned',
+      'rows-projects':  '4 rows returned',
       // Table metadata descriptions
       'meta-fact_daily_activity-desc': 'The central fact table. Grain: one row per engineer per day. Contains the only true measure in this schema — contributions count — plus foreign keys to dim_engineer and dim_date.',
       'meta-dim_engineer-desc':        'Dimension holding personal attributes of the engineer — who I am. Name and role are stored here and used to filter queries across all marts.',
@@ -1684,7 +1698,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
     skills:   { table: 'skills',   rows: '5 rows returned',   file: 'skills.sql',   error: false },
     activity: { table: 'activity', rows: '365 rows returned', file: 'activity.sql', error: false },
     writing:  { table: 'writing',  rows: '3 rows returned',   file: 'writing.sql',  error: false },
-    projects: { table: 'projects', rows: '2 rows returned',   file: 'projects.sql', error: false },
+    projects: { table: 'projects', rows: '4 rows returned',   file: 'projects.sql', error: false },
     salary:   { table: 'salary',   rows: '',                  file: 'salary.sql',   error: true  },
     repl:     { table: '',         rows: '',                  file: '>_ repl',       error: false },
   };
