@@ -29,10 +29,80 @@ const featuredProjects = [
 const skills = ["dbt", "SQL", "Python", "BigQuery", "Snowflake", "Spark", "Airflow"];
 
 const tabs = [
-  { id: "skills",   file: "skills.sql",   rows: "5 rows" },
-  { id: "activity", file: "activity.sql",  rows: "365 rows" },
-  { id: "writing",  file: "writing.sql",   rows: "3 rows" },
-  { id: "projects", file: "projects.sql",  rows: "2 rows" },
+  { id: "skills",   file: "skills.sql"   },
+  { id: "activity", file: "activity.sql" },
+  { id: "writing",  file: "writing.sql"  },
+  { id: "projects", file: "projects.sql" },
+  { id: "salary",   file: "salary.sql"   },
+];
+
+const TABLE_META = [
+  {
+    id: 'fact_engineer',
+    kind: 'fact' as const,
+    description: 'The central fact table of this star schema. Represents me as a single engineer and holds foreign keys linking to all dimension tables.',
+    columns: [
+      { name: 'engineer_id', key: 'PK FK', desc: 'Unique identifier for the engineer. References dim_engineer.' },
+      { name: 'skill_id',    key: 'FK',    desc: 'Current primary skill focus. References dim_skills.' },
+      { name: 'project_id',  key: 'FK',    desc: 'Featured OSS project. References dim_projects.' },
+      { name: 'writing_id',  key: 'FK',    desc: 'Writing platform record. References dim_writing.' },
+      { name: 'activity_id', key: 'FK',    desc: 'GitHub activity snapshot. References dim_activity.' },
+    ],
+  },
+  {
+    id: 'dim_engineer',
+    kind: 'dim' as const,
+    description: 'Dimension holding personal attributes of the engineer — who I am. Name and role are stored here and used to filter queries.',
+    columns: [
+      { name: 'engineer_id', key: 'PK', desc: 'Unique identifier for the engineer.' },
+      { name: 'name',        key: '',   desc: 'Engineer\'s name. Used in WHERE clauses to filter rows.' },
+      { name: 'role',        key: '',   desc: 'Job title or role (e.g. Analytics Engineer).' },
+    ],
+  },
+  {
+    id: 'dim_skills',
+    kind: 'dim' as const,
+    description: 'Dimension for technical skills. Stores the skill set I use professionally — data modeling, SQL, Python and more — along with proficiency levels.',
+    columns: [
+      { name: 'id',          key: 'PK', desc: 'Unique identifier for the skill.' },
+      { name: 'skill_name',  key: '',   desc: 'Name of the skill (e.g. dbt, SQL, Python).' },
+      { name: 'category',    key: '',   desc: 'Skill category (e.g. Analytics Eng, Programming).' },
+      { name: 'proficiency', key: '',   desc: 'Proficiency level (expert / proficient).' },
+    ],
+  },
+  {
+    id: 'dim_activity',
+    kind: 'dim' as const,
+    description: 'Dimension for GitHub contribution history. Captures daily coding habits and makes them queryable as time-series data.',
+    columns: [
+      { name: 'id',            key: 'PK', desc: 'Unique identifier for the activity record.' },
+      { name: 'date',          key: '',   desc: 'Contribution date (DATE type).' },
+      { name: 'contributions', key: '',   desc: 'Number of contributions on that day.' },
+    ],
+  },
+  {
+    id: 'dim_writing',
+    kind: 'dim' as const,
+    description: 'Dimension for writing platforms. Tracks where I publish articles — Medium, Qiita, Zenn — and the topics I write about.',
+    columns: [
+      { name: 'id',       key: 'PK', desc: 'Unique identifier for the platform record.' },
+      { name: 'platform', key: '',   desc: 'Platform name (medium / qiita / zenn).' },
+      { name: 'url',      key: '',   desc: 'Profile URL for the platform.' },
+      { name: 'topics',   key: '',   desc: 'Main writing topics (e.g. Analytics Engineering, dbt).' },
+    ],
+  },
+  {
+    id: 'dim_projects',
+    kind: 'dim' as const,
+    description: 'Dimension for OSS projects. Holds metadata for tools I have built for the analytics engineering community.',
+    columns: [
+      { name: 'id',          key: 'PK', desc: 'Unique identifier for the project.' },
+      { name: 'title',       key: '',   desc: 'Project name (e.g. Modaryn, Modscape).' },
+      { name: 'description', key: '',   desc: 'Short description of what the project does.' },
+      { name: 'tags',        key: '',   desc: 'Array of technology tags (TEXT[]).' },
+      { name: 'github_url',  key: '',   desc: 'GitHub repository URL.' },
+    ],
+  },
 ];
 ---
 
@@ -216,6 +286,21 @@ const tabs = [
   .run-btn:hover { background: rgba(59,130,246,.25); }
   .run-btn:active { transform: scale(.96); }
   .run-btn.running { opacity: .6; pointer-events: none; }
+
+  /* ── Language toggle ── */
+  .lang-btn {
+    padding: 2px 7px;
+    background: transparent;
+    border: 1px solid rgba(48,54,61,.8);
+    border-radius: 3px;
+    color: rgba(139,148,158,.35);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    transition: color .15s, border-color .15s;
+  }
+  .lang-btn:hover { color: rgba(139,148,158,.7); border-color: rgba(139,148,158,.3); }
+  .lang-btn.active { color: rgba(59,130,246,.85); border-color: rgba(59,130,246,.4); background: rgba(59,130,246,.08); }
 
   /* ── ER pane ── */
   .ide-er-pane {
@@ -516,7 +601,7 @@ const tabs = [
         <svg viewBox="0 0 16 16" style="width:14px;height:14px;fill:rgba(59,130,246,.6);flex-shrink:0;">
           <path d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8z"/>
         </svg>
-        <span class="mono" style="font-size:12px;color:rgba(240,240,240,.6);font-weight:500;">mypage.sql</span>
+        <span class="mono" style="font-size:12px;color:rgba(240,240,240,.6);font-weight:500;">My page</span>
       </div>
       <!-- Menu items -->
       {["File", "Edit", "View", "Run", "Help"].map(item => (
@@ -524,10 +609,15 @@ const tabs = [
       ))}
       <!-- Spacer -->
       <div style="flex:1;"></div>
+      <!-- Language toggle -->
+      <div style="display:flex;align-items:center;gap:3px;margin-right:12px;">
+        <button class="lang-btn active" id="lang-en" data-lang="en">EN</button>
+        <button class="lang-btn"        id="lang-ja" data-lang="ja">JA</button>
+      </div>
       <!-- Online badge -->
       <div style="display:flex;align-items:center;gap:5px;margin-right:14px;padding-right:14px;border-right:1px solid rgba(33,38,45,.8);">
         <span style="width:5px;height:5px;border-radius:50%;background:#34d399;display:inline-block;flex-shrink:0;"></span>
-        <span class="mono" style="font-size:10px;color:rgba(139,148,158,.3);">Analytics Engineer</span>
+        <span class="mono" style="font-size:10px;color:rgba(139,148,158,.3);" data-i18n="role-badge">Analytics Engineer</span>
       </div>
       <!-- Profile trigger -->
       <div style="position:relative;">
@@ -617,6 +707,12 @@ const tabs = [
                 <span style="color:rgba(86,156,214,.7);">fact_engineer</span>
               </div>
 
+              <!-- dim_engineer (not clickable, just display) -->
+              <div class="explorer-item" style="opacity:.55;cursor:default;">
+                <span class="ei-icon" style="color:rgba(78,201,176,.5);">⬡</span>
+                <span>engineer</span>
+              </div>
+
               <!-- dim tables (clickable) -->
               {[
                 { id: "skills",   table: "skills"   },
@@ -681,11 +777,11 @@ const tabs = [
           <div class="ide-editor-content active" data-content="skills">
             <div class="sql-line">
               <span class="ln">1</span>
-              <span class="lc"><span class="sql-cmt">-- What I work with every day.</span></span>
+              <span class="lc"><span class="sql-cmt" data-i18n="skills-cmt-1">-- What I work with every day.</span></span>
             </div>
             <div class="sql-line">
               <span class="ln">2</span>
-              <span class="lc"><span class="sql-cmt">-- Data Modeling is my core passion — I love turning messy data into clear structures.</span></span>
+              <span class="lc"><span class="sql-cmt" data-i18n="skills-cmt-2">-- Data Modeling is my core passion — I love turning messy data into clear structures.</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">3</span>
@@ -697,14 +793,18 @@ const tabs = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">5</span>
-              <span class="lc"><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_skills</span> <span class="sql-col">s</span> <span class="sql-kw">ON</span> <span class="sql-col">f.skill_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">s.id</span></span>
+              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">f.engineer_id</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">6</span>
-              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">f.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-num">1</span><span style="color:rgba(139,148,158,.5)">;</span></span>
+              <span class="lc"><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_skills</span>{"    "}<span class="sql-col">s</span> <span class="sql-kw">ON</span> <span class="sql-col">f.skill_id</span>{"    "}<span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">s.id</span></span>
+            </div>
+            <div class="sql-line highlighted">
+              <span class="ln">7</span>
+              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span><span style="color:rgba(139,148,158,.5)">;</span></span>
             </div>
             <div class="sql-line">
-              <span class="ln">7</span>
+              <span class="ln">8</span>
               <span class="lc"><span class="sql-cursor"></span></span>
             </div>
           </div>
@@ -713,11 +813,11 @@ const tabs = [
           <div class="ide-editor-content" data-content="activity">
             <div class="sql-line">
               <span class="ln">1</span>
-              <span class="lc"><span class="sql-cmt">-- My GitHub contribution history.</span></span>
+              <span class="lc"><span class="sql-cmt" data-i18n="activity-cmt-1">-- My GitHub contribution history.</span></span>
             </div>
             <div class="sql-line">
               <span class="ln">2</span>
-              <span class="lc"><span class="sql-cmt">-- Coding is a daily habit — consistency matters more than intensity.</span></span>
+              <span class="lc"><span class="sql-cmt" data-i18n="activity-cmt-2">-- Coding is a daily habit — consistency matters more than intensity.</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">3</span>
@@ -729,14 +829,18 @@ const tabs = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">5</span>
-              <span class="lc"><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_activity</span> <span class="sql-col">a</span> <span class="sql-kw">ON</span> <span class="sql-col">f.activity_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">a.id</span></span>
+              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">f.engineer_id</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">6</span>
-              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">f.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-num">1</span> <span class="sql-kw">ORDER BY</span> <span class="sql-col">a.date</span> <span class="sql-kw">DESC</span><span style="color:rgba(139,148,158,.5)">;</span></span>
+              <span class="lc"><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_activity</span>{"  "}<span class="sql-col">a</span> <span class="sql-kw">ON</span> <span class="sql-col">f.activity_id</span>{"  "}<span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">a.id</span></span>
+            </div>
+            <div class="sql-line highlighted">
+              <span class="ln">7</span>
+              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span> <span class="sql-kw">ORDER BY</span> <span class="sql-col">a.date</span> <span class="sql-kw">DESC</span><span style="color:rgba(139,148,158,.5)">;</span></span>
             </div>
             <div class="sql-line">
-              <span class="ln">7</span>
+              <span class="ln">8</span>
               <span class="lc"><span class="sql-cursor"></span></span>
             </div>
           </div>
@@ -745,11 +849,11 @@ const tabs = [
           <div class="ide-editor-content" data-content="writing">
             <div class="sql-line">
               <span class="ln">1</span>
-              <span class="lc"><span class="sql-cmt">-- Where I share what I learn.</span></span>
+              <span class="lc"><span class="sql-cmt" data-i18n="writing-cmt-1">-- Where I share what I learn.</span></span>
             </div>
             <div class="sql-line">
               <span class="ln">2</span>
-              <span class="lc"><span class="sql-cmt">-- Writing helps me solidify ideas and give back to the community.</span></span>
+              <span class="lc"><span class="sql-cmt" data-i18n="writing-cmt-2">-- Writing helps me solidify ideas and give back to the community.</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">3</span>
@@ -761,14 +865,18 @@ const tabs = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">5</span>
-              <span class="lc"><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_writing</span> <span class="sql-col">w</span> <span class="sql-kw">ON</span> <span class="sql-col">f.writing_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">w.id</span></span>
+              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">f.engineer_id</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">6</span>
-              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">f.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-num">1</span><span style="color:rgba(139,148,158,.5)">;</span></span>
+              <span class="lc"><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_writing</span>{"   "}<span class="sql-col">w</span> <span class="sql-kw">ON</span> <span class="sql-col">f.writing_id</span>{"   "}<span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">w.id</span></span>
+            </div>
+            <div class="sql-line highlighted">
+              <span class="ln">7</span>
+              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span><span style="color:rgba(139,148,158,.5)">;</span></span>
             </div>
             <div class="sql-line">
-              <span class="ln">7</span>
+              <span class="ln">8</span>
               <span class="lc"><span class="sql-cursor"></span></span>
             </div>
           </div>
@@ -777,11 +885,11 @@ const tabs = [
           <div class="ide-editor-content" data-content="projects">
             <div class="sql-line">
               <span class="ln">1</span>
-              <span class="lc"><span class="sql-cmt">-- OSS tools I built for the analytics engineering community.</span></span>
+              <span class="lc"><span class="sql-cmt" data-i18n="projects-cmt-1">-- OSS tools I built for the analytics engineering community.</span></span>
             </div>
             <div class="sql-line">
               <span class="ln">2</span>
-              <span class="lc"><span class="sql-cmt">-- Focused on making data modeling more observable and understandable.</span></span>
+              <span class="lc"><span class="sql-cmt" data-i18n="projects-cmt-2">-- Focused on making data modeling more observable and understandable.</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">3</span>
@@ -793,14 +901,46 @@ const tabs = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">5</span>
-              <span class="lc"><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_projects</span> <span class="sql-col">p</span> <span class="sql-kw">ON</span> <span class="sql-col">f.project_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">p.id</span></span>
+              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">f.engineer_id</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">6</span>
-              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">f.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-num">1</span><span style="color:rgba(139,148,158,.5)">;</span></span>
+              <span class="lc"><span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">dim_projects</span>{"  "}<span class="sql-col">p</span> <span class="sql-kw">ON</span> <span class="sql-col">f.project_id</span>{"  "}<span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">p.id</span></span>
+            </div>
+            <div class="sql-line highlighted">
+              <span class="ln">7</span>
+              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span><span style="color:rgba(139,148,158,.5)">;</span></span>
             </div>
             <div class="sql-line">
-              <span class="ln">7</span>
+              <span class="ln">8</span>
+              <span class="lc"><span class="sql-cursor"></span></span>
+            </div>
+          </div>
+
+          <!-- Salary SQL -->
+          <div class="ide-editor-content" data-content="salary">
+            <div class="sql-line">
+              <span class="ln">1</span>
+              <span class="lc"><span class="sql-cmt" data-i18n="salary-cmt-1">-- Just curious...</span></span>
+            </div>
+            <div class="sql-line highlighted">
+              <span class="ln">2</span>
+              <span class="lc"><span class="sql-kw">SELECT</span> <span class="sql-col">f.salary</span></span>
+            </div>
+            <div class="sql-line highlighted">
+              <span class="ln">3</span>
+              <span class="lc"><span class="sql-kw">FROM</span>{"      "}<span class="sql-tbl">fact_engineer</span> <span class="sql-col">f</span></span>
+            </div>
+            <div class="sql-line highlighted">
+              <span class="ln">4</span>
+              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">f.engineer_id</span></span>
+            </div>
+            <div class="sql-line highlighted">
+              <span class="ln">5</span>
+              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span><span style="color:rgba(139,148,158,.5)">;</span></span>
+            </div>
+            <div class="sql-line">
+              <span class="ln">6</span>
               <span class="lc"><span class="sql-cursor"></span></span>
             </div>
           </div>
@@ -818,7 +958,7 @@ const tabs = [
           </div>
           <button class="run-btn" id="run-btn">
             <svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:currentColor;"><path d="M4 2l10 6-10 6z"/></svg>
-            Run Query
+            <span data-i18n="run-btn">Run Query</span>
           </button>
         </div>
 
@@ -836,7 +976,7 @@ const tabs = [
             </svg>
             Schema · fact_engineer (star)
           </span>
-          <span style="color:rgba(139,148,158,.2);">click to query</span>
+          <span style="color:rgba(139,148,158,.2);" data-i18n="er-hint">click to inspect</span>
         </div>
 
         <div class="ide-er-scroll">
@@ -845,16 +985,30 @@ const tabs = [
             <svg id="schema-svg" viewBox="0 0 800 460" style="width:100%;max-width:640px;min-width:340px;" xmlns="http://www.w3.org/2000/svg">
 
               <!-- Relationship lines -->
+              <line id="line-engineer" x1="210" y1="65"  x2="270" y2="200" stroke="#30363d" stroke-width="1.5"/>
               <line id="line-skills"   x1="400" y1="168" x2="400" y2="125" stroke="#30363d" stroke-width="1.5"/>
               <line id="line-activity" x1="400" y1="310" x2="400" y2="350" stroke="#30363d" stroke-width="1.5"/>
               <line id="line-projects" x1="270" y1="239" x2="230" y2="239" stroke="#30363d" stroke-width="1.5"/>
               <line id="line-writing"  x1="530" y1="239" x2="570" y2="239" stroke="#30363d" stroke-width="1.5"/>
 
               <!-- 1:N labels -->
+              <text id="lbl-engineer" x="218" y="125"  fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:1</text>
               <text id="lbl-skills"   x="406" y="148" fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
               <text id="lbl-activity" x="406" y="334" fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
               <text id="lbl-projects" x="240" y="233" fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
               <text id="lbl-writing"  x="538" y="233" fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
+
+              <!-- dim_engineer -->
+              <g id="dim-engineer" style="cursor:pointer">
+                <rect id="rect-engineer" x="30" y="20" width="180" height="90" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+                <line x1="30" y1="44" x2="210" y2="44" stroke="#30363d" stroke-width="1"/>
+                <text x="44" y="36" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_engineer</text>
+                <text x="44" y="62" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
+                <text x="66" y="62" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id  INT</text>
+                <line x1="44" y1="68" x2="195" y2="68" stroke="#30363d" stroke-width="0.5"/>
+                <text x="44" y="82" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">name         TEXT</text>
+                <text x="44" y="97" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">role         TEXT</text>
+              </g>
 
               <!-- dim_skills -->
               <g id="dim-skills" style="cursor:pointer">
@@ -900,35 +1054,38 @@ const tabs = [
                 <text x="314" y="420" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">               -- github activity</text>
               </g>
 
-              <!-- fact_engineer (center) -->
-              <rect id="rect-fact" x="270" y="168" width="260" height="142" rx="6" fill="#0d1117" stroke="#3b82f6" stroke-width="1.5"/>
-              <line x1="270" y1="194" x2="530" y2="194" stroke="#3b82f6" stroke-width="1" opacity="0.5"/>
-              <text x="286" y="185" fill="#569cd6" font-size="12" font-weight="700" font-family="JetBrains Mono, monospace">⬡ fact_engineer</text>
+              <!-- fact_engineer (center, clickable) -->
+              <g id="dim-fact" style="cursor:pointer">
+                <rect id="rect-fact" x="270" y="168" width="260" height="142" rx="6" fill="#0d1117" stroke="#3b82f6" stroke-width="1.5"/>
+                <line x1="270" y1="194" x2="530" y2="194" stroke="#3b82f6" stroke-width="1" opacity="0.5"/>
+                <text x="286" y="185" fill="#569cd6" font-size="12" font-weight="700" font-family="JetBrains Mono, monospace">⬡ fact_engineer</text>
 
-              <text x="286" y="212" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
-              <text x="308" y="212" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id</text>
-              <text x="430" y="212" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT  -- 1</text>
-              <line x1="286" y1="218" x2="514" y2="218" stroke="#30363d" stroke-width="0.5"/>
+                <text x="286" y="212" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
+                <text x="303" y="212" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                <text x="320" y="212" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id</text>
+                <text x="430" y="212" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT  -- 1</text>
+                <line x1="286" y1="218" x2="514" y2="218" stroke="#30363d" stroke-width="0.5"/>
 
-              <g id="fk-skills">
-                <text x="286" y="234" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
-                <text x="308" y="234" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">skill_id</text>
-                <text x="430" y="234" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
-              </g>
-              <g id="fk-projects">
-                <text x="286" y="252" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
-                <text x="308" y="252" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">project_id</text>
-                <text x="430" y="252" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
-              </g>
-              <g id="fk-writing">
-                <text x="286" y="270" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
-                <text x="308" y="270" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">writing_id</text>
-                <text x="430" y="270" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
-              </g>
-              <g id="fk-activity">
-                <text x="286" y="288" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
-                <text x="308" y="288" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">activity_id</text>
-                <text x="430" y="288" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                <g id="fk-skills">
+                  <text x="286" y="234" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="308" y="234" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">skill_id</text>
+                  <text x="430" y="234" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                </g>
+                <g id="fk-projects">
+                  <text x="286" y="252" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="308" y="252" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">project_id</text>
+                  <text x="430" y="252" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                </g>
+                <g id="fk-writing">
+                  <text x="286" y="270" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="308" y="270" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">writing_id</text>
+                  <text x="430" y="270" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                </g>
+                <g id="fk-activity">
+                  <text x="286" y="288" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="308" y="288" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">activity_id</text>
+                  <text x="430" y="288" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                </g>
               </g>
 
             </svg>
@@ -941,7 +1098,7 @@ const tabs = [
     <!-- ── Panel Divider ── -->
     <div class="ide-divider">
       <div style="display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10px;">
-        <span style="color:rgba(139,148,158,.4);">Results</span>
+        <span style="color:rgba(139,148,158,.4);" data-i18n="results-label">Results</span>
         <span id="result-row-label" style="color:rgba(52,211,153,0);transition:color .4s;" class="mono" style="font-size:10px;"></span>
       </div>
       <div class="view-toggle">
@@ -968,7 +1125,7 @@ const tabs = [
 
         <!-- Empty state -->
         <div class="results-empty" id="results-empty">
-          Press ▶ Run Query to execute
+          <span data-i18n="results-empty">Press ▶ Run Query to execute</span>
         </div>
 
         <!-- Skills result -->
@@ -1210,6 +1367,71 @@ const tabs = [
         </div>
 
       </div>
+
+      <!-- Salary error result -->
+      <div class="ide-result-content" data-result="salary" style="display:none;">
+        <div style="padding:20px 24px;height:100%;display:flex;flex-direction:column;gap:16px;">
+          <div style="background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.3);border-radius:6px;padding:16px 20px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <svg viewBox="0 0 16 16" style="width:16px;height:16px;fill:#f87171;flex-shrink:0;"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 4a.75.75 0 00-1.5 0v3.5a.75.75 0 001.5 0V5zm-.75 6.5a.75.75 0 100-1.5.75.75 0 000 1.5z"/></svg>
+              <span data-i18n="salary-err-title" style="color:#f87171;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;">ERROR: permission denied</span>
+            </div>
+            <pre data-i18n="salary-err-body" style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.7;color:rgba(248,113,113,.75);margin:0;white-space:pre-wrap;">SQLSTATE[42501]: Insufficient privilege: 7
+ERROR: column "salary" of relation "fact_engineer" does not exist
+LINE 1: SELECT f.salary FROM fact_engineer f JOIN dim_engineer d ON d.engineer_id = f.engineer_id WHERE d.name = 'Yuji'
+                   ^
+HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
+      Current role: 'analytics_engineer' — nice try 😏</pre>
+          </div>
+          <div data-i18n="salary-err-footer" style="color:rgba(139,148,158,.35);font-family:'JetBrains Mono',monospace;font-size:10px;">
+            Execution time: 0ms · 0 rows returned · Query failed
+          </div>
+        </div>
+      </div>
+
+      <!-- Table metadata panels -->
+      {TABLE_META.map(tbl => (
+        <div class="ide-result-content" data-result={`ddl-${tbl.id}`} style="display:none;">
+          <div style="padding:16px 20px;overflow-x:auto;">
+
+            <!-- Header -->
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+              <span style={`font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:${tbl.kind === 'fact' ? '#3b82f6' : '#4ec9b0'};`}>
+                ⬡ {tbl.id}
+              </span>
+              <span style={`padding:1px 7px;font-size:9px;border-radius:3px;font-family:'JetBrains Mono',monospace;border:1px solid;${tbl.kind === 'fact' ? 'color:#3b82f6;border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.07);' : 'color:#4ec9b0;border-color:rgba(78,201,176,.3);background:rgba(78,201,176,.07);'}`}>
+                {tbl.kind}
+              </span>
+            </div>
+
+            <!-- Description -->
+            <p style="font-size:12px;color:rgba(139,148,158,.7);line-height:1.7;margin-bottom:16px;max-width:560px;"
+               data-i18n={`meta-${tbl.id}-desc`}>
+              {tbl.description}
+            </p>
+
+            <!-- Columns -->
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(139,148,158,.4);margin-bottom:8px;letter-spacing:.04em;">
+              COLUMNS · {tbl.columns.length}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              {tbl.columns.map(col => (
+                <div style="display:flex;align-items:baseline;gap:10px;padding:6px 10px;border-radius:5px;background:rgba(255,255,255,.025);border:1px solid rgba(48,54,61,.6);">
+                  <div style="display:flex;align-items:center;gap:5px;min-width:130px;flex-shrink:0;">
+                    <span style="color:#9cdcfe;font-family:'JetBrains Mono',monospace;font-size:11px;">{col.name}</span>
+                    {col.key.includes('PK') && <span style="padding:0 4px;font-size:8px;color:#f59e0b;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:2px;">PK</span>}
+                    {col.key.includes('FK') && <span style="padding:0 4px;font-size:8px;color:#34d399;background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.25);border-radius:2px;">FK</span>}
+                  </div>
+                  <span style="font-size:11px;color:rgba(139,148,158,.5);line-height:1.5;"
+                        data-i18n={`meta-${tbl.id}-col-${col.name}`}>{col.desc}</span>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </div>
+      ))}
+
     </div><!-- /results pane -->
 
     <!-- ── Status Bar ── -->
@@ -1217,7 +1439,7 @@ const tabs = [
       <div style="display:flex;align-items:center;gap:10px;">
         <span style="display:flex;align-items:center;gap:5px;color:rgba(59,130,246,.65);">
           <span style="width:6px;height:6px;border-radius:50%;background:#34d399;display:inline-block;"></span>
-          Connected
+          <span data-i18n="status-connected">Connected</span>
         </span>
         <span style="color:rgba(139,148,158,.2);">·</span>
         <span style="color:rgba(139,148,158,.4);">fact_engineer</span>
@@ -1236,12 +1458,159 @@ const tabs = [
 </main>
 
 <script>
+  // ── i18n ──
+  type Lang = 'en' | 'ja';
+  let currentLang: Lang = (localStorage.getItem('lang') as Lang) || 'en';
+
+  const TRANS: Record<Lang, Record<string, string>> = {
+    en: {
+      'role-badge':      'Analytics Engineer',
+      'er-hint':         'click to inspect',
+      'results-label':   'Results',
+      'results-empty':   'Press ▶ Run Query to execute',
+      'status-connected':'Connected',
+      'run-btn':         'Run Query',
+      'running':         'Running...',
+      'error-btn':       'Error',
+      // SQL comments
+      'skills-cmt-1':   '-- What I work with every day.',
+      'skills-cmt-2':   '-- Data Modeling is my core passion — I love turning messy data into clear structures.',
+      'activity-cmt-1': '-- My GitHub contribution history.',
+      'activity-cmt-2': '-- Coding is a daily habit — consistency matters more than intensity.',
+      'writing-cmt-1':  '-- Where I share what I learn.',
+      'writing-cmt-2':  '-- Writing helps me solidify ideas and give back to the community.',
+      'projects-cmt-1': '-- OSS tools I built for the analytics engineering community.',
+      'projects-cmt-2': '-- Focused on making data modeling more observable and understandable.',
+      'salary-cmt-1':   '-- Just curious...',
+      // Salary error panel
+      'salary-err-title':  'ERROR: permission denied',
+      'salary-err-body':   `SQLSTATE[42501]: Insufficient privilege: 7\nERROR: column "salary" of relation "fact_engineer" does not exist\nLINE 1: SELECT f.salary FROM fact_engineer f JOIN dim_engineer d ON d.engineer_id = f.engineer_id WHERE d.name = 'Yuji'\n                   ^\nHINT: This column is classified. Access requires ROLE = 'hr_admin' or above.\n      Current role: 'analytics_engineer' — nice try 😏`,
+      'salary-err-footer': 'Execution time: 0ms · 0 rows returned · Query failed',
+      // rows returned
+      'rows-skills':    '5 rows returned',
+      'rows-activity':  '365 rows returned',
+      'rows-writing':   '3 rows returned',
+      'rows-projects':  '2 rows returned',
+      // Table metadata descriptions
+      'meta-fact_engineer-desc': 'The central fact table of this star schema. Represents me as a single engineer and holds foreign keys linking to all dimension tables.',
+      'meta-dim_engineer-desc':  'Dimension holding personal attributes of the engineer — who I am. Name and role are stored here and used to filter queries.',
+      'meta-dim_skills-desc':    'Dimension for technical skills. Stores the skill set I use professionally — data modeling, SQL, Python and more — along with proficiency levels.',
+      'meta-dim_activity-desc':  'Dimension for GitHub contribution history. Captures daily coding habits and makes them queryable as time-series data.',
+      'meta-dim_writing-desc':   'Dimension for writing platforms. Tracks where I publish articles — Medium, Qiita, Zenn — and the topics I write about.',
+      'meta-dim_projects-desc':  'Dimension for OSS projects. Holds metadata for tools I have built for the analytics engineering community.',
+      // Column descriptions
+      'meta-fact_engineer-col-engineer_id': 'Unique identifier for the engineer. References dim_engineer.',
+      'meta-fact_engineer-col-skill_id':    'Current primary skill focus. References dim_skills.',
+      'meta-fact_engineer-col-project_id':  'Featured OSS project. References dim_projects.',
+      'meta-fact_engineer-col-writing_id':  'Writing platform record. References dim_writing.',
+      'meta-fact_engineer-col-activity_id': 'GitHub activity snapshot. References dim_activity.',
+      'meta-dim_engineer-col-engineer_id':  'Unique identifier for the engineer.',
+      'meta-dim_engineer-col-name':         "Engineer's name. Used in WHERE clauses to filter rows.",
+      'meta-dim_engineer-col-role':         'Job title or role (e.g. Analytics Engineer).',
+      'meta-dim_skills-col-id':             'Unique identifier for the skill.',
+      'meta-dim_skills-col-skill_name':     'Name of the skill (e.g. dbt, SQL, Python).',
+      'meta-dim_skills-col-category':       'Skill category (e.g. Analytics Eng, Programming).',
+      'meta-dim_skills-col-proficiency':    'Proficiency level (expert / proficient).',
+      'meta-dim_activity-col-id':           'Unique identifier for the activity record.',
+      'meta-dim_activity-col-date':         'Contribution date (DATE type).',
+      'meta-dim_activity-col-contributions':'Number of contributions on that day.',
+      'meta-dim_writing-col-id':            'Unique identifier for the platform record.',
+      'meta-dim_writing-col-platform':      'Platform name (medium / qiita / zenn).',
+      'meta-dim_writing-col-url':           'Profile URL for the platform.',
+      'meta-dim_writing-col-topics':        'Main writing topics (e.g. Analytics Engineering, dbt).',
+      'meta-dim_projects-col-id':           'Unique identifier for the project.',
+      'meta-dim_projects-col-title':        'Project name (e.g. Modaryn, Modscape).',
+      'meta-dim_projects-col-description':  'Short description of what the project does.',
+      'meta-dim_projects-col-tags':         'Array of technology tags (TEXT[]).',
+      'meta-dim_projects-col-github_url':   'GitHub repository URL.',
+    },
+    ja: {
+      'role-badge':      'アナリティクスエンジニア',
+      'er-hint':         'クリックで詳細表示',
+      'results-label':   '結果',
+      'results-empty':   '▶ クエリを実行してください',
+      'status-connected':'接続済み',
+      'run-btn':         'クエリ実行',
+      'running':         '実行中...',
+      'error-btn':       'エラー',
+      // SQL comments
+      'skills-cmt-1':   '-- 日々使っているスキル一覧。',
+      'skills-cmt-2':   '-- データモデリングが一番の得意分野。複雑なデータを整理するのが好き。',
+      'activity-cmt-1': '-- GitHub のコントリビューション履歴。',
+      'activity-cmt-2': '-- コーディングは毎日の習慣。量より継続が大事。',
+      'writing-cmt-1':  '-- 学びをアウトプットする場所。',
+      'writing-cmt-2':  '-- 書くことで考えが整理され、コミュニティへの還元にもなる。',
+      'projects-cmt-1': '-- アナリティクスエンジニアリング向けに作った OSS ツール群。',
+      'projects-cmt-2': '-- データモデリングをより可視化・理解しやすくすることを目指している。',
+      'salary-cmt-1':   '-- ちょっと気になって...',
+      // Salary error panel
+      'salary-err-title':  'エラー: 権限がありません',
+      'salary-err-body':   `SQLSTATE[42501]: 権限不足: 7\nエラー: リレーション "fact_engineer" に "salary" カラムは存在しません\n行 1: SELECT f.salary FROM fact_engineer f JOIN dim_engineer d ON d.engineer_id = f.engineer_id WHERE d.name = 'Yuji'\n                   ^\nヒント: このカラムは機密扱いです。アクセスには ROLE = 'hr_admin' 以上が必要です。\n      現在のロール: 'analytics_engineer' — 残念でした 😏`,
+      'salary-err-footer': '実行時間: 0ms · 0行取得 · クエリ失敗',
+      // rows returned
+      'rows-skills':    '5行取得',
+      'rows-activity':  '365行取得',
+      'rows-writing':   '3行取得',
+      'rows-projects':  '2行取得',
+      // Table metadata descriptions
+      'meta-fact_engineer-desc': 'このスキーマの中心となるファクトテーブル。エンジニアとしての私を1行で表し、各ディメンションへの外部キーを保持します。',
+      'meta-dim_engineer-desc':  'エンジニア自身の属性を保持するディメンション。名前・役割など「誰であるか」を表す情報が格納され、クエリの絞り込みに使用されます。',
+      'meta-dim_skills-desc':    '技術スキルのディメンション。データモデリング・SQL・Python など業務で使用するスキルセットと習熟度を管理します。',
+      'meta-dim_activity-desc':  'GitHub のコントリビューション履歴を保持するディメンション。日々のコーディング習慣を時系列データとして扱えます。',
+      'meta-dim_writing-desc':   '執筆プラットフォームのディメンション。Medium・Qiita・Zenn など発信する場所と扱うトピックを管理します。',
+      'meta-dim_projects-desc':  'OSS プロジェクトのディメンション。アナリティクスエンジニアリングコミュニティ向けに開発したツール群のメタデータを保持します。',
+      // Column descriptions
+      'meta-fact_engineer-col-engineer_id': 'エンジニアの識別子。dim_engineer を参照。',
+      'meta-fact_engineer-col-skill_id':    '現在注力しているスキル。dim_skills を参照。',
+      'meta-fact_engineer-col-project_id':  '代表的な OSS プロジェクト。dim_projects を参照。',
+      'meta-fact_engineer-col-writing_id':  '執筆プラットフォームのレコード。dim_writing を参照。',
+      'meta-fact_engineer-col-activity_id': 'GitHub 活動のスナップショット。dim_activity を参照。',
+      'meta-dim_engineer-col-engineer_id':  'エンジニアの一意識別子。',
+      'meta-dim_engineer-col-name':         'エンジニアの名前。WHERE 句で絞り込みに使用。',
+      'meta-dim_engineer-col-role':         '職種・肩書き（例: アナリティクスエンジニア）。',
+      'meta-dim_skills-col-id':             'スキルの一意識別子。',
+      'meta-dim_skills-col-skill_name':     'スキル名（例: dbt, SQL, Python）。',
+      'meta-dim_skills-col-category':       'スキルカテゴリ（例: Analytics Eng, Programming）。',
+      'meta-dim_skills-col-proficiency':    '習熟度レベル（expert / proficient）。',
+      'meta-dim_activity-col-id':           'アクティビティレコードの識別子。',
+      'meta-dim_activity-col-date':         'コントリビューション日付（DATE 型）。',
+      'meta-dim_activity-col-contributions':'その日のコントリビューション数。',
+      'meta-dim_writing-col-id':            'プラットフォームの識別子。',
+      'meta-dim_writing-col-platform':      'プラットフォーム名（medium / qiita / zenn）。',
+      'meta-dim_writing-col-url':           'プロフィール URL。',
+      'meta-dim_writing-col-topics':        '主な執筆テーマ（例: Analytics Engineering, dbt）。',
+      'meta-dim_projects-col-id':           'プロジェクトの識別子。',
+      'meta-dim_projects-col-title':        'プロジェクト名（例: Modaryn, Modscape）。',
+      'meta-dim_projects-col-description':  'プロジェクトの概要説明。',
+      'meta-dim_projects-col-tags':         '使用技術タグの配列（TEXT[]）。',
+      'meta-dim_projects-col-github_url':   'GitHub リポジトリの URL。',
+    },
+  };
+
+  function t(key: string): string {
+    return TRANS[currentLang][key] ?? TRANS.en[key] ?? key;
+  }
+
+  function setLang(lang: Lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    document.querySelectorAll<HTMLElement>('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n!;
+      const val = TRANS[lang][key];
+      if (val !== undefined) el.textContent = val;
+    });
+    document.querySelectorAll<HTMLElement>('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+  }
+
   // ── Tab data ──
-  const TAB_META: Record<string, { table: string; rows: string; file: string }> = {
-    skills:   { table: 'skills',   rows: '5 rows returned',   file: 'skills.sql'   },
-    activity: { table: 'activity', rows: '365 rows returned', file: 'activity.sql' },
-    writing:  { table: 'writing',  rows: '3 rows returned',   file: 'writing.sql'  },
-    projects: { table: 'projects', rows: '2 rows returned',   file: 'projects.sql' },
+  const TAB_META: Record<string, { table: string; rows: string; file: string; error: boolean }> = {
+    skills:   { table: 'skills',   rows: '5 rows returned',   file: 'skills.sql',   error: false },
+    activity: { table: 'activity', rows: '365 rows returned', file: 'activity.sql', error: false },
+    writing:  { table: 'writing',  rows: '3 rows returned',   file: 'writing.sql',  error: false },
+    projects: { table: 'projects', rows: '2 rows returned',   file: 'projects.sql', error: false },
+    salary:   { table: 'salary',   rows: '',                  file: 'salary.sql',   error: true  },
   };
 
   let activeTab = 'skills';
@@ -1285,6 +1654,7 @@ const tabs = [
 
   // ── Show result ──
   function showResult(tab: string) {
+    const meta = TAB_META[tab];
     document.getElementById('results-empty')!.style.display = 'none';
     document.querySelectorAll<HTMLElement>('.ide-result-content').forEach(el => {
       const isTarget = el.dataset.result === tab;
@@ -1293,11 +1663,15 @@ const tabs = [
       else el.style.display = '';
     });
 
-    // Row label
+    // Row label + status bar color
     const label = document.getElementById('result-row-label');
-    if (label) {
-      label.textContent = '· ' + TAB_META[tab].rows;
-      label.style.color = 'rgba(52,211,153,.7)';
+    const statusBar = document.querySelector<HTMLElement>('.ide-statusbar');
+    if (meta.error) {
+      if (label) { label.textContent = '· ERROR: permission denied'; label.style.color = '#f87171'; }
+      if (statusBar) statusBar.style.borderTop = '1px solid rgba(220,38,38,.4)';
+    } else {
+      if (label) { label.textContent = '· ' + t(`rows-${tab}`); label.style.color = 'rgba(52,211,153,.7)'; }
+      if (statusBar) statusBar.style.borderTop = '';
     }
   }
 
@@ -1310,19 +1684,34 @@ const tabs = [
     if (empty) empty.style.display = '';
     const label = document.getElementById('result-row-label');
     if (label) { label.textContent = ''; label.style.color = 'rgba(52,211,153,0)'; }
+    const statusBar = document.querySelector<HTMLElement>('.ide-statusbar');
+    if (statusBar) statusBar.style.borderTop = '';
   }
 
   // ── Run button ──
   const runBtn = document.getElementById('run-btn');
   runBtn?.addEventListener('click', () => {
     runBtn.classList.add('running');
-    runBtn.innerHTML = `<svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:currentColor;animation:spin .6s linear infinite;"><path d="M8 2a6 6 0 100 12A6 6 0 008 2zm0 1a5 5 0 110 10A5 5 0 018 3zm-.5 2.5v3l2.5 1.5.5-.87-2-.5-2 .5V5.5h-.5z" opacity=".5"/></svg> Running...`;
+    runBtn.innerHTML = `<svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:currentColor;animation:spin .6s linear infinite;"><path d="M8 2a6 6 0 100 12A6 6 0 008 2zm0 1a5 5 0 110 10A5 5 0 018 3zm-.5 2.5v3l2.5 1.5.5-.87-2-.5-2 .5V5.5h-.5z" opacity=".5"/></svg> ${t('running')}`;
 
     setTimeout(() => {
       resultShown[activeTab] = true;
       showResult(activeTab);
       runBtn.classList.remove('running');
-      runBtn.innerHTML = `<svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:currentColor;"><path d="M4 2l10 6-10 6z"/></svg> Run Query`;
+      if (TAB_META[activeTab].error) {
+        runBtn.style.background = 'rgba(220,38,38,.15)';
+        runBtn.style.borderColor = 'rgba(220,38,38,.4)';
+        runBtn.style.color = '#f87171';
+        runBtn.innerHTML = `<svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:currentColor;"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 4a.75.75 0 00-1.5 0v3.5a.75.75 0 001.5 0V5zm-.75 6.5a.75.75 0 100-1.5.75.75 0 000 1.5z"/></svg> ${t('error-btn')}`;
+        setTimeout(() => {
+          runBtn.style.background = '';
+          runBtn.style.borderColor = '';
+          runBtn.style.color = '';
+          runBtn.innerHTML = `<svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:currentColor;"><path d="M4 2l10 6-10 6z"/></svg> ${t('run-btn')}`;
+        }, 2500);
+      } else {
+        runBtn.innerHTML = `<svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:currentColor;"><path d="M4 2l10 6-10 6z"/></svg> ${t('run-btn')}`;
+      }
     }, 820);
   });
 
@@ -1366,16 +1755,41 @@ const tabs = [
   });
   profilePopup?.addEventListener('click', (e) => e.stopPropagation());
 
+  // ── DDL inspect ──
+  function showDDL(tableId: string) {
+    const emptyEl = document.getElementById('results-empty');
+    if (emptyEl) emptyEl.style.display = 'none';
+    document.querySelectorAll<HTMLElement>('.ide-result-content').forEach(el => {
+      const isTarget = el.dataset.result === `ddl-${tableId}`;
+      if (isTarget) {
+        el.classList.add('visible');
+        el.style.display = '';
+      } else {
+        el.classList.remove('visible');
+        el.style.display = 'none';
+      }
+    });
+    // スクロールを先頭に戻す
+    const scroller = document.querySelector<HTMLElement>('.ide-results-pane > div');
+    if (scroller) scroller.scrollTop = 0;
+    const label = document.getElementById('result-row-label');
+    if (label) { label.textContent = `· ${tableId}`; label.style.color = 'rgba(78,201,176,.7)'; }
+    const statusEl = document.getElementById('status-active-tab');
+    if (statusEl) statusEl.textContent = tableId;
+    const statusBar = document.querySelector<HTMLElement>('.ide-statusbar');
+    if (statusBar) statusBar.style.borderTop = '';
+  }
+
   // ── ER Diagram interactions ──
   const BLUE = '#3b82f6';
   const ER_ITEMS = [
-    { dim: 'dim-skills',   rect: 'rect-skills',   line: 'line-skills',   lbl: 'lbl-skills',   fk: 'fk-skills',   tab: 'skills'   },
-    { dim: 'dim-projects', rect: 'rect-projects', line: 'line-projects', lbl: 'lbl-projects', fk: 'fk-projects', tab: 'projects' },
-    { dim: 'dim-writing',  rect: 'rect-writing',  line: 'line-writing',  lbl: 'lbl-writing',  fk: 'fk-writing',  tab: 'writing'  },
-    { dim: 'dim-activity', rect: 'rect-activity', line: 'line-activity', lbl: 'lbl-activity', fk: 'fk-activity', tab: 'activity' },
+    { dim: 'dim-skills',   rect: 'rect-skills',   line: 'line-skills',   lbl: 'lbl-skills',   fk: 'fk-skills',   ddl: 'dim_skills'   },
+    { dim: 'dim-projects', rect: 'rect-projects', line: 'line-projects', lbl: 'lbl-projects', fk: 'fk-projects', ddl: 'dim_projects' },
+    { dim: 'dim-writing',  rect: 'rect-writing',  line: 'line-writing',  lbl: 'lbl-writing',  fk: 'fk-writing',  ddl: 'dim_writing'  },
+    { dim: 'dim-activity', rect: 'rect-activity', line: 'line-activity', lbl: 'lbl-activity', fk: 'fk-activity', ddl: 'dim_activity' },
   ];
 
-  ER_ITEMS.forEach(({ dim, rect, line, lbl, fk, tab }) => {
+  ER_ITEMS.forEach(({ dim, rect, line, lbl, fk, ddl }) => {
     const dimEl  = document.getElementById(dim);
     const rectEl = document.getElementById(rect);
     const lineEl = document.getElementById(line);
@@ -1397,15 +1811,46 @@ const tabs = [
         t.setAttribute('fill', i === 0 ? '#6a9955' : i === 1 ? '#9cdcfe' : '#8b949e');
       });
     });
-    dimEl.addEventListener('click', () => switchTab(tab));
+    dimEl.addEventListener('click', () => showDDL(ddl));
   });
+
+  // fact_engineer と dim_engineer のhover + DDL表示
+  const dimFactEl     = document.getElementById('dim-fact');
+  const dimEngineerEl = document.getElementById('dim-engineer');
+  const rectFactEl    = document.getElementById('rect-fact');
+  const rectEngineerEl = document.getElementById('rect-engineer');
+  const lineEngineerEl = document.getElementById('line-engineer');
+  const lblEngineerEl  = document.getElementById('lbl-engineer');
+
+  dimFactEl?.addEventListener('mouseenter', () => {
+    rectFactEl?.setAttribute('stroke', BLUE);
+    lineEngineerEl?.setAttribute('stroke', BLUE);
+  });
+  dimFactEl?.addEventListener('mouseleave', () => {
+    rectFactEl?.setAttribute('stroke', '#3b82f6');
+    lineEngineerEl?.setAttribute('stroke', '#30363d');
+  });
+  dimFactEl?.addEventListener('click', () => showDDL('fact_engineer'));
+
+  dimEngineerEl?.addEventListener('mouseenter', () => {
+    rectEngineerEl?.setAttribute('stroke', BLUE);
+    lineEngineerEl?.setAttribute('stroke', BLUE);
+    lblEngineerEl?.setAttribute('fill', BLUE);
+  });
+  dimEngineerEl?.addEventListener('mouseleave', () => {
+    rectEngineerEl?.setAttribute('stroke', '#30363d');
+    lineEngineerEl?.setAttribute('stroke', '#30363d');
+    lblEngineerEl?.setAttribute('fill', '#8b949e');
+  });
+  dimEngineerEl?.addEventListener('click', () => showDDL('dim_engineer'));
 
   // ── ER line animation on load ──
   const lineLengths: Record<string, number> = {
-    'line-skills':   43,
-    'line-activity': 40,
-    'line-projects': 40,
-    'line-writing':  40,
+    'line-engineer': 148,
+    'line-skills':    43,
+    'line-activity':  40,
+    'line-projects':  40,
+    'line-writing':   40,
   };
   Object.entries(lineLengths).forEach(([id, len]) => {
     const el = document.getElementById(id);
@@ -1420,7 +1865,7 @@ const tabs = [
     new IntersectionObserver(([entry]) => {
       if (!entry.isIntersecting || linesDrawn) return;
       linesDrawn = true;
-      ['line-skills','line-projects','line-writing','line-activity'].forEach((id, i) => {
+      ['line-engineer','line-skills','line-projects','line-writing','line-activity'].forEach((id, i) => {
         setTimeout(() => {
           const line = document.getElementById(id) as SVGLineElement | null;
           const lbl  = document.getElementById(id.replace('line-', 'lbl-'));
@@ -1469,6 +1914,13 @@ const tabs = [
   }
   applyMobileLayout();
   window.addEventListener('resize', applyMobileLayout);
+
+  // ── Language toggle ──
+  document.querySelectorAll<HTMLElement>('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => setLang(btn.dataset.lang as Lang));
+  });
+  // Apply saved language on load
+  setLang(currentLang);
 </script>
 
 </Layout>
