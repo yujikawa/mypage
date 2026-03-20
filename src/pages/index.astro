@@ -1724,7 +1724,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
     // dim_engineer
     if (/from\s+dim_engineer\b/.test(q))
       return { kind:'table', headers:['engineer_id','name','role','location','years_exp'], rows:[
-        ['1','Yuji Kawano','Analytics Engineer','Japan 🇯🇵','5+'],
+        ['1','Yuji','Analytics Engineer','Japan 🇯🇵','5+'],
       ]};
 
     // dim_skill
@@ -1794,7 +1794,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
 
     // version()
     if (/\bversion\s*\(\)/.test(q))
-      return { kind:'table', headers:['version'], rows:[['mypage.sql 2.0.0 on portfolio_db, compiled by Yuji Kawano']] };
+      return { kind:'table', headers:['version'], rows:[['mypage.sql 2.0.0 on portfolio_db, compiled by Yuji']] };
 
     // EXPLAIN
     if (/^explain\b/.test(q))
