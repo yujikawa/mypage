@@ -132,18 +132,15 @@ const TABLE_META = [
 ];
 ---
 
-<Layout title="mypage.sql">
+<Layout title="mypage.sql" hideNavBar={true}>
 
 <style>
   /* ── IDE window ── */
   .ide-window {
     display: flex;
     flex-direction: column;
-    background: #0d1117;
-    border: 1px solid #30363d;
-    border-radius: 12px;
+    background: var(--color-background);
     overflow: hidden;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03);
   }
 
   /* ── Header ── */
@@ -153,8 +150,8 @@ const TABLE_META = [
     gap: 0;
     padding: 0 12px;
     height: 42px;
-    background: #161b22;
-    border-bottom: 1px solid #21262d;
+    background: var(--color-background-alt);
+    border-bottom: 1px solid var(--color-border-color);
     flex-shrink: 0;
     user-select: none;
   }
@@ -163,21 +160,22 @@ const TABLE_META = [
     align-items: center;
     gap: 7px;
     padding-right: 20px;
-    border-right: 1px solid rgba(33,38,45,.8);
+    border-right: 1px solid var(--color-border-alt);
     margin-right: 4px;
     flex-shrink: 0;
   }
   .menu-item {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
-    color: rgba(139,148,158,.4);
+    color: var(--color-text-muted);
     padding: 4px 10px;
     border-radius: 4px;
     cursor: default;
     transition: background .15s, color .15s;
     white-space: nowrap;
   }
-  .menu-item:hover { background: rgba(255,255,255,.05); color: rgba(139,148,158,.75); }
+  .menu-item:hover { background: rgba(0,0,0,.05); color: var(--color-text-base); }
+  html.dark .menu-item:hover { background: rgba(255,255,255,.05); color: var(--color-text-base); }
 
   /* ── Editor + ER split ── */
   .ide-body {
@@ -191,7 +189,7 @@ const TABLE_META = [
   .ide-editor-pane {
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #21262d;
+    border-right: 1px solid var(--color-border-color);
     min-width: 0;
     width: 44%;
     flex-shrink: 0;
@@ -201,8 +199,8 @@ const TABLE_META = [
   .ide-tabbar {
     display: flex;
     align-items: flex-end;
-    background: #0d1117;
-    border-bottom: 1px solid #21262d;
+    background: var(--color-background-alt);
+    border-bottom: 1px solid var(--color-border-color);
     overflow-x: auto;
     flex-shrink: 0;
     scrollbar-width: none;
@@ -216,9 +214,9 @@ const TABLE_META = [
     padding: 6px 14px 7px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
-    color: rgba(139,148,158,.4);
+    color: var(--color-text-muted);
     border-top: 1px solid transparent;
-    border-right: 1px solid transparent;
+    border-right: 1px solid var(--color-border-color);
     border-left: 1px solid transparent;
     cursor: pointer;
     white-space: nowrap;
@@ -228,26 +226,28 @@ const TABLE_META = [
     top: 1px;
     border-radius: 4px 4px 0 0;
   }
-  .ide-tab:hover { color: rgba(139,148,158,.65); background: rgba(255,255,255,.03); }
+  .ide-tab:hover { color: var(--color-text-base); background: rgba(0,0,0,.03); }
+  html.dark .ide-tab:hover { background: rgba(255,255,255,.03); }
   .ide-tab.active {
-    color: #f0f0f0;
-    background: #0d1117;
-    border-color: #30363d;
-    border-bottom-color: #0d1117;
+    color: var(--color-text-base);
+    background: var(--color-background);
+    border-color: var(--color-border-color);
+    border-bottom-color: var(--color-background);
+    z-index: 2;
   }
-  .ide-tab.active .tab-dot { color: #3b82f6; }
+  .ide-tab.active .tab-dot { color: var(--color-primary); }
 
   /* ── SQL Editor lines ── */
   .ide-editor-scroll {
     flex: 1;
     overflow-y: auto;
-    background: #0d1117;
+    background: var(--color-background);
     scrollbar-width: thin;
-    scrollbar-color: #30363d transparent;
+    scrollbar-color: var(--color-border-color) transparent;
   }
   .ide-editor-scroll::-webkit-scrollbar { width: 6px; }
   .ide-editor-scroll::-webkit-scrollbar-track { background: transparent; }
-  .ide-editor-scroll::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+  .ide-editor-scroll::-webkit-scrollbar-thumb { background: var(--color-border-color); border-radius: 3px; }
 
   .ide-editor-content { display: none; padding-bottom: 16px; }
   .ide-editor-content.active { display: block; }
@@ -259,25 +259,28 @@ const TABLE_META = [
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
   }
-  .sql-line:hover { background: rgba(255,255,255,.025); }
-  .sql-line.highlighted { background: rgba(59,130,246,.06); }
+  .sql-line:hover { background: rgba(0,0,0,.025); }
+  html.dark .sql-line:hover { background: rgba(255,255,255,.025); }
+  .sql-line.highlighted { background: rgba(59,130,246,.1); }
+  html.dark .sql-line.highlighted { background: rgba(59,130,246,.15); }
 
   .ln {
     width: 44px;
     text-align: right;
     padding-right: 16px;
-    color: rgba(139,148,158,.22);
+    color: var(--color-text-muted);
+    opacity: 0.5;
     flex-shrink: 0;
     user-select: none;
   }
-  .lc { padding-right: 16px; color: rgba(240,240,240,.85); flex: 1; }
+  .lc { padding-right: 16px; color: var(--color-text-base); flex: 1; }
 
   /* blinking cursor */
   .sql-cursor {
     display: inline-block;
     width: 2px;
     height: 14px;
-    background: #3b82f6;
+    background: var(--color-primary);
     vertical-align: text-bottom;
     animation: blink 1.1s step-end infinite;
     border-radius: 1px;
@@ -290,8 +293,8 @@ const TABLE_META = [
     align-items: center;
     justify-content: space-between;
     padding: 5px 10px;
-    background: #161b22;
-    border-top: 1px solid #21262d;
+    background: var(--color-background-alt);
+    border-top: 1px solid var(--color-border-color);
     flex-shrink: 0;
   }
 
@@ -304,7 +307,7 @@ const TABLE_META = [
     background: rgba(59,130,246,.15);
     border: 1px solid rgba(59,130,246,.3);
     border-radius: 5px;
-    color: rgba(59,130,246,.85);
+    color: var(--color-primary);
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     cursor: pointer;
@@ -318,16 +321,16 @@ const TABLE_META = [
   .lang-btn {
     padding: 2px 7px;
     background: transparent;
-    border: 1px solid rgba(48,54,61,.8);
+    border: 1px solid var(--color-border-color);
     border-radius: 3px;
-    color: rgba(139,148,158,.35);
+    color: var(--color-text-muted);
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     cursor: pointer;
     transition: color .15s, border-color .15s;
   }
-  .lang-btn:hover { color: rgba(139,148,158,.7); border-color: rgba(139,148,158,.3); }
-  .lang-btn.active { color: rgba(59,130,246,.85); border-color: rgba(59,130,246,.4); background: rgba(59,130,246,.08); }
+  .lang-btn:hover { opacity: 1; border-color: var(--color-text-muted); }
+  .lang-btn.active { color: var(--color-primary); border-color: var(--color-primary); background: rgba(59, 130, 246, 0.1); opacity: 1; }
 
   /* ── REPL tab special styling ── */
   .ide-tab[data-tab="repl"] { color: rgba(52,211,153,.5); }
@@ -341,7 +344,7 @@ const TABLE_META = [
     background: transparent;
     border: none;
     outline: none;
-    color: #9cdcfe;
+    color: var(--color-secondary);
     font-family: 'JetBrains Mono', monospace;
     font-size: 13px;
     line-height: 1.7;
@@ -349,7 +352,7 @@ const TABLE_META = [
     resize: none;
     caret-color: #34d399;
   }
-  .repl-textarea::placeholder { color: rgba(139,148,158,.25); }
+  .repl-textarea::placeholder { color: var(--color-text-muted); opacity: 0.25; }
   .repl-textarea::selection   { background: rgba(59,130,246,.2); }
 
   /* ── ER pane ── */
@@ -358,36 +361,37 @@ const TABLE_META = [
     flex-direction: column;
     flex: 1;
     min-width: 0;
-    background: #090d12;
+    background: var(--color-background-alt);
   }
   .ide-panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 5px 12px;
-    background: #0d1117;
-    border-bottom: 1px solid #21262d;
+    background: var(--color-background-alt);
+    border-bottom: 1px solid var(--color-border-color);
     flex-shrink: 0;
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
-    color: rgba(139,148,158,.4);
+    color: var(--color-text-muted);
   }
   .ide-er-scroll {
     flex: 1;
     overflow: auto;
     position: relative;
-    background-image: radial-gradient(circle, #1e2530 1px, transparent 1px);
+    background-image: radial-gradient(circle, var(--color-border-color) 1px, transparent 1px);
     background-size: 20px 20px;
     scrollbar-width: thin;
-    scrollbar-color: #30363d transparent;
+    scrollbar-color: var(--color-border-color) transparent;
   }
 
   /* ── View toggle ── */
   .view-toggle {
     display: flex;
     gap: 2px;
-    background: rgba(0,0,0,.3);
-    border: 1px solid rgba(255,255,255,.06);
+    background: rgba(0,0,0,.1);
+    html.dark & { background: rgba(0,0,0,.3); }
+    border: 1px solid var(--color-border-color);
     border-radius: 5px;
     padding: 2px;
   }
@@ -399,13 +403,13 @@ const TABLE_META = [
     height: 20px;
     border-radius: 3px;
     cursor: pointer;
-    color: rgba(139,148,158,.35);
+    color: var(--color-text-muted);
     transition: background .12s, color .12s;
     border: none;
     background: transparent;
   }
-  .view-btn:hover { color: rgba(139,148,158,.7); }
-  .view-btn.active { background: rgba(59,130,246,.2); color: rgba(59,130,246,.85); }
+  .view-btn:hover { color: var(--color-text-base); }
+  .view-btn.active { background: rgba(59,130,246,.2); color: var(--color-primary); opacity: 1; }
 
   .result-view { display: none; }
   .result-view.active { display: block; }
@@ -417,21 +421,21 @@ const TABLE_META = [
     align-items: center;
     justify-content: space-between;
     padding: 4px 12px;
-    background: #161b22;
-    border-top: 1px solid #21262d;
-    border-bottom: 1px solid #21262d;
+    background: var(--color-background-alt);
+    border-top: 1px solid var(--color-border-color);
+    border-bottom: 1px solid var(--color-border-color);
     flex-shrink: 0;
     cursor: row-resize;
     user-select: none;
   }
   .divider-dots { display: flex; gap: 2px; }
-  .divider-dot { width: 14px; height: 2px; background: rgba(139,148,158,.12); border-radius: 1px; }
+  .divider-dot { width: 14px; height: 2px; background: var(--color-text-muted); opacity: 0.12; border-radius: 1px; }
 
   /* ── Results pane ── */
   .ide-results-pane {
     display: flex;
     flex-direction: column;
-    background: #0d1117;
+    background: var(--color-background);
     flex-shrink: 0;
     height: 34%;
     min-height: 160px;
@@ -458,9 +462,9 @@ const TABLE_META = [
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     font-weight: normal;
-    color: rgba(139,148,158,.5);
-    background: #161b22;
-    border-bottom: 1px solid #21262d;
+    color: var(--color-text-muted);
+    background: var(--color-background-alt);
+    border-bottom: 1px solid var(--color-border-color);
     position: sticky;
     top: 0;
     z-index: 1;
@@ -469,11 +473,12 @@ const TABLE_META = [
     padding: 6px 14px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
-    border-bottom: 1px solid rgba(33,38,45,.5);
+    border-bottom: 1px solid var(--color-border-color);
     transition: background .1s;
   }
-  .result-table tr:hover td { background: rgba(255,255,255,.02); }
-  .row-num { color: rgba(139,148,158,.2); width: 36px; }
+  .result-table tr:hover td { background: rgba(0,0,0,.02); }
+  html.dark .result-table tr:hover td { background: rgba(255,255,255,.02); }
+  .row-num { color: var(--color-text-muted); opacity: 0.2; width: 36px; }
 
   /* ── Status bar ── */
   .ide-statusbar {
@@ -481,12 +486,14 @@ const TABLE_META = [
     align-items: center;
     justify-content: space-between;
     padding: 4px 12px;
-    background: rgba(59,130,246,.12);
-    border-top: 1px solid rgba(59,130,246,.2);
+    background: var(--color-background-alt);
+    border-top: 1px solid var(--color-border-color);
+    color: var(--color-text-muted);
     flex-shrink: 0;
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
   }
+  /* Remove dark mode specific statusbar color as we are using muted colors now */
 
   /* ── Empty state ── */
   .results-empty {
@@ -496,7 +503,8 @@ const TABLE_META = [
     height: 100%;
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
-    color: rgba(139,148,158,.2);
+    color: var(--color-text-muted);
+    opacity: 0.2;
   }
 
   /* ── Explorer pane (leftmost) ── */
@@ -505,15 +513,15 @@ const TABLE_META = [
     flex-direction: column;
     width: 168px;
     flex-shrink: 0;
-    border-right: 1px solid #21262d;
-    background: #0d1117;
+    border-right: 1px solid var(--color-border-color);
+    background: var(--color-background-alt);
     overflow: hidden;
   }
   .ide-explorer-scroll {
     flex: 1;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: #30363d transparent;
+    scrollbar-color: var(--color-border-color) transparent;
   }
   .explorer-section {
     padding: 6px 0 2px;
@@ -525,7 +533,8 @@ const TABLE_META = [
     padding: 3px 10px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 9px;
-    color: rgba(139,148,158,.3);
+    color: var(--color-text-muted);
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .06em;
     user-select: none;
@@ -537,19 +546,22 @@ const TABLE_META = [
     padding: 4px 10px 4px 18px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
-    color: rgba(139,148,158,.5);
+    color: var(--color-text-base);
     cursor: pointer;
     transition: background .12s, color .12s;
     border-left: 2px solid transparent;
   }
-  .explorer-item:hover { background: rgba(255,255,255,.04); color: rgba(139,148,158,.8); }
+  .explorer-item:hover { background: rgba(0,0,0,.04); }
+  html.dark .explorer-item:hover { background: rgba(255,255,255,.04); }
   .explorer-item.active {
-    color: #9cdcfe;
+    color: var(--color-primary);
+    font-weight: 600;
     background: rgba(59,130,246,.08);
-    border-left-color: #3b82f6;
+    border-left-color: var(--color-primary);
   }
   .explorer-item.fact {
-    color: rgba(86,156,214,.7);
+    color: var(--color-primary);
+    font-weight: 600;
     cursor: default;
     border-left: 2px solid rgba(59,130,246,.3);
     background: rgba(59,130,246,.04);
@@ -563,17 +575,20 @@ const TABLE_META = [
     right: 0;
     width: 200px;
     border-radius: 8px;
-    border: 1px solid #30363d;
-    background: #161b22;
+    border: 1px solid var(--color-border-color);
+    background: var(--color-background-alt);
     overflow: hidden;
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     z-index: 100;
-    box-shadow: 0 12px 40px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.04);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
     opacity: 0;
     transform: translateY(-4px) scale(.98);
     pointer-events: none;
     transition: opacity .18s ease, transform .18s ease;
+  }
+  html.dark .profile-popup {
+    box-shadow: 0 12px 40px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,0.04);
   }
   .profile-popup.open {
     opacity: 1;
@@ -590,7 +605,8 @@ const TABLE_META = [
     border-radius: 5px;
     transition: background .15s;
   }
-  .profile-trigger:hover { background: rgba(255,255,255,.06); }
+  .profile-trigger:hover { background: rgba(0,0,0,.05); }
+  html.dark .profile-trigger:hover { background: rgba(255,255,255,.06); }
 
   /* ── Mobile layout ── */
   @media (max-width: 767px) {
@@ -614,7 +630,7 @@ const TABLE_META = [
       height: 300px;
       flex-shrink: 0;
       border-right: none;
-      border-bottom: 1px solid #21262d;
+      border-bottom: 1px solid var(--color-border-alt);
     }
 
     /* SQL editor: middle */
@@ -625,7 +641,7 @@ const TABLE_META = [
       min-height: 160px;
       flex-shrink: 0;
       border-right: none;
-      border-bottom: 1px solid #21262d;
+      border-bottom: 1px solid var(--color-border-alt);
     }
     .ide-editor-scroll { max-height: 200px; }
 
@@ -643,9 +659,9 @@ const TABLE_META = [
   }
 </style>
 
-<main class="px-3 sm:px-4 pb-4 pt-4">
+<main class="w-full h-screen overflow-hidden">
 
-  <div class="ide-window" id="ide-window" style="height: calc(100vh - 2rem); min-height: 580px;">
+  <div class="ide-window" id="ide-window" style="width: 100vw; height: 100vh;">
 
     <!-- ── Header ── -->
     <div class="ide-header">
@@ -654,7 +670,7 @@ const TABLE_META = [
         <svg viewBox="0 0 16 16" style="width:14px;height:14px;fill:rgba(59,130,246,.6);flex-shrink:0;">
           <path d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8z"/>
         </svg>
-        <span class="mono" style="font-size:12px;color:rgba(240,240,240,.6);font-weight:500;">My page</span>
+        <span class="mono" style="font-size:12px;color:var(--color-text-base);font-weight:600;">My page</span>
       </div>
       <!-- Menu items -->
       {["File", "Edit", "View", "Run", "Help"].map(item => (
@@ -662,42 +678,47 @@ const TABLE_META = [
       ))}
       <!-- Spacer -->
       <div style="flex:1;"></div>
+      <!-- Theme toggle -->
+      <button id="theme-toggle" class="lang-btn" style="margin-right:8px;display:flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;" title="Toggle Dark/Light Mode">
+        <svg id="sun-icon" viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;display:none;"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg id="moon-icon" viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;display:none;"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
       <!-- Language toggle -->
       <div style="display:flex;align-items:center;gap:3px;margin-right:12px;">
         <button class="lang-btn active" id="lang-en" data-lang="en">EN</button>
         <button class="lang-btn"        id="lang-ja" data-lang="ja">JA</button>
       </div>
       <!-- Online badge -->
-      <div style="display:flex;align-items:center;gap:5px;margin-right:14px;padding-right:14px;border-right:1px solid rgba(33,38,45,.8);">
-        <span style="width:5px;height:5px;border-radius:50%;background:#34d399;display:inline-block;flex-shrink:0;"></span>
-        <span class="mono" style="font-size:10px;color:rgba(139,148,158,.3);" data-i18n="role-badge">Analytics Engineer</span>
+      <div style="display:flex;align-items:center;gap:5px;margin-right:14px;padding-right:14px;border-right:1px solid var(--color-border-alt);">
+        <span style="width:5px;height:5px;border-radius:50%;background:#2da44e;display:inline-block;flex-shrink:0;"></span>
+        <span class="mono" style="font-size:10px;color:var(--color-text-muted);font-weight:600;" data-i18n="role-badge">Analytics Engineer</span>
       </div>
       <!-- Profile trigger -->
       <div style="position:relative;">
         <div class="profile-trigger" id="profile-trigger">
-          <img src="/mypage/icon.png" alt="Yuji" style="width:22px;height:22px;border-radius:50%;border:1px solid rgba(59,130,246,.25);object-fit:cover;" />
-          <span class="mono" style="font-size:11px;color:rgba(139,148,158,.5);">Yuji</span>
-          <svg viewBox="0 0 10 6" style="width:8px;height:8px;fill:none;stroke:rgba(139,148,158,.3);stroke-width:1.5;flex-shrink:0;"><path d="M1 1l4 4 4-4"/></svg>
+          <img src="/mypage/icon.png" alt="Yuji" style="width:22px;height:22px;border-radius:50%;border:1px solid var(--color-primary);object-fit:cover;" />
+          <span class="mono" style="font-size:11px;color:var(--color-text-base);font-weight:500;">Yuji</span>
+          <svg viewBox="0 0 10 6" style="width:8px;height:8px;fill:none;stroke:var(--color-text-muted);stroke-width:2;flex-shrink:0;"><path d="M1 1l4 4 4-4"/></svg>
         </div>
         <!-- Profile popup -->
         <div class="profile-popup" id="profile-popup">
-          <div style="padding:7px 10px;border-bottom:1px solid rgba(33,38,45,.7);display:flex;align-items:center;gap:6px;">
+          <div style="padding:7px 10px;border-bottom:1px solid var(--color-border-alt);display:flex;align-items:center;gap:6px;">
             <span style="width:6px;height:6px;border-radius:50%;background:#34d399;display:inline-block;flex-shrink:0;"></span>
             <span style="color:rgba(52,211,153,.7);">active</span>
-            <span style="margin-left:auto;color:rgba(139,148,158,.25);">engineers · id:1</span>
+            <span style="margin-left:auto;color:var(--color-text-muted);font-size:9px;">engineers · id:1</span>
           </div>
-          <div style="padding:10px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(33,38,45,.5);">
+          <div style="padding:10px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--color-border-alt);">
             <div style="position:relative;flex-shrink:0;">
-              <img src="/mypage/icon.png" alt="Yuji" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(59,130,246,.25);object-fit:cover;" />
-              <div style="position:absolute;bottom:0;right:0;width:9px;height:9px;border-radius:50%;background:#34d399;border:1.5px solid #161b22;"></div>
+              <img src="/mypage/icon.png" alt="Yuji" style="width:36px;height:36px;border-radius:50%;border:1px solid var(--color-primary);opacity:0.6;object-fit:cover;" />
+              <div style="position:absolute;bottom:0;right:0;width:9px;height:9px;border-radius:50%;background:#34d399;border:1.5px solid var(--color-background-alt);"></div>
             </div>
             <div>
-              <div style="color:#f0f0f0;font-weight:700;font-size:12px;">Yuji</div>
-              <div style="color:rgba(139,148,158,.4);font-size:9px;margin-top:1px;">Analytics Engineer</div>
-              <div style="color:rgba(139,148,158,.3);font-size:9px;">Japan</div>
+              <div style="color:var(--color-text-base);font-weight:700;font-size:12px;">Yuji</div>
+              <div style="color:var(--color-text-muted);opacity:0.6;font-size:9px;margin-top:1px;">Analytics Engineer</div>
+              <div style="color:var(--color-text-muted);font-size:9px;">Japan</div>
             </div>
           </div>
-          <div style="padding:8px 10px;border-bottom:1px solid rgba(33,38,45,.5);">
+          <div style="padding:8px 10px;border-bottom:1px solid var(--color-border-alt);">
             {[
               { col: "name",     val: "'Yuji'",             },
               { col: "role",     val: "'Analytics Eng'",   },
@@ -705,23 +726,23 @@ const TABLE_META = [
               { col: "passion",  val: "'biz users + data'" },
             ].map(({ col, val }) => (
               <div style="display:flex;align-items:center;gap:6px;line-height:1.8;">
-                <span style="color:#9cdcfe;width:46px;flex-shrink:0;font-size:9px;">{col}</span>
-                <span style="color:rgba(139,148,158,.35);font-size:9px;">│</span>
-                <span style="color:#ce9178;font-size:9px;truncate;">{val}</span>
+                <span class="sql-col" style="width:46px;flex-shrink:0;font-size:9px;">{col}</span>
+                <span style="color:var(--color-text-muted);font-size:9px;">│</span>
+                <span class="sql-str" style="font-size:9px;truncate;">{val}</span>
               </div>
             ))}
           </div>
-          <div style="padding:8px 10px;display:flex;flex-wrap:wrap;gap:3px;border-bottom:1px solid rgba(33,38,45,.5);">
+          <div style="padding:8px 10px;display:flex;flex-wrap:wrap;gap:3px;border-bottom:1px solid var(--color-border-alt);">
             {skills.map(skill => (
-              <span style="padding:1px 5px;color:rgba(59,130,246,.65);background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:3px;font-size:8px;">{skill}</span>
+              <span style="padding:1px 5px;color:var(--color-primary);background:rgba(59,130,246,.08);border:1px solid var(--color-primary);opacity:0.6;border-radius:3px;font-size:8px;">{skill}</span>
             ))}
           </div>
           <div style="padding:7px 10px;display:flex;gap:5px;">
-            <a href="https://github.com/yujikawa" target="_blank" rel="noopener noreferrer" style="flex:1;display:flex;align-items:center;justify-content:center;gap:3px;padding:5px;border-radius:4px;border:1px solid rgba(48,54,61,.5);color:rgba(139,148,158,.45);font-size:9px;text-decoration:none;transition:color .15s,border-color .15s;" onmouseover="this.style.color='rgba(139,148,158,.8)'" onmouseout="this.style.color='rgba(139,148,158,.45)'">
+            <a href="https://github.com/yujikawa" target="_blank" rel="noopener noreferrer" style="flex:1;display:flex;align-items:center;justify-content:center;gap:3px;padding:5px;border-radius:4px;border:1px solid var(--color-border-color);color:var(--color-text-muted);font-size:9px;text-decoration:none;transition:color .15s,border-color .15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">
               <svg viewBox="0 0 16 16" style="width:9px;height:9px;" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38C13.71 14.53 16 11.54 16 8c0-4.42-3.58-8-8-8z"/></svg>
               GitHub
             </a>
-            <a href="https://medium.com/@yujikawa" target="_blank" rel="noopener noreferrer" style="flex:1;display:flex;align-items:center;justify-content:center;padding:5px;border-radius:4px;border:1px solid rgba(48,54,61,.5);color:rgba(139,148,158,.45);font-size:9px;text-decoration:none;transition:color .15s;" onmouseover="this.style.color='rgba(139,148,158,.8)'" onmouseout="this.style.color='rgba(139,148,158,.45)'">
+            <a href="https://medium.com/@yujikawa" target="_blank" rel="noopener noreferrer" style="flex:1;display:flex;align-items:center;justify-content:center;padding:5px;border-radius:4px;border:1px solid var(--color-border-color);color:var(--color-text-muted);font-size:9px;text-decoration:none;transition:color .15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">
               Medium
             </a>
           </div>
@@ -736,7 +757,7 @@ const TABLE_META = [
       <div class="ide-explorer-pane">
         <div class="ide-panel-header">
           <span style="display:flex;align-items:center;gap:5px;">
-            <svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:rgba(139,148,158,.4);"><path d="M1 2.5A1.5 1.5 0 012.5 1h3A1.5 1.5 0 017 2.5v3A1.5 1.5 0 015.5 7h-3A1.5 1.5 0 011 5.5v-3zm8 0A1.5 1.5 0 0110.5 1h3A1.5 1.5 0 0115 2.5v3A1.5 1.5 0 0113.5 7h-3A1.5 1.5 0 019 5.5v-3zm-8 8A1.5 1.5 0 012.5 9h3A1.5 1.5 0 017 10.5v3A1.5 1.5 0 015.5 15h-3A1.5 1.5 0 011 13.5v-3zm8 0A1.5 1.5 0 0110.5 9h3A1.5 1.5 0 0115 10.5v3A1.5 1.5 0 0113.5 15h-3A1.5 1.5 0 019 13.5v-3z"/></svg>
+            <svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:var(--color-text-muted);opacity:0.4;"><path d="M1 2.5A1.5 1.5 0 012.5 1h3A1.5 1.5 0 017 2.5v3A1.5 1.5 0 015.5 7h-3A1.5 1.5 0 011 5.5v-3zm8 0A1.5 1.5 0 0110.5 1h3A1.5 1.5 0 0115 2.5v3A1.5 1.5 0 0113.5 7h-3A1.5 1.5 0 019 5.5v-3zm-8 8A1.5 1.5 0 012.5 9h3A1.5 1.5 0 017 10.5v3A1.5 1.5 0 015.5 15h-3A1.5 1.5 0 011 13.5v-3zm8 0A1.5 1.5 0 0110.5 9h3A1.5 1.5 0 0115 10.5v3A1.5 1.5 0 0113.5 15h-3A1.5 1.5 0 019 13.5v-3z"/></svg>
             Explorer
           </span>
         </div>
@@ -756,13 +777,13 @@ const TABLE_META = [
 
               <!-- fact_daily_activity (not clickable, just display) -->
               <div class="explorer-item fact">
-                <span class="ei-icon" style="color:rgba(86,156,214,.6);">⬡</span>
-                <span style="color:rgba(86,156,214,.7);">fact_daily_activity</span>
+                <span class="ei-icon" style="color:var(--color-primary);opacity:0.6;">⬡</span>
+                <span style="color:var(--color-primary);">fact_daily_activity</span>
               </div>
 
               <!-- dim_engineer (not clickable, just display) -->
               <div class="explorer-item" style="opacity:.55;cursor:default;">
-                <span class="ei-icon" style="color:rgba(78,201,176,.5);">⬡</span>
+                <span class="ei-icon" style="color:var(--color-accent);opacity:0.5;">⬡</span>
                 <span>dim_engineer</span>
               </div>
 
@@ -774,7 +795,7 @@ const TABLE_META = [
                 { id: "projects", table: "projects" },
               ].map((item, i) => (
                 <div class={`explorer-item ${i === 0 ? 'active' : ''}`} data-explorer-tab={item.id}>
-                  <span class="ei-icon" style="color:rgba(78,201,176,.5);">⬡</span>
+                  <span class="ei-icon" style="color:var(--color-accent);opacity:0.5;">⬡</span>
                   <span>{item.table}</span>
                 </div>
               ))}
@@ -798,13 +819,13 @@ const TABLE_META = [
           </div>
 
           <!-- Connection info (bottom) -->
-          <div style="margin-top:auto;padding:8px 10px;border-top:1px solid rgba(33,38,45,.6);margin-top:16px;">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(139,148,158,.25);line-height:1.8;">
+          <div style="margin-top:auto;padding:8px 10px;border-top:1px solid var(--color-border-alt);margin-top:16px;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--color-text-muted);opacity:0.25;line-height:1.8;">
               <div style="display:flex;align-items:center;gap:4px;">
                 <span style="width:5px;height:5px;border-radius:50%;background:#34d399;display:inline-block;flex-shrink:0;"></span>
                 <span>mypage_db</span>
               </div>
-              <div style="color:rgba(139,148,158,.18);padding-left:9px;">engineer_id = 1</div>
+              <div style="opacity:0.18;padding-left:9px;">engineer_id = 1</div>
             </div>
           </div>
         </div>
@@ -838,7 +859,7 @@ const TABLE_META = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">3</span>
-              <span class="lc"><span class="sql-kw">SELECT</span> <span class="sql-col">s.skill_name</span><span style="color:rgba(139,148,158,.5)">,</span> <span class="sql-col">s.category</span><span style="color:rgba(139,148,158,.5)">,</span> <span class="sql-col">s.proficiency</span></span>
+              <span class="lc"><span class="sql-kw">SELECT</span> <span class="sql-col">s.skill_name</span><span style="color:var(--color-text-muted);opacity:0.5;">,</span> <span class="sql-col">s.category</span><span style="color:var(--color-text-muted);opacity:0.5;">,</span> <span class="sql-col">s.proficiency</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">4</span>
@@ -846,11 +867,11 @@ const TABLE_META = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">5</span>
-              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">s.engineer_id</span></span>
+              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:var(--color-text-muted);opacity:0.7;">=</span> <span class="sql-col">s.engineer_id</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">6</span>
-              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span><span style="color:rgba(139,148,158,.5)">;</span></span>
+              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:var(--color-text-muted);opacity:0.7;">=</span> <span class="sql-str">'Yuji'</span><span style="color:var(--color-text-muted);opacity:0.5;">;</span></span>
             </div>
             <div class="sql-line">
               <span class="ln">7</span>
@@ -870,7 +891,7 @@ const TABLE_META = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">3</span>
-              <span class="lc"><span class="sql-kw">SELECT</span> <span class="sql-col">dt.date</span><span style="color:rgba(139,148,158,.5)">,</span> <span class="sql-col">f.contributions</span></span>
+              <span class="lc"><span class="sql-kw">SELECT</span> <span class="sql-col">dt.date</span><span style="color:var(--color-text-muted);opacity:0.5;">,</span> <span class="sql-col">f.contributions</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">4</span>
@@ -878,15 +899,15 @@ const TABLE_META = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">5</span>
-              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"        "}<span class="sql-col">d</span>{"  "}<span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">f.engineer_id</span></span>
+              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"        "}<span class="sql-col">d</span>{"  "}<span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:var(--color-text-muted);opacity:0.7;">=</span> <span class="sql-col">f.engineer_id</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">6</span>
-              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_date</span>{"            "}<span class="sql-col">dt</span> <span class="sql-kw">ON</span> <span class="sql-col">dt.date_id</span>{"    "}<span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">f.date_id</span></span>
+              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_date</span>{"            "}<span class="sql-col">dt</span> <span class="sql-kw">ON</span> <span class="sql-col">dt.date_id</span>{"    "}<span style="color:var(--color-text-muted);opacity:0.7;">=</span> <span class="sql-col">f.date_id</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">7</span>
-              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span> <span class="sql-kw">ORDER BY</span> <span class="sql-col">dt.date</span> <span class="sql-kw">DESC</span><span style="color:rgba(139,148,158,.5)">;</span></span>
+              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:var(--color-text-muted);opacity:0.7;">=</span> <span class="sql-str">'Yuji'</span> <span class="sql-kw">ORDER BY</span> <span class="sql-col">dt.date</span> <span class="sql-kw">DESC</span><span style="color:var(--color-text-muted);opacity:0.5;">;</span></span>
             </div>
             <div class="sql-line">
               <span class="ln">8</span>
@@ -906,7 +927,7 @@ const TABLE_META = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">3</span>
-              <span class="lc"><span class="sql-kw">SELECT</span> <span class="sql-col">w.platform</span><span style="color:rgba(139,148,158,.5)">,</span> <span class="sql-col">w.url</span><span style="color:rgba(139,148,158,.5)">,</span> <span class="sql-col">w.topics</span></span>
+              <span class="lc"><span class="sql-kw">SELECT</span> <span class="sql-col">w.platform</span><span style="color:var(--color-text-muted);opacity:0.5;">,</span> <span class="sql-col">w.url</span><span style="color:var(--color-text-muted);opacity:0.5;">,</span> <span class="sql-col">w.topics</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">4</span>
@@ -914,11 +935,11 @@ const TABLE_META = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">5</span>
-              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">w.engineer_id</span></span>
+              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:var(--color-text-muted);opacity:0.7;">=</span> <span class="sql-col">s.engineer_id</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">6</span>
-              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span><span style="color:rgba(139,148,158,.5)">;</span></span>
+              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:var(--color-text-muted);opacity:0.7;">=</span> <span class="sql-str">'Yuji'</span><span style="color:var(--color-text-muted);opacity:0.5;">;</span></span>
             </div>
             <div class="sql-line">
               <span class="ln">7</span>
@@ -938,7 +959,7 @@ const TABLE_META = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">3</span>
-              <span class="lc"><span class="sql-kw">SELECT</span> <span class="sql-col">p.title</span><span style="color:rgba(139,148,158,.5)">,</span> <span class="sql-col">p.description</span><span style="color:rgba(139,148,158,.5)">,</span> <span class="sql-col">p.tags</span><span style="color:rgba(139,148,158,.5)">,</span> <span class="sql-col">p.github_url</span></span>
+              <span class="lc"><span class="sql-kw">SELECT</span> <span class="sql-col">p.title</span><span style="color:var(--color-text-muted);opacity:0.5;">,</span> <span class="sql-col">p.description</span><span style="color:var(--color-text-muted);opacity:0.5;">,</span> <span class="sql-col">p.tags</span><span style="color:var(--color-text-muted);opacity:0.5;">,</span> <span class="sql-col">p.github_url</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">4</span>
@@ -946,11 +967,11 @@ const TABLE_META = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">5</span>
-              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-col">p.engineer_id</span></span>
+              <span class="lc"><span class="sql-kw">JOIN</span>{"      "}<span class="sql-tbl">dim_engineer</span>{"  "}<span class="sql-col">d</span> <span class="sql-kw">ON</span> <span class="sql-col">d.engineer_id</span> <span style="color:var(--color-text-muted);opacity:0.7;">=</span> <span class="sql-col">p.engineer_id</span></span>
             </div>
             <div class="sql-line highlighted">
               <span class="ln">6</span>
-              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span><span style="color:rgba(139,148,158,.5)">;</span></span>
+              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:var(--color-text-muted);opacity:0.7;">=</span> <span class="sql-str">'Yuji'</span><span style="color:var(--color-text-muted);opacity:0.5;">;</span></span>
             </div>
             <div class="sql-line">
               <span class="ln">7</span>
@@ -974,7 +995,7 @@ const TABLE_META = [
             </div>
             <div class="sql-line highlighted">
               <span class="ln">4</span>
-              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:rgba(139,148,158,.7)">=</span> <span class="sql-str">'Yuji'</span><span style="color:rgba(139,148,158,.5)">;</span></span>
+              <span class="lc"><span class="sql-kw">WHERE</span>{"     "}<span class="sql-col">d.name</span> <span style="color:var(--color-text-muted);opacity:0.7;">=</span> <span class="sql-str">'Yuji'</span><span style="color:var(--color-text-muted);opacity:0.5;">;</span></span>
             </div>
             <div class="sql-line">
               <span class="ln">5</span>
@@ -998,18 +1019,18 @@ const TABLE_META = [
         <!-- Editor footer -->
         <div class="ide-editor-footer">
           <div style="display:flex;align-items:center;gap:8px;">
-            <span class="mono" style="font-size:10px;color:rgba(139,148,158,.2);">Ln 1, Col 1</span>
-            <span style="color:rgba(139,148,158,.1);">·</span>
-            <span class="mono" style="font-size:10px;color:rgba(139,148,158,.2);">SQL</span>
-            <span style="color:rgba(139,148,158,.1);">·</span>
-            <span class="mono" style="font-size:10px;color:rgba(139,148,158,.2);" id="active-table">skills</span>
+            <span class="mono" style="font-size:10px;color:var(--color-text-muted);opacity:0.2;">Ln 1, Col 1</span>
+            <span style="opacity:0.1;">·</span>
+            <span class="mono" style="font-size:10px;color:var(--color-text-muted);opacity:0.2;">SQL</span>
+            <span style="opacity:0.1;">·</span>
+            <span class="mono" style="font-size:10px;color:var(--color-text-muted);opacity:0.2;" id="active-table">skills</span>
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
             <button class="run-btn" id="run-btn">
               <svg viewBox="0 0 16 16" style="width:10px;height:10px;fill:currentColor;"><path d="M4 2l10 6-10 6z"/></svg>
               <span data-i18n="run-btn">Run Query</span>
             </button>
-            <span class="mono" style="font-size:9px;color:rgba(139,148,158,.35);">Ctrl+Enter</span>
+            <span class="mono" style="font-size:9px;color:var(--color-text-muted);opacity:0.35;">Ctrl+Enter</span>
           </div>
         </div>
 
@@ -1019,7 +1040,7 @@ const TABLE_META = [
       <div class="ide-er-pane">
         <div class="ide-panel-header">
           <span style="display:flex;align-items:center;gap:6px;">
-            <svg viewBox="0 0 16 16" style="width:11px;height:11px;fill:rgba(78,201,176,.5);">
+            <svg viewBox="0 0 16 16" style="width:11px;height:11px;fill:var(--color-accent);opacity:0.5;">
               <rect x="2" y="2" width="5" height="5" rx="1"/>
               <rect x="9" y="2" width="5" height="5" rx="1"/>
               <rect x="2" y="9" width="5" height="5" rx="1"/>
@@ -1027,7 +1048,7 @@ const TABLE_META = [
             </svg>
             Schema · fact_daily_activity (galaxy)
           </span>
-          <span style="color:rgba(139,148,158,.2);" data-i18n="er-hint">click to inspect</span>
+          <span style="color:var(--color-text-muted);opacity:0.2;" data-i18n="er-hint">click to inspect</span>
         </div>
 
         <div class="ide-er-scroll">
@@ -1037,122 +1058,122 @@ const TABLE_META = [
 
               <!-- ── Relationship lines ── -->
               <!-- dim_skill → dim_engineer (diagonal, top-left to center) -->
-              <line id="line-skill"     x1="200" y1="72"  x2="248" y2="195" stroke="#30363d" stroke-width="1.5"/>
+              <line id="line-skill"     x1="200" y1="72"  x2="248" y2="195" stroke="var(--color-border-color)" stroke-width="1.5"/>
               <!-- dim_platform → dim_engineer (horizontal, left to center) -->
-              <line id="line-platform"  x1="200" y1="237" x2="248" y2="237" stroke="#30363d" stroke-width="1.5"/>
+              <line id="line-platform"  x1="200" y1="237" x2="248" y2="237" stroke="var(--color-border-color)" stroke-width="1.5"/>
               <!-- dim_project → dim_engineer (diagonal, bottom-left to center) -->
-              <line id="line-project"   x1="200" y1="392" x2="248" y2="270" stroke="#30363d" stroke-width="1.5"/>
+              <line id="line-project"   x1="200" y1="392" x2="248" y2="270" stroke="var(--color-border-color)" stroke-width="1.5"/>
               <!-- dim_engineer → fact_daily_activity (horizontal) -->
-              <line id="line-engineer"  x1="428" y1="237" x2="472" y2="237" stroke="#30363d" stroke-width="1.5"/>
+              <line id="line-engineer"  x1="428" y1="237" x2="472" y2="237" stroke="var(--color-border-color)" stroke-width="1.5"/>
               <!-- fact_daily_activity → dim_date (diagonal, bottom) -->
-              <line id="line-date"      x1="576" y1="320" x2="520" y2="368" stroke="#30363d" stroke-width="1.5"/>
+              <line id="line-date"      x1="576" y1="320" x2="520" y2="368" stroke="var(--color-border-color)" stroke-width="1.5"/>
 
               <!-- ── Cardinality labels ── -->
-              <text id="lbl-skill"     x="205" y="125"  fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
-              <text id="lbl-platform"  x="210" y="230"  fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
-              <text id="lbl-project"   x="205" y="345"  fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
-              <text id="lbl-engineer"  x="434" y="230"  fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
-              <text id="lbl-date"      x="558" y="352"  fill="#8b949e" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">N:1</text>
+              <text id="lbl-skill"     x="205" y="125"  fill="var(--color-text-muted)" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
+              <text id="lbl-platform"  x="210" y="230"  fill="var(--color-text-muted)" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
+              <text id="lbl-project"   x="205" y="345"  fill="var(--color-text-muted)" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
+              <text id="lbl-engineer"  x="434" y="230"  fill="var(--color-text-muted)" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">1:N</text>
+              <text id="lbl-date"      x="558" y="352"  fill="var(--color-text-muted)" font-size="9" font-family="JetBrains Mono, monospace" opacity="0">N:1</text>
 
               <!-- ── dim_skill (top-left) ── -->
               <g id="dim-skill" style="cursor:pointer">
-                <rect id="rect-skill" x="14" y="20" width="186" height="105" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-                <line x1="14" y1="44" x2="200" y2="44" stroke="#30363d" stroke-width="1"/>
-                <text x="28" y="36" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_skill</text>
-                <text x="28" y="60" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
-                <text x="46" y="60" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">skill_id      INT</text>
+                <rect id="rect-skill" x="14" y="20" width="186" height="105" rx="6" fill="var(--color-background)" stroke="var(--color-accent)" stroke-width="1.5"/>
+                <line x1="14" y1="46" x2="200" y2="46" stroke="var(--color-accent)" stroke-width="1" opacity="0.5"/>
+                <text x="28" y="38" fill="var(--color-accent)" font-size="11" font-weight="700" font-family="JetBrains Mono, monospace">⬡ dim_skill</text>
+                <text x="28" y="62" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
+                <text x="46" y="62" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">skill_id      INT</text>
                 <g id="fk-skill">
-                  <text x="28" y="76" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
-                  <text x="46" y="76" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id   INT</text>
+                  <text x="28" y="78" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="46" y="78" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">engineer_id   INT</text>
                 </g>
-                <line x1="28" y1="82" x2="190" y2="82" stroke="#30363d" stroke-width="0.5"/>
-                <text x="28" y="94"  fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">skill_name    TEXT</text>
-                <text x="28" y="109" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">proficiency   TEXT</text>
+                <line x1="28" y1="84" x2="190" y2="84" stroke="var(--color-border-color)" stroke-width="0.5"/>
+                <text x="28" y="96"  fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">skill_name    TEXT</text>
+                <text x="28" y="111" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">proficiency   TEXT</text>
               </g>
 
               <!-- ── dim_platform (left-mid) ── -->
               <g id="dim-platform" style="cursor:pointer">
-                <rect id="rect-platform" x="14" y="193" width="186" height="105" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-                <line x1="14" y1="217" x2="200" y2="217" stroke="#30363d" stroke-width="1"/>
-                <text x="28" y="209" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_platform</text>
-                <text x="28" y="233" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
-                <text x="46" y="233" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">platform_id   INT</text>
+                <rect id="rect-platform" x="14" y="193" width="186" height="105" rx="6" fill="var(--color-background)" stroke="var(--color-accent)" stroke-width="1.5"/>
+                <line x1="14" y1="219" x2="200" y2="219" stroke="var(--color-accent)" stroke-width="1" opacity="0.5"/>
+                <text x="28" y="211" fill="var(--color-accent)" font-size="11" font-weight="700" font-family="JetBrains Mono, monospace">⬡ dim_platform</text>
+                <text x="28" y="235" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
+                <text x="46" y="235" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">platform_id   INT</text>
                 <g id="fk-platform">
-                  <text x="28" y="249" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
-                  <text x="46" y="249" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id   INT</text>
+                  <text x="28" y="251" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="46" y="251" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">engineer_id   INT</text>
                 </g>
-                <line x1="28" y1="255" x2="190" y2="255" stroke="#30363d" stroke-width="0.5"/>
-                <text x="28" y="267" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">platform      TEXT</text>
-                <text x="28" y="282" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">               -- 'qiita','zenn'</text>
+                <line x1="28" y1="257" x2="190" y2="257" stroke="var(--color-border-color)" stroke-width="0.5"/>
+                <text x="28" y="269" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">platform      TEXT</text>
+                <text x="28" y="284" fill="var(--color-text-muted)" font-size="9"  font-family="JetBrains Mono, monospace">               -- 'qiita','zenn'</text>
               </g>
 
               <!-- ── dim_project (bottom-left) ── -->
               <g id="dim-project" style="cursor:pointer">
-                <rect id="rect-project" x="14" y="356" width="186" height="90" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-                <line x1="14" y1="380" x2="200" y2="380" stroke="#30363d" stroke-width="1"/>
-                <text x="28" y="372" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_project</text>
-                <text x="28" y="396" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
-                <text x="46" y="396" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">project_id    INT</text>
+                <rect id="rect-project" x="14" y="356" width="186" height="90" rx="6" fill="var(--color-background)" stroke="var(--color-accent)" stroke-width="1.5"/>
+                <line x1="14" y1="382" x2="200" y2="382" stroke="var(--color-accent)" stroke-width="1" opacity="0.5"/>
+                <text x="28" y="374" fill="var(--color-accent)" font-size="11" font-weight="700" font-family="JetBrains Mono, monospace">⬡ dim_project</text>
+                <text x="28" y="398" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
+                <text x="46" y="398" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">project_id    INT</text>
                 <g id="fk-project">
-                  <text x="28" y="412" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
-                  <text x="46" y="412" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id   INT</text>
+                  <text x="28" y="414" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
+                  <text x="46" y="414" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">engineer_id   INT</text>
                 </g>
-                <text x="28" y="428" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">title         TEXT</text>
+                <text x="28" y="430" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">title         TEXT</text>
               </g>
 
               <!-- ── dim_engineer (center-left) ── -->
               <g id="dim-engineer" style="cursor:pointer">
-                <rect id="rect-engineer" x="248" y="195" width="180" height="90" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-                <line x1="248" y1="219" x2="428" y2="219" stroke="#30363d" stroke-width="1"/>
-                <text x="262" y="211" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_engineer</text>
-                <text x="262" y="235" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
-                <text x="280" y="235" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id  INT</text>
-                <line x1="262" y1="241" x2="418" y2="241" stroke="#30363d" stroke-width="0.5"/>
-                <text x="262" y="255" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">name         TEXT</text>
-                <text x="262" y="270" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">role         TEXT</text>
+                <rect id="rect-engineer" x="248" y="195" width="180" height="90" rx="6" fill="var(--color-background)" stroke="var(--color-accent)" stroke-width="1.5"/>
+                <line x1="248" y1="221" x2="428" y2="221" stroke="var(--color-accent)" stroke-width="1" opacity="0.5"/>
+                <text x="262" y="213" fill="var(--color-accent)" font-size="11" font-weight="700" font-family="JetBrains Mono, monospace">⬡ dim_engineer</text>
+                <text x="262" y="237" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
+                <text x="280" y="237" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">engineer_id  INT</text>
+                <line x1="262" y1="243" x2="418" y2="243" stroke="var(--color-border-color)" stroke-width="0.5"/>
+                <text x="262" y="257" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">name         TEXT</text>
+                <text x="262" y="272" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">role         TEXT</text>
               </g>
 
               <!-- ── fact_daily_activity (center-right, blue) ── -->
               <g id="dim-fact" style="cursor:pointer">
-                <rect id="rect-fact" x="472" y="165" width="252" height="155" rx="6" fill="#0d1117" stroke="#3b82f6" stroke-width="1.5"/>
-                <line x1="472" y1="191" x2="724" y2="191" stroke="#3b82f6" stroke-width="1" opacity="0.5"/>
-                <text x="488" y="182" fill="#569cd6" font-size="12" font-weight="700" font-family="JetBrains Mono, monospace">⬡ fact_daily_activity</text>
+                <rect id="rect-fact" x="472" y="165" width="252" height="155" rx="6" fill="var(--color-background)" stroke="var(--color-primary)" stroke-width="1.5"/>
+                <line x1="472" y1="191" x2="724" y2="191" stroke="var(--color-primary)" stroke-width="1" opacity="0.5"/>
+                <text x="488" y="182" fill="var(--color-primary)" font-size="12" font-weight="700" font-family="JetBrains Mono, monospace">⬡ fact_daily_activity</text>
 
                 <text x="488" y="209" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
-                <text x="506" y="209" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">activity_id</text>
-                <text x="620" y="209" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
-                <line x1="488" y1="215" x2="708" y2="215" stroke="#30363d" stroke-width="0.5"/>
+                <text x="506" y="209" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">activity_id</text>
+                <text x="620" y="209" fill="var(--color-text-muted)" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                <line x1="488" y1="215" x2="708" y2="215" stroke="var(--color-border-color)" stroke-width="0.5"/>
 
                 <g id="fk-engineer">
                   <text x="488" y="231" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
-                  <text x="506" y="231" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">engineer_id</text>
-                  <text x="620" y="231" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                  <text x="506" y="231" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">engineer_id</text>
+                  <text x="620" y="231" fill="var(--color-text-muted)" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
                 </g>
                 <g id="fk-date">
                   <text x="488" y="249" fill="#6a9955" font-size="9"  font-family="JetBrains Mono, monospace">FK</text>
-                  <text x="506" y="249" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">date_id</text>
-                  <text x="620" y="249" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                  <text x="506" y="249" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">date_id</text>
+                  <text x="620" y="249" fill="var(--color-text-muted)" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
                 </g>
-                <line x1="488" y1="255" x2="708" y2="255" stroke="#30363d" stroke-width="0.5"/>
+                <line x1="488" y1="255" x2="708" y2="255" stroke="var(--color-border-color)" stroke-width="0.5"/>
 
                 <text x="488" y="271" fill="#ce9178" font-size="9"  font-family="JetBrains Mono, monospace">MEAS</text>
-                <text x="524" y="271" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">contributions</text>
-                <text x="620" y="271" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
-                <text x="488" y="286" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">               -- the only measure</text>
+                <text x="524" y="271" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">contributions</text>
+                <text x="620" y="271" fill="var(--color-text-muted)" font-size="9"  font-family="JetBrains Mono, monospace">INT</text>
+                <text x="488" y="286" fill="var(--color-text-muted)" font-size="9"  font-family="JetBrains Mono, monospace">               -- the only measure</text>
 
-                <line x1="488" y1="292" x2="708" y2="292" stroke="#30363d" stroke-width="0.5"/>
-                <text x="488" y="307" fill="#8b949e" font-size="9"  font-family="JetBrains Mono, monospace">grain: 1 row / engineer / day</text>
+                <line x1="488" y1="292" x2="708" y2="292" stroke="var(--color-border-color)" stroke-width="0.5"/>
+                <text x="488" y="307" fill="var(--color-text-muted)" font-size="9"  font-family="JetBrains Mono, monospace">grain: 1 row / engineer / day</text>
               </g>
 
               <!-- ── dim_date (bottom-center) ── -->
               <g id="dim-date" style="cursor:pointer">
-                <rect id="rect-date" x="340" y="368" width="196" height="78" rx="5" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-                <line x1="340" y1="392" x2="536" y2="392" stroke="#30363d" stroke-width="1"/>
-                <text x="354" y="384" fill="#4ec9b0" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace">⬡ dim_date</text>
-                <text x="354" y="408" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
-                <text x="372" y="408" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">date_id      INT</text>
-                <line x1="354" y1="414" x2="526" y2="414" stroke="#30363d" stroke-width="0.5"/>
-                <text x="354" y="428" fill="#9cdcfe" font-size="10" font-family="JetBrains Mono, monospace">date         DATE</text>
+                <rect id="rect-date" x="340" y="368" width="196" height="78" rx="6" fill="var(--color-background)" stroke="var(--color-accent)" stroke-width="1.5"/>
+                <line x1="340" y1="394" x2="536" y2="394" stroke="var(--color-accent)" stroke-width="1" opacity="0.5"/>
+                <text x="354" y="386" fill="var(--color-accent)" font-size="11" font-weight="700" font-family="JetBrains Mono, monospace">⬡ dim_date</text>
+                <text x="354" y="410" fill="#f59e0b" font-size="9"  font-family="JetBrains Mono, monospace">PK</text>
+                <text x="372" y="410" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">date_id      INT</text>
+                <line x1="354" y1="416" x2="526" y2="416" stroke="var(--color-border-color)" stroke-width="0.5"/>
+                <text x="354" y="428" fill="var(--color-secondary)" font-size="10" font-family="JetBrains Mono, monospace">date         DATE</text>
               </g>
 
             </svg>
@@ -1165,7 +1186,7 @@ const TABLE_META = [
     <!-- ── Panel Divider ── -->
     <div class="ide-divider">
       <div style="display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10px;">
-        <span style="color:rgba(139,148,158,.4);" data-i18n="results-label">Results</span>
+        <span style="color:var(--color-text-muted);" data-i18n="results-label">Results</span>
         <span id="result-row-label" style="color:rgba(52,211,153,0);transition:color .4s;" class="mono" style="font-size:10px;"></span>
       </div>
       <div class="view-toggle">
@@ -1188,7 +1209,7 @@ const TABLE_META = [
 
     <!-- ── Results Pane ── -->
     <div class="ide-results-pane">
-      <div style="flex:1;overflow:auto;scrollbar-width:thin;scrollbar-color:#30363d transparent;">
+      <div style="flex:1;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--color-border-color) transparent;">
 
         <!-- Empty state -->
         <div class="results-empty" id="results-empty">
@@ -1206,22 +1227,22 @@ const TABLE_META = [
               { name: "Python",           category: "Programming",   bar: 75, passion: false, color: "#10b981" },
               { name: "Airflow",          category: "Orchestration", bar: 72, passion: false, color: "#f59e0b" },
             ].map(s => (
-              <div style={`flex-shrink:0;width:148px;border-radius:8px;border:1px solid rgba(255,255,255,.07);background:#161b22;overflow:hidden;display:flex;flex-direction:column;${s.passion ? 'border-color:rgba(59,130,246,.3);box-shadow:0 0 16px rgba(59,130,246,.08);' : ''}`}>
+              <div style={`flex-shrink:0;width:148px;border-radius:8px;border:1px solid var(--color-border-alt);background:var(--color-background-alt);overflow:hidden;display:flex;flex-direction:column;${s.passion ? 'border-color:var(--color-primary);box-shadow:0 0 16px rgba(59,130,246,.08);' : ''}`}>
                 <!-- color bar top -->
                 <div style={`height:3px;background:${s.color};opacity:0.7;`}></div>
                 <div style="padding:12px 12px 10px;flex:1;display:flex;flex-direction:column;gap:8px;">
                   <div>
-                    {s.passion && <div style="font-size:8px;color:rgba(59,130,246,.7);letter-spacing:.06em;margin-bottom:4px;">★ PASSION</div>}
-                    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:#f0f0f0;line-height:1.3;">{s.name}</div>
-                    <div style="font-size:10px;color:rgba(139,148,158,.4);margin-top:2px;">{s.category}</div>
+                    {s.passion && <div style="font-size:8px;color:var(--color-primary);opacity:0.8;letter-spacing:.06em;margin-bottom:4px;">★ PASSION</div>}
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--color-text-base);line-height:1.3;">{s.name}</div>
+                    <div style="font-size:10px;color:var(--color-text-muted);margin-top:2px;">{s.category}</div>
                   </div>
                   <!-- proficiency bar -->
                   <div style="margin-top:auto;">
                     <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-                      <span style="font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(139,148,158,.3);">proficiency</span>
+                      <span style="font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--color-text-muted);opacity:0.3;">proficiency</span>
                       <span style={`font-family:'JetBrains Mono',monospace;font-size:8px;color:${s.color};opacity:.8;`}>{s.bar}%</span>
                     </div>
-                    <div style="height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">
+                    <div style="height:3px;background:var(--color-border-alt);border-radius:2px;overflow:hidden;">
                       <div style={`height:100%;width:${s.bar}%;background:${s.color};opacity:.7;border-radius:2px;`}></div>
                     </div>
                   </div>
@@ -1249,11 +1270,11 @@ const TABLE_META = [
                     <td class="row-num">{i+1}</td>
                     <td>
                       <span class="sql-str">'{s.name}'</span>
-                      {s.passion && <span style="margin-left:8px;font-size:9px;padding:1px 6px;border:1px solid rgba(59,130,246,.3);color:rgba(59,130,246,.7);border-radius:3px;background:rgba(59,130,246,.05);">★ passion</span>}
+                      {s.passion && <span style="margin-left:8px;font-size:9px;padding:1px 6px;border:1px solid var(--color-primary);color:var(--color-primary);opacity:0.7;border-radius:3px;background:rgba(59,130,246,.05);">★ passion</span>}
                     </td>
-                    <td class="hidden sm:table-cell" style="color:rgba(139,148,158,.4);">{s.category}</td>
+                    <td class="hidden sm:table-cell" style="color:var(--color-text-muted);">{s.category}</td>
                     <td class="hidden md:table-cell">
-                      <span style={`font-size:10px;padding:2px 8px;border-radius:3px;border:1px solid;${s.level==='expert'?'color:rgba(59,130,246,.8);border-color:rgba(59,130,246,.2);background:rgba(59,130,246,.06);':'color:rgba(139,148,158,.45);border-color:#30363d;'}`}>{s.level}</span>
+                      <span style={`font-size:10px;padding:2px 8px;border-radius:3px;border:1px solid;${s.level==='expert'?'color:var(--color-primary);border-color:var(--color-primary);opacity:0.8;background:rgba(59,130,246,.06);':'color:var(--color-text-muted);opacity:0.45;border-color:var(--color-border-color);'}`}>{s.level}</span>
                     </td>
                   </tr>
                 ))}
@@ -1272,20 +1293,20 @@ const TABLE_META = [
                   { label: 'followers',    value: ghStats.followers,  color: '#10b981' },
                   { label: 'following',    value: ghStats.following,  color: '#f59e0b' },
                 ].filter(s => s.value !== null).map(s => (
-                  <div style="display:flex;align-items:center;gap:7px;padding:5px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.06);background:#161b22;">
+                  <div style="display:flex;align-items:center;gap:7px;padding:5px 12px;border-radius:6px;border:1px solid var(--color-border-alt);background:var(--color-background-alt);">
                     <span style={`width:6px;height:6px;border-radius:50%;background:${s.color};flex-shrink:0;`}></span>
-                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(139,148,158,.4);">{s.label}</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--color-text-muted);">{s.label}</span>
                     <span style={`font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:${s.color};`}>{s.value}</span>
                   </div>
                 ))}
               </div>
             )}
             <img
-              style="width:100%;max-width:680px;border-radius:8px;opacity:.85;display:block;border:1px solid rgba(255,255,255,.04);"
+              style="width:100%;max-width:680px;border-radius:8px;opacity:.85;display:block;border:1px solid var(--color-border-alt);"
               src="https://ghchart.rshah.org/3b82f6/yujikawa"
               alt="GitHub contribution chart"
             />
-            <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(139,148,158,.2);margin-top:8px;">365 rows · ordered by date DESC · source: github.com/yujikawa</p>
+            <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--color-text-muted);opacity:0.2;margin-top:8px;">365 rows · ordered by date DESC · source: github.com/yujikawa</p>
           </div>
         </div>
 
@@ -1298,11 +1319,11 @@ const TABLE_META = [
                 platform: "Medium",
                 href: "https://medium.com/@yujikawa",
                 url: "medium.com/@yujikawa",
-                color: "#ffffff",
-                bg: "rgba(255,255,255,.04)",
-                border: "rgba(255,255,255,.08)",
+                color: "var(--color-text-base)",
+                bg: "var(--color-background-alt)",
+                border: "var(--color-border-alt)",
                 topics: ["Analytics Engineering", "dbt", "data modeling"],
-                logo: `<svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:#ffffff;opacity:.8;" xmlns="http://www.w3.org/2000/svg"><path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>`,
+                logo: `<svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor;opacity:.8;" xmlns="http://www.w3.org/2000/svg"><path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>`,
               },
               {
                 platform: "Qiita",
@@ -1331,13 +1352,9 @@ const TABLE_META = [
                 onmouseout={`this.style.borderColor='${w.border}';this.style.transform='translateY(0)'`}
               >
                 <div style="padding:16px 14px 12px;flex:1;display:flex;flex-direction:column;gap:10px;">
-                  <div style="display:flex;align-items:center;justify-content:space-between;">
-                    <Fragment set:html={w.logo} />
-                    <svg viewBox="0 0 16 16" style={`width:10px;height:10px;fill:${w.color};opacity:.5;`}><path d="M3.75 2h3.5a.75.75 0 010 1.5h-3.5a.25.25 0 00-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25v-3.5a.75.75 0 011.5 0v3.5A1.75 1.75 0 0112.25 14h-8.5A1.75 1.75 0 012 12.25v-8.5C2 2.784 2.784 2 3.75 2zm6.854-1h4.146a.25.25 0 01.25.25v4.146a.25.25 0 01-.427.177L13.03 4.03 9.28 7.78a.75.75 0 01-1.06-1.06l3.75-3.75-1.543-1.543A.25.25 0 0110.604 1z"/></svg>
-                  </div>
                   <div>
                     <div style={`font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:${w.color};`}>{w.platform}</div>
-                    <div style="font-size:10px;color:rgba(139,148,158,.35);margin-top:2px;">{w.url}</div>
+                    <div style="font-size:10px;color:var(--color-text-muted);opacity:0.35;margin-top:2px;">{w.url}</div>
                   </div>
                   <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:auto;">
                     {w.topics.map(t => (
@@ -1364,8 +1381,8 @@ const TABLE_META = [
                   <tr>
                     <td class="row-num">{i+1}</td>
                     <td><span class="sql-str">'{w.platform}'</span></td>
-                    <td><a href={w.href} target="_blank" rel="noopener noreferrer" style="color:#3b82f6;text-decoration:none;">{w.url} ↗</a></td>
-                    <td class="hidden md:table-cell" style="color:rgba(139,148,158,.4);font-size:10px;">{w.topics}</td>
+                    <td><a href={w.href} target="_blank" rel="noopener noreferrer" style="color:var(--color-primary);text-decoration:none;">{w.url} ↗</a></td>
+                    <td class="hidden md:table-cell" style="color:var(--color-text-muted);font-size:10px;">{w.topics}</td>
                   </tr>
                 ))}
               </tbody>
@@ -1379,24 +1396,24 @@ const TABLE_META = [
           <div class="result-view result-view-card active" style="gap:10px;padding:14px 16px;overflow-x:auto;align-items:stretch;">
             {featuredProjects.map(p => (
               <a href={p.link} target="_blank" rel="noopener noreferrer"
-                style="flex-shrink:0;width:260px;border-radius:8px;border:1px solid rgba(255,255,255,.07);background:#161b22;overflow:hidden;display:flex;flex-direction:column;text-decoration:none;transition:border-color .2s,transform .2s;"
-                onmouseover="this.style.borderColor='rgba(59,130,246,.4)';this.style.transform='translateY(-2px)'"
-                onmouseout="this.style.borderColor='rgba(255,255,255,.07)';this.style.transform='translateY(0)'"
+                style="flex-shrink:0;width:260px;border-radius:8px;border:1px solid var(--color-border-alt);background:var(--color-background-alt);overflow:hidden;display:flex;flex-direction:column;text-decoration:none;transition:border-color .2s,transform .2s;"
+                onmouseover="this.style.borderColor='var(--color-primary)';this.style.transform='translateY(-2px)'"
+                onmouseout="this.style.borderColor='var(--color-border-alt)';this.style.transform='translateY(0)'"
               >
                 <!-- header accent -->
-                <div style="height:2px;background:linear-gradient(90deg,#3b82f6,#06b6d4);"></div>
+                <div style="height:2px;background:linear-gradient(90deg,var(--color-primary),var(--color-accent));"></div>
                 <div style="padding:14px 14px 12px;flex:1;display:flex;flex-direction:column;gap:8px;">
                   <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
                     <div>
-                      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#f0f0f0;">{p.title}</div>
-                      <div style="font-size:9px;color:rgba(139,148,158,.35);margin-top:2px;font-family:'JetBrains Mono',monospace;">github.com/yujikawa/{p.slug}</div>
+                      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--color-text-base);">{p.title}</div>
+                      <div style="font-size:9px;color:var(--color-text-muted);opacity:0.35;margin-top:2px;font-family:'JetBrains Mono',monospace;">github.com/yujikawa/{p.slug}</div>
                     </div>
-                    <svg viewBox="0 0 16 16" style="width:14px;height:14px;fill:rgba(139,148,158,.3);flex-shrink:0;margin-top:2px;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38C13.71 14.53 16 11.54 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                    <svg viewBox="0 0 16 16" style="width:14px;height:14px;fill:var(--color-text-muted);opacity:0.3;flex-shrink:0;margin-top:2px;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38C13.71 14.53 16 11.54 16 8c0-4.42-3.58-8-8-8z"/></svg>
                   </div>
-                  <p style="font-size:11px;color:rgba(139,148,158,.55);line-height:1.6;flex:1;">{p.description}</p>
+                  <p style="font-size:11px;color:var(--color-text-muted);opacity:0.55;line-height:1.6;flex:1;">{p.description}</p>
                   <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:auto;">
                     {p.tags.map(tag => (
-                      <span style="font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.18);color:rgba(59,130,246,.75);font-family:'JetBrains Mono',monospace;">{tag}</span>
+                      <span style="font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.18);color:var(--color-primary);opacity:0.75;font-family:'JetBrains Mono',monospace;">{tag}</span>
                     ))}
                   </div>
                 </div>
@@ -1417,15 +1434,15 @@ const TABLE_META = [
                   <tr>
                     <td class="row-num">{i+1}</td>
                     <td><span class="sql-str">'{p.title}'</span></td>
-                    <td class="hidden md:table-cell" style="color:rgba(139,148,158,.4);font-size:10px;">{p.description}</td>
+                    <td class="hidden md:table-cell" style="color:var(--color-text-muted);font-size:10px;">{p.description}</td>
                     <td class="hidden sm:table-cell">
                       <div style="display:flex;gap:3px;flex-wrap:wrap;">
                         {p.tags.map(tag => (
-                          <span style="padding:1px 6px;font-size:9px;color:rgba(59,130,246,.7);background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:3px;">{tag}</span>
+                          <span style="padding:1px 6px;font-size:9px;color:var(--color-primary);opacity:0.7;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:3px;">{tag}</span>
                         ))}
                       </div>
                     </td>
-                    <td><a href={p.link} target="_blank" rel="noopener noreferrer" style="color:#3b82f6;text-decoration:none;">github.com/yujikawa/{p.slug} ↗</a></td>
+                    <td><a href={p.link} target="_blank" rel="noopener noreferrer" style="color:var(--color-primary);text-decoration:none;">github.com/yujikawa/{p.slug} ↗</a></td>
                   </tr>
                 ))}
               </tbody>
@@ -1448,7 +1465,7 @@ LINE 1: SELECT f.salary FROM fact_engineer f JOIN dim_engineer d ON d.engineer_i
 HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
       Current role: 'analytics_engineer' — nice try 😏</pre>
           </div>
-          <div data-i18n="salary-err-footer" style="color:rgba(139,148,158,.35);font-family:'JetBrains Mono',monospace;font-size:10px;">
+          <div data-i18n="salary-err-footer" style="color:var(--color-text-muted);opacity:0.35;font-family:'JetBrains Mono',monospace;font-size:10px;">
             Execution time: 0ms · 0 rows returned · Query failed
           </div>
         </div>
@@ -1466,33 +1483,33 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
 
             <!-- Header -->
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-              <span style={`font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:${tbl.kind === 'fact' ? '#3b82f6' : '#4ec9b0'};`}>
+              <span style={`font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:${tbl.kind === 'fact' ? 'var(--color-primary)' : 'var(--color-accent)'};`}>
                 ⬡ {tbl.id}
               </span>
-              <span style={`padding:1px 7px;font-size:9px;border-radius:3px;font-family:'JetBrains Mono',monospace;border:1px solid;${tbl.kind === 'fact' ? 'color:#3b82f6;border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.07);' : 'color:#4ec9b0;border-color:rgba(78,201,176,.3);background:rgba(78,201,176,.07);'}`}>
+              <span style={`padding:1px 7px;font-size:9px;border-radius:3px;font-family:'JetBrains Mono',monospace;border:1px solid;${tbl.kind === 'fact' ? 'color:var(--color-primary);border-color:var(--color-primary);opacity:0.3;background:rgba(59,130,246,.07);' : 'color:var(--color-accent);border-color:var(--color-accent);opacity:0.3;background:rgba(78,201,176,.07);'}`}>
                 {tbl.kind}
               </span>
             </div>
 
             <!-- Description -->
-            <p style="font-size:12px;color:rgba(139,148,158,.7);line-height:1.7;margin-bottom:16px;max-width:560px;"
+            <p style="font-size:12px;color:var(--color-text-muted);opacity:0.7;line-height:1.7;margin-bottom:16px;max-width:560px;"
                data-i18n={`meta-${tbl.id}-desc`}>
               {tbl.description}
             </p>
 
             <!-- Columns -->
-            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(139,148,158,.4);margin-bottom:8px;letter-spacing:.04em;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--color-text-muted);margin-bottom:8px;letter-spacing:.04em;">
               COLUMNS · {tbl.columns.length}
             </div>
             <div style="display:flex;flex-direction:column;gap:4px;">
               {tbl.columns.map(col => (
-                <div style="display:flex;align-items:baseline;gap:10px;padding:6px 10px;border-radius:5px;background:rgba(255,255,255,.025);border:1px solid rgba(48,54,61,.6);">
+                <div style="display:flex;align-items:baseline;gap:10px;padding:6px 10px;border-radius:5px;background:rgba(255,255,255,.025);border:1px solid var(--color-border-alt);opacity:0.8;">
                   <div style="display:flex;align-items:center;gap:5px;min-width:130px;flex-shrink:0;">
-                    <span style="color:#9cdcfe;font-family:'JetBrains Mono',monospace;font-size:11px;">{col.name}</span>
+                    <span class="sql-col" style="font-family:'JetBrains Mono',monospace;font-size:11px;">{col.name}</span>
                     {col.key.includes('PK') && <span style="padding:0 4px;font-size:8px;color:#f59e0b;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:2px;">PK</span>}
                     {col.key.includes('FK') && <span style="padding:0 4px;font-size:8px;color:#34d399;background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.25);border-radius:2px;">FK</span>}
                   </div>
-                  <span style="font-size:11px;color:rgba(139,148,158,.5);line-height:1.5;"
+                  <span style="font-size:11px;color:var(--color-text-muted);line-height:1.5;"
                         data-i18n={`meta-${tbl.id}-col-${col.name}`}>{col.desc}</span>
                 </div>
               ))}
@@ -1508,16 +1525,16 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
     <!-- ── Status Bar ── -->
     <div class="ide-statusbar">
       <div style="display:flex;align-items:center;gap:10px;">
-        <span style="display:flex;align-items:center;gap:5px;color:rgba(59,130,246,.65);">
-          <span style="width:6px;height:6px;border-radius:50%;background:#34d399;display:inline-block;"></span>
+        <span style="display:flex;align-items:center;gap:5px;color:var(--color-primary);font-weight:600;">
+          <span style="width:6px;height:6px;border-radius:50%;background:#2da44e;display:inline-block;"></span>
           <span data-i18n="status-connected">Connected</span>
         </span>
-        <span style="color:rgba(139,148,158,.2);">·</span>
-        <span style="color:rgba(139,148,158,.4);">fact_daily_activity</span>
-        <span style="color:rgba(139,148,158,.2);">·</span>
-        <span style="color:rgba(139,148,158,.35);" id="status-active-tab">skills.sql</span>
+        <span style="opacity:0.2;">·</span>
+        <span style="color:var(--color-text-muted);">fact_daily_activity</span>
+        <span style="opacity:0.2;">·</span>
+        <span style="color:var(--color-text-muted);opacity:0.35;" id="status-active-tab">skills.sql</span>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;color:rgba(139,148,158,.3);">
+      <div style="display:flex;align-items:center;gap:10px;color:var(--color-text-muted);opacity:0.3;">
         <span>UTF-8</span>
         <span>SQL</span>
         <span id="clock">--:--:--</span>
@@ -1631,14 +1648,14 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
       'rows-skills':    '5行取得',
       'rows-activity':  '365行取得',
       'rows-writing':   '3行取得',
-      'rows-projects':  '2行取得',
+      'rows-projects':  '4行取得',
       // Table metadata descriptions
       'meta-fact_daily_activity-desc': '中心となるファクトテーブル。粒度: エンジニア × 日の1行。このスキーマ唯一のメジャー（コントリビューション数）と dim_engineer・dim_date への外部キーを持ちます。',
       'meta-dim_engineer-desc':        'エンジニア自身の属性を保持するディメンション。名前・役割など「誰であるか」を表す情報が格納され、全マートのクエリ絞り込みに使用されます。',
       'meta-dim_date-desc':            '日付ディメンション。ファクトテーブルに時間軸を与えます。年・月・曜日での集計・フィルタを、クエリ内の日付計算なしに行えます。',
       'meta-dim_skill-desc':           'スキルのディメンション。エンジニアが持つスキルを1行1スキーマで管理。dim_engineer と直接結合し、mart_skills はファクト不要の純粋な dim-to-dim クエリになります。',
-      'meta-dim_platform-desc':        '執筆プラットフォームのディメンション。dim_engineer と直接結合。mart_writing もファクトテーブルを経由しない dim-to-dim クエリです。',
-      'meta-dim_project-desc':         'OSS プロジェクトのディメンション。dim_engineer と直接結合。mart_projects もファクトテーブルを経由しない dim-to-dim クエリです。',
+      'meta-dim_platform-desc':        '執筆プラットフォームのディメンション。dim_engineer と直接結合. mart_writing もファクトテーブルを経由しない dim-to-dim クエリです。',
+      'meta-dim_project-desc':         'OSS プロジェクトのディメンション。dim_engineer と直接結合. mart_projects もファクトテーブルを経由しない dim-to-dim クエリです。',
       // fact_daily_activity
       'meta-fact_daily_activity-col-activity_id':   'アクティビティ行のサロゲートキー。',
       'meta-fact_daily_activity-col-engineer_id':   'dim_engineer を参照。誰のアクティビティかを識別。',
@@ -1689,6 +1706,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
       if (val !== undefined) el.textContent = val;
     });
     document.querySelectorAll<HTMLElement>('.lang-btn').forEach(btn => {
+      if (btn.id === 'theme-toggle') return;
       btn.classList.toggle('active', btn.dataset.lang === lang);
     });
   }
@@ -1750,12 +1768,12 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
 
     // dim_skill
     if (/from\s+dim_skill\b/.test(q))
-      return { kind:'table', headers:['skill_id','engineer_id','skill_name','category','proficiency'], rows:[
-        ['1','1','Data Modeling','Analytics Eng','expert'],
-        ['2','1','dbt','Analytics Eng','expert'],
-        ['3','1','SQL','Query Language','expert'],
-        ['4','1','Python','Programming','proficient'],
-        ['5','1','BigQuery','Data Warehouse','proficient'],
+      return { kind:'table', headers:['engineer_id','skill_name','category','proficiency'], rows:[
+        ['1','Data Modeling','Analytics Eng','expert'],
+        ['1','dbt','Analytics Eng','expert'],
+        ['1','SQL','Query Language','expert'],
+        ['1','Python','Programming','proficient'],
+        ['1','BigQuery','Data Warehouse','proficient'],
       ]};
 
     // dim_platform
@@ -1848,25 +1866,24 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
     if (scrollPane) scrollPane.scrollTop = 0;
 
     if (result.kind === 'error') {
-      inner.innerHTML = '<div style="padding:20px 24px;"><div style="background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.3);border-radius:6px;padding:16px 20px;"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><svg viewBox="0 0 16 16" style="width:16px;height:16px;fill:#f87171;flex-shrink:0;"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 4a.75.75 0 00-1.5 0v3.5a.75.75 0 001.5 0V5zm-.75 6.5a.75.75 0 100-1.5.75.75 0 000 1.5z"/></svg><span style="color:#f87171;font-family:\'JetBrains Mono\',monospace;font-size:13px;font-weight:600;">' + escHtml(result.msg.split('\n')[0]) + '</span></div><pre style="font-family:\'JetBrains Mono\',monospace;font-size:11px;line-height:1.7;color:rgba(248,113,113,.75);margin:0;white-space:pre-wrap;">' + escHtml(result.msg) + (result.hint ? '\n' + result.hint : '') + '</pre></div><div style="color:rgba(139,148,158,.35);font-family:\'JetBrains Mono\',monospace;font-size:10px;margin-top:10px;">Execution time: 0ms · 0 rows returned · Query failed</div></div>';
+      inner.innerHTML = '<div style="padding:20px 24px;"><div style="background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.3);border-radius:6px;padding:16px 20px;"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><svg viewBox="0 0 16 16" style="width:16px;height:16px;fill:#f87171;flex-shrink:0;"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 4a.75.75 0 00-1.5 0v3.5a.75.75 0 001.5 0V5zm-.75 6.5a.75.75 0 100-1.5.75.75 0 000 1.5z"/></svg><span style="color:#f87171;font-family:\'JetBrains Mono\',monospace;font-size:13px;font-weight:600;">' + escHtml(result.msg.split('\n')[0]) + '</span></div><pre style="font-family:\'JetBrains Mono\',monospace;font-size:11px;line-height:1.7;color:rgba(248,113,113,.75);margin:0;white-space:pre-wrap;">' + escHtml(result.msg) + (result.hint ? '\n' + result.hint : '') + '</pre></div><div style="color:var(--color-text-muted);opacity:0.35;font-family:\'JetBrains Mono\',monospace;font-size:10px;margin-top:10px;">Execution time: 0ms · 0 rows returned · Query failed</div></div>';
       if (label) { label.textContent = '· ERROR'; label.style.color = '#f87171'; }
-      if (statusBar) statusBar.style.borderTop = '1px solid rgba(220,38,38,.4)';
     } else if (result.kind === 'table') {
       const shown = result.rows.length;
       const total = result.total ?? shown;
-      const thStyle  = `text-align:left;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:normal;color:rgba(139,148,158,.5);background:#161b22;border-bottom:1px solid #21262d;position:sticky;top:0;z-index:1;white-space:nowrap;`;
-      const tdStyle  = `padding:6px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;border-bottom:1px solid rgba(33,38,45,.5);white-space:nowrap;`;
-      const numStyle = `color:rgba(139,148,158,.2);width:36px;`;
+      const thStyle  = `text-align:left;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:normal;color:var(--color-text-muted);opacity:0.5;background:var(--color-background-alt);border-bottom:1px solid var(--color-border-color);position:sticky;top:0;z-index:1;white-space:nowrap;`;
+      const tdStyle  = `padding:6px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;border-bottom:1px solid var(--color-border-color);white-space:nowrap;`;
+      const numStyle = `color:var(--color-text-muted);opacity:0.2;width:36px;`;
       const thead = `<tr><th style="${thStyle}${numStyle}">#</th>${result.headers.map(h => `<th style="${thStyle}">${escHtml(h)}</th>`).join('')}</tr>`;
       const tbody = result.rows.map((row, i) =>
         `<tr><td style="${tdStyle}${numStyle}">${i + 1}</td>${row.map(c => `<td style="${tdStyle}">${escHtml(c)}</td>`).join('')}</tr>`
       ).join('');
       const note = total > shown ? ` · showing ${shown} of ${total}` : '';
-      inner.innerHTML = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table></div><div style="padding:8px 14px;font-family:\'JetBrains Mono\',monospace;font-size:10px;color:rgba(139,148,158,.35);border-top:1px solid rgba(33,38,45,.5);">' + total + ' row' + (total !== 1 ? 's' : '') + ' returned' + note + '</div>';
+      inner.innerHTML = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table></div><div style="padding:8px 14px;font-family:\'JetBrains Mono\',monospace;font-size:10px;color:var(--color-text-muted);opacity:0.35;border-top:1px solid var(--color-border-alt);">' + total + ' row' + (total !== 1 ? 's' : '') + ' returned' + note + '</div>';
       if (label) { label.textContent = `· ${total} rows returned`; label.style.color = 'rgba(52,211,153,.7)'; }
       if (statusBar) statusBar.style.borderTop = '';
     } else {
-      inner.innerHTML = '<div style="padding:20px 24px;"><pre style="font-family:\'JetBrains Mono\',monospace;font-size:11px;line-height:1.7;color:rgba(139,148,158,.65);margin:0;white-space:pre-wrap;">' + escHtml(result.msg) + '</pre></div>';
+      inner.innerHTML = '<div style="padding:20px 24px;"><pre style="font-family:\'JetBrains Mono\',monospace;font-size:11px;line-height:1.7;color:var(--color-text-muted);opacity:0.65;margin:0;white-space:pre-wrap;">' + escHtml(result.msg) + '</pre></div>';
       if (label) { label.textContent = ''; label.style.color = 'rgba(52,211,153,0)'; }
       if (statusBar) statusBar.style.borderTop = '';
     }
@@ -1927,10 +1944,8 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
     const statusBar = document.querySelector<HTMLElement>('.ide-statusbar');
     if (meta.error) {
       if (label) { label.textContent = '· ERROR: permission denied'; label.style.color = '#f87171'; }
-      if (statusBar) statusBar.style.borderTop = '1px solid rgba(220,38,38,.4)';
     } else {
       if (label) { label.textContent = '· ' + t(`rows-${tab}`); label.style.color = 'rgba(52,211,153,.7)'; }
-      if (statusBar) statusBar.style.borderTop = '';
     }
   }
 
@@ -1943,8 +1958,6 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
     if (empty) empty.style.display = '';
     const label = document.getElementById('result-row-label');
     if (label) { label.textContent = ''; label.style.color = 'rgba(52,211,153,0)'; }
-    const statusBar = document.querySelector<HTMLElement>('.ide-statusbar');
-    if (statusBar) statusBar.style.borderTop = '';
   }
 
   // ── Run button ──
@@ -2068,7 +2081,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
     const scroller = document.querySelector<HTMLElement>('.ide-results-pane > div');
     if (scroller) scroller.scrollTop = 0;
     const label = document.getElementById('result-row-label');
-    if (label) { label.textContent = `· ${tableId}`; label.style.color = 'rgba(78,201,176,.7)'; }
+    if (label) { label.textContent = `· ${tableId}`; label.style.color = 'var(--color-primary)'; }
     const statusEl = document.getElementById('status-active-tab');
     if (statusEl) statusEl.textContent = tableId;
     const statusBar = document.querySelector<HTMLElement>('.ide-statusbar');
@@ -2076,7 +2089,7 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
   }
 
   // ── ER Diagram interactions ──
-  const BLUE = '#3b82f6';
+  const BLUE = 'var(--color-primary)';
   const ER_ITEMS = [
     { dim: 'dim-skill',    rect: 'rect-skill',    line: 'line-skill',    lbl: 'lbl-skill',    fk: 'fk-skill',    ddl: 'dim_skill'    },
     { dim: 'dim-platform', rect: 'rect-platform', line: 'line-platform', lbl: 'lbl-platform', fk: 'fk-platform', ddl: 'dim_platform' },
@@ -2093,17 +2106,17 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
     if (!dimEl) return;
 
     dimEl.addEventListener('mouseenter', () => {
-      rectEl?.setAttribute('stroke', BLUE);
-      lineEl?.setAttribute('stroke', BLUE);
-      lblEl?.setAttribute('fill', BLUE);
-      fkEl?.querySelectorAll('text').forEach(t => t.setAttribute('fill', BLUE));
+      if (rectEl) rectEl.style.stroke = BLUE;
+      if (lineEl) lineEl.style.stroke = BLUE;
+      if (lblEl)  lblEl.style.fill = BLUE;
+      fkEl?.querySelectorAll('text').forEach(t => (t as SVGTextElement).style.fill = BLUE);
     });
     dimEl.addEventListener('mouseleave', () => {
-      rectEl?.setAttribute('stroke', '#30363d');
-      lineEl?.setAttribute('stroke', '#30363d');
-      lblEl?.setAttribute('fill', '#8b949e');
+      if (rectEl) rectEl.style.stroke = 'var(--color-accent)';
+      if (lineEl) lineEl.style.stroke = 'var(--color-border-color)';
+      if (lblEl)  lblEl.style.fill = 'var(--color-text-muted)';
       fkEl?.querySelectorAll('text').forEach((t, i) => {
-        t.setAttribute('fill', i === 0 ? '#6a9955' : i === 1 ? '#9cdcfe' : '#8b949e');
+        (t as SVGTextElement).style.fill = i === 0 ? '#6a9955' : i === 1 ? 'var(--color-secondary)' : 'var(--color-text-muted)';
       });
     });
     dimEl.addEventListener('click', () => showDDL(ddl));
@@ -2118,24 +2131,24 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
   const lblEngineerEl  = document.getElementById('lbl-engineer');
 
   dimFactEl?.addEventListener('mouseenter', () => {
-    rectFactEl?.setAttribute('stroke', BLUE);
-    lineEngineerEl?.setAttribute('stroke', BLUE);
+    if (rectFactEl) rectFactEl.style.stroke = BLUE;
+    if (lineEngineerEl) lineEngineerEl.style.stroke = BLUE;
   });
   dimFactEl?.addEventListener('mouseleave', () => {
-    rectFactEl?.setAttribute('stroke', '#3b82f6');
-    lineEngineerEl?.setAttribute('stroke', '#30363d');
+    if (rectFactEl) rectFactEl.style.stroke = 'var(--color-primary)';
+    if (lineEngineerEl) lineEngineerEl.style.stroke = 'var(--color-border-color)';
   });
   dimFactEl?.addEventListener('click', () => showDDL('fact_daily_activity'));
 
   dimEngineerEl?.addEventListener('mouseenter', () => {
-    rectEngineerEl?.setAttribute('stroke', BLUE);
-    lineEngineerEl?.setAttribute('stroke', BLUE);
-    lblEngineerEl?.setAttribute('fill', BLUE);
+    if (rectEngineerEl) rectEngineerEl.style.stroke = BLUE;
+    if (lineEngineerEl) lineEngineerEl.style.stroke = BLUE;
+    if (lblEngineerEl)  lblEngineerEl.style.fill = BLUE;
   });
   dimEngineerEl?.addEventListener('mouseleave', () => {
-    rectEngineerEl?.setAttribute('stroke', '#30363d');
-    lineEngineerEl?.setAttribute('stroke', '#30363d');
-    lblEngineerEl?.setAttribute('fill', '#8b949e');
+    if (rectEngineerEl) rectEngineerEl.style.stroke = 'var(--color-accent)';
+    if (lineEngineerEl) lineEngineerEl.style.stroke = 'var(--color-border-color)';
+    if (lblEngineerEl)  lblEngineerEl.style.fill = 'var(--color-text-muted)';
   });
   dimEngineerEl?.addEventListener('click', () => showDDL('dim_engineer'));
 
@@ -2202,9 +2215,11 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
     if (window.innerWidth < 768) {
       ideWindow.style.height = 'auto';
       ideWindow.style.minHeight = 'unset';
+      ideWindow.style.width = '100%';
     } else {
-      ideWindow.style.height = 'calc(100vh - 2rem)';
+      ideWindow.style.height = '100vh';
       ideWindow.style.minHeight = '580px';
+      ideWindow.style.width = '100vw';
     }
   }
   applyMobileLayout();
@@ -2212,10 +2227,45 @@ HINT: This column is classified. Access requires ROLE = 'hr_admin' or above.
 
   // ── Language toggle ──
   document.querySelectorAll<HTMLElement>('.lang-btn').forEach(btn => {
+    if (btn.id === 'theme-toggle') return;
     btn.addEventListener('click', () => setLang(btn.dataset.lang as Lang));
   });
   // Apply saved language on load
   setLang(currentLang);
+
+  // ── Theme toggle ──
+  const themeToggle = document.getElementById('theme-toggle');
+  const sunIcon = document.getElementById('sun-icon');
+  const moonIcon = document.getElementById('moon-icon');
+
+  function updateThemeIcons(theme: string) {
+    if (sunIcon && moonIcon) {
+      if (theme === 'dark') {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+      } else {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+      }
+    }
+  }
+
+  const initialTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  updateThemeIcons(initialTheme);
+
+  themeToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    const newTheme = isDark ? 'light' : 'dark';
+    
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcons(newTheme);
+  });
 </script>
 
 </Layout>

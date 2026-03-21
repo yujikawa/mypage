@@ -3,9 +3,10 @@ import NavBar from '../components/NavBar.astro';
 
 interface Props {
   title?: string;
+  hideNavBar?: boolean;
 }
 
-const { title } = Astro.props;
+const { title, hideNavBar = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -19,14 +20,56 @@ const { title } = Astro.props;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script is:inline>
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+
+      if (theme === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.add('dark');
+      }
+      window.localStorage.setItem('theme', theme);
+    </script>
   </head>
   <body class="bg-background text-text-base antialiased">
-    <NavBar />
+    {!hideNavBar && <NavBar />}
     <slot />
   </body>
 </html>
 
 <style is:global>
+  :root {
+    --color-background: #ffffff; /* エディタ：純白に近い色で清潔感と可視性を */
+    --color-background-alt: #f3f4f6; /* ヘッダー・サイドバー：一段下げて境界を明確に */
+    --color-primary: #0969da;
+    --color-secondary: #24292f;
+    --color-accent: #1a7f37;
+    --color-text-base: #1f2328;
+    --color-text-muted: #57606a;
+    --color-border-color: #d0d7de; /* 境界線を少し強く */
+    --color-border-alt: #d8dee4;
+  }
+
+  html.dark {
+    --color-background: #22272e; /* エディタ：標準的なダーク */
+    --color-background-alt: #1c2128; /* ヘッダー・サイドバー：より深くしてエディタを浮かせる */
+    --color-primary: #539bf5;
+    --color-secondary: #adbac7;
+    --color-accent: #6bc46d;
+    --color-text-base: #adbac7;
+    --color-text-muted: #768390;
+    --color-border-color: #444c56; /* 境界線を明瞭に */
+    --color-border-alt: #373e47;
+  }
+
   *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -47,28 +90,38 @@ const { title } = Astro.props;
     font-family: 'JetBrains Mono', monospace;
   }
 
-  body {
-    background-color: #0d1117;
-  }
-
   /* SQL syntax highlighting */
-  .sql-kw  { color: #569cd6; font-weight: 500; }
-  .sql-col { color: #9cdcfe; }
-  .sql-str { color: #ce9178; }
-  .sql-tbl { color: #4ec9b0; }
-  .sql-num { color: #b5cea8; }
-  .sql-cmt { color: #6a9955; font-style: italic; }
+  .sql-kw  { color: #0550ae; font-weight: 500; }
+  .sql-col { color: #24292f; }
+  .sql-str { color: #0a3069; }
+  .sql-tbl { color: #116329; }
+  .sql-num { color: #cf222e; }
+  .sql-cmt { color: #6e7781; font-style: italic; }
+
+  html.dark .sql-kw  { color: #569cd6; }
+  html.dark .sql-col { color: #9cdcfe; }
+  html.dark .sql-str { color: #ce9178; }
+  html.dark .sql-tbl { color: #4ec9b0; }
+  html.dark .sql-num { color: #b5cea8; }
+  html.dark .sql-cmt { color: #6a9955; }
 
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(ellipse 70% 40% at 15% -5%, rgba(59, 130, 246, 0.1) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 35% at 85% 105%, rgba(6, 182, 212, 0.07) 0%, transparent 60%);
+      radial-gradient(ellipse 70% 40% at 15% -5%, rgba(59, 130, 246, 0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 35% at 85% 105%, rgba(6, 182, 212, 0.03) 0%, transparent 60%);
     pointer-events: none;
     z-index: 0;
   }
+
+  html.dark body::before {
+    background:
+      radial-gradient(ellipse 70% 40% at 15% -5%, rgba(59, 130, 246, 0.1) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 35% at 85% 105%, rgba(6, 182, 212, 0.07) 0%, transparent 60%);
+  }
+
 
   main {
     position: relative;

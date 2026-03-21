@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     './src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}',
     './public/**/*.html',
@@ -7,14 +8,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: '#0d1117',
-        'background-alt': '#161b22',
-        primary: '#3b82f6',
-        secondary: '#60a5fa',
-        accent: '#06b6d4',
-        'text-base': '#e6edf3',
-        'text-muted': '#8b949e',
-        'border-color': '#30363d',
+        background: 'var(--color-background)',
+        'background-alt': 'var(--color-background-alt)',
+        primary: 'var(--color-primary)',
+        secondary: 'var(--color-secondary)',
+        accent: 'var(--color-accent)',
+        'text-base': 'var(--color-text-base)',
+        'text-muted': 'var(--color-text-muted)',
+        'border-color': 'var(--color-border-color)',
       },
       keyframes: {
         fadeIn: {
